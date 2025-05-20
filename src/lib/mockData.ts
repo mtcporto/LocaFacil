@@ -25,23 +25,23 @@ export type Property = {
 export const mockProperties: Property[] = [
   {
     id: '1',
-    name: 'Edifício Lest Ville - Unidade 305',
+    name: 'Edifício Lest Ville', // Nome genérico do edifício
     address: 'Av. Cabo Branco, 2834',
     city: 'João Pessoa',
     state: 'PB',
     zip: '58045-010',
-    description: 'Aconchegante apartamento de 1 quarto com vista para o mar.',
-    longDescription: 'Descubra o conforto de viver neste bem conservado apartamento de 1 quarto no Edifício Lest Ville. Localizado no vibrante bairro de Cabo Branco, esta unidade oferece vistas deslumbrantes do oceano e fácil acesso às comodidades locais. O edifício é gerido profissionalmente, garantindo uma experiência de vida agradável. Ideal para solteiros ou casais que procuram uma localização privilegiada à beira-mar.',
+    description: 'Aconchegante apartamento com vista para o mar.',
+    longDescription: 'Descubra o conforto de viver neste bem conservado apartamento no Edifício Lest Ville. Localizado no vibrante bairro de Cabo Branco, esta unidade oferece vistas deslumbrantes do oceano e fácil acesso às comodidades locais. O edifício é gerido profissionalmente, garantindo uma experiência de vida agradável. Ideal para solteiros ou casais que procuram uma localização privilegiada à beira-mar.',
     images: ['https://placehold.co/600x400.png', 'https://placehold.co/600x400.png', 'https://placehold.co/600x400.png'],
-    sq_m: 30,
+    sq_m: 30, // Ajustar se a unidade 309 for diferente da 305 original
     bedrooms: 1,
     bathrooms: 1,
     rent_amount: 950,
-    available: true,
+    available: false, // Patrícia está ocupando
     amenities: ['Estacionamento', 'Aceita Pets', 'Mobiliado'],
     type: "Apartamento",
-    floors: 3,
-    unitsPerFloor: {"1":26, "2":26, "3":26}
+    floors: 3, // Assumindo que o apto 309 está no 3º andar
+    unitsPerFloor: {"1":26, "2":26, "3":26} // Exemplo
   },
   {
     id: '2',
@@ -57,7 +57,7 @@ export const mockProperties: Property[] = [
     bedrooms: 3,
     bathrooms: 2,
     rent_amount: 3500,
-    available: false,
+    available: false, // Maria Silva está ocupando
     amenities: ['Estacionamento', 'Piscina', 'Academia', 'Varanda'],
     type: "Apartamento",
   },
@@ -75,7 +75,7 @@ export const mockProperties: Property[] = [
     bedrooms: 2,
     bathrooms: 2,
     rent_amount: 2200,
-    available: true,
+    available: false, // Ana Costa está ocupando
     amenities: ['Estacionamento', 'Academia', 'Varanda'],
     type: "Condomínio",
   },
@@ -110,10 +110,16 @@ export type Tenant = {
   name: string;
   email: string;
   phone: string;
+  cpf: string; // Adicionado para o contrato
+  // Adicionar mais campos do contrato se necessário no futuro
+  // nacionalidade: string;
+  // estadoCivil: string;
+  // profissao: string;
+  // rg: string;
   propertyId: string;
   apartmentUnit: string;
-  leaseStartDate: string;
-  leaseEndDate: string;
+  leaseStartDate: string; // YYYY-MM-DD
+  leaseEndDate: string; // YYYY-MM-DD
   rent_paid_status: TaxStatus;
   iptuAmount: number;
   iptuDueDate: string; // YYYY-MM-DD
@@ -129,6 +135,7 @@ export const mockTenants: Tenant[] = [
     name: 'Maria Silva',
     email: 'maria.silva@example.com',
     phone: '(83) 99999-1111',
+    cpf: '111.222.333-44',
     propertyId: '2', // Manaira Prime Residence
     apartmentUnit: '12B',
     leaseStartDate: '2023-01-15',
@@ -142,27 +149,29 @@ export const mockTenants: Tenant[] = [
     tcrStatus: 'Pago',
   },
   {
-    id: 't2',
-    name: 'João Santos',
-    email: 'joao.santos@example.com',
-    phone: '(83) 98888-2222',
+    id: 't2', // Patrícia Medeiros Cantisani
+    name: 'Patrícia Medeiros Cantisani',
+    email: 'patricia.cantisani@gmail.com',
+    phone: '(83) 99317-2212',
+    cpf: '826.160.434-91',
     propertyId: '1', // Edificio Lest Ville
-    apartmentUnit: '301',
-    leaseStartDate: '2022-06-01',
-    leaseEndDate: '2024-08-31', // Ajustado para não estar vencido ainda
-    rent_paid_status: 'Pendente',
-    iptuAmount: 75.00,
-    iptuDueDate: '2024-09-10', 
+    apartmentUnit: '309',
+    leaseStartDate: '2024-10-15', // Conforme contrato
+    leaseEndDate: '2025-04-14',   // Conforme contrato
+    rent_paid_status: 'Pendente', // Novo contrato, ainda não pago
+    iptuAmount: 75.00, // Exemplo
+    iptuDueDate: '2025-02-10', 
     iptuStatus: 'Pendente',
-    tcrAmount: 55.25,
-    tcrDueDate: '2024-03-15', 
-    tcrStatus: 'Vencido',
+    tcrAmount: 55.25, // Exemplo
+    tcrDueDate: '2025-03-15', 
+    tcrStatus: 'Pendente',
   },
   {
     id: 't3',
     name: 'Ana Costa',
     email: 'ana.costa@example.com',
     phone: '(83) 97777-3333',
+    cpf: '555.666.777-88',
     propertyId: '3', 
     apartmentUnit: '2A',
     leaseStartDate: '2024-01-01',
@@ -182,7 +191,7 @@ export type ServiceItem = {
   name: string;
   description: string;
   price: number;
-  icon?: React.ElementType; // Opcional, para um ícone visual
+  icon?: React.ElementType; 
 };
 
 export const mockServices: ServiceItem[] = [
@@ -212,4 +221,6 @@ export const mockServices: ServiceItem[] = [
   },
 ];
 
-    
+export const getTenantById = (id: string): Tenant | undefined => {
+  return mockTenants.find(t => t.id === id);
+}
