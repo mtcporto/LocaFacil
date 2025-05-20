@@ -10,7 +10,7 @@ export default function HomePage() {
       <section className="text-center py-12 md:py-20 bg-gradient-to-br from-primary/10 via-background to-accent/10 rounded-xl shadow-lg">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6">
-            DomusLink: Gestão de Imóveis Descomplicada
+            LocaFácil: Gestão de Imóveis Descomplicada
           </h1>
           <p className="text-lg md:text-xl text-foreground/80 mb-10 max-w-3xl mx-auto">
             Capacitando proprietários com ferramentas inteligentes e oferecendo aos inquilinos uma experiência de aluguel transparente e moderna.
@@ -31,7 +31,7 @@ export default function HomePage() {
       </section>
 
       <section className="container mx-auto px-4">
-        <h2 className="text-3xl font-semibold text-center mb-10 text-primary">Por que escolher o DomusLink?</h2>
+        <h2 className="text-3xl font-semibold text-center mb-10 text-primary">Por que escolher o LocaFácil?</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <Card className="shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader className="items-center">
@@ -91,7 +91,7 @@ export default function HomePage() {
             <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-card">
               <h3 className="text-3xl font-semibold text-primary mb-4">Descubra Seu Espaço Perfeito</h3>
               <p className="text-foreground/80 mb-6">
-                Nossa plataforma apresenta uma gama diversificada de imóveis para se adequar ao seu estilo de vida. De apartamentos aconchegantes a casas espaçosas, comece sua busca com DomusLink hoje.
+                Nossa plataforma apresenta uma gama diversificada de imóveis para se adequar ao seu estilo de vida. De apartamentos aconchegantes a casas espaçosas, comece sua busca com LocaFácil hoje.
               </p>
               <Button size="lg" asChild className="self-start shadow-md hover:shadow-lg transition-shadow">
                 <Link href="/properties">

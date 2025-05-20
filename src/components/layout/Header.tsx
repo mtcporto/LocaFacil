@@ -8,7 +8,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 text-primary hover:text-accent transition-colors">
           <Building className="h-8 w-8" />
-          <h1 className="text-2xl font-bold">DomusLink</h1>
+          <h1 className="text-2xl font-bold">LocaFácil</h1>
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4">
           <Button variant="ghost" asChild>

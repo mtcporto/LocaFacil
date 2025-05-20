@@ -9,7 +9,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-primary">Bem-vindo de Volta!</CardTitle>
-          <CardDescription>Faça login para acessar seu portal DomusLink.</CardDescription>
+          <CardDescription>Faça login para acessar seu portal LocaFácil.</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />

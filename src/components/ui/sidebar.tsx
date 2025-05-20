@@ -18,6 +18,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import Link from "next/link"; // Adicionado para o Link
+import { Building } from "lucide-react"; // Adicionado para o ícone Building
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -206,11 +208,10 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
-            <SheetHeader className="p-2 border-b border-sidebar-border"> {/* Added padding and border for visual separation if title wasn't sr-only */}
+            <SheetHeader className="p-2 border-b border-sidebar-border">
               <SheetTitle className="sr-only">Menu Principal</SheetTitle>
-              {/* You might want to place a visible trigger here if needed, or other header content */}
             </SheetHeader>
-            <div className="flex h-full w-full flex-col overflow-y-auto"> {/* Added overflow-y-auto */}
+            <div className="flex h-full w-full flex-col overflow-y-auto">
               {children}
             </div>
           </SheetContent>

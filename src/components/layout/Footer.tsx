@@ -36,7 +36,7 @@ export default function Footer() {
             </address>
           </div>
           <div className="md:col-span-2 md:text-right">
-            <p className="text-muted-foreground">&copy; {currentYear} DomusLink. Todos os direitos reservados.</p>
+            <p className="text-muted-foreground">&copy; {currentYear} LocaFácil. Todos os direitos reservados.</p>
             <p className="text-xs text-muted-foreground/80 mt-1">Modernizando a Gestão de Imóveis</p>
             <p className="text-xs text-muted-foreground/80 mt-2">
               Uma solução <a href="https://earlen.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-primary underline">Construtora Earlen</a>

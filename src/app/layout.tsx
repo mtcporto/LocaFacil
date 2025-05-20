@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'DomusLink - Gestão Moderna de Imóveis',
-  description: 'DomusLink ajuda proprietários a gerenciar imóveis e inquilinos de forma eficiente.',
+  title: 'LocaFácil - Gestão Moderna de Imóveis',
+  description: 'LocaFácil ajuda proprietários a gerenciar imóveis e inquilinos de forma eficiente.',
 };
 
 export default function RootLayout({
