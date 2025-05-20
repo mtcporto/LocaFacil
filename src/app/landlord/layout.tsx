@@ -1,13 +1,16 @@
+
 "use client";
 
 import SidebarLayout from '@/components/layout/SidebarLayout';
-import { LayoutDashboard, Building, Users, Bell } from 'lucide-react';
+import { LayoutDashboard, Building, Users, Bell, Wrench, ClipboardList } from 'lucide-react';
 
 const landlordNavItems = [
   { href: '/landlord/dashboard', label: 'Painel', icon: LayoutDashboard, tooltip: 'Visão Geral' },
   { href: '/landlord/properties', label: 'Imóveis', icon: Building, tooltip: 'Gerenciar Imóveis' },
   { href: '/landlord/tenants', label: 'Inquilinos', icon: Users, tooltip: 'Gerenciar Inquilinos' },
   { href: '/landlord/notifications', label: 'Notificações', icon: Bell, tooltip: 'Enviar Notificações' },
+  { href: '/landlord/maintenance', label: 'Manutenção', icon: Wrench, tooltip: 'Solicitações de Manutenção' },
+  { href: '/landlord/proposals', label: 'Propostas', icon: ClipboardList, tooltip: 'Propostas Recebidas' },
 ];
 
 export default function LandlordLayout({

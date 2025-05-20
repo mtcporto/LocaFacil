@@ -1,4 +1,6 @@
 
+import type { LucideIcon } from "lucide-react";
+
 export type PropertyAmenity = "Estacionamento" | "Piscina" | "Academia" | "Aceita Pets" | "Mobiliado" | "Varanda";
 
 export type Property = {
@@ -25,14 +27,14 @@ export type Property = {
 export const mockProperties: Property[] = [
   {
     id: '1',
-    name: 'Edifício Lest Ville', // Nome genérico do edifício
+    name: 'Edifício Lest Ville',
     address: 'Av. Cabo Branco, 2834',
     city: 'João Pessoa',
     state: 'PB',
     zip: '58045-010',
     description: 'Aconchegante apartamento com vista para o mar.',
     longDescription: 'Descubra o conforto de viver neste bem conservado apartamento no Edifício Lest Ville. Localizado no vibrante bairro de Cabo Branco, esta unidade oferece vistas deslumbrantes do oceano e fácil acesso às comodidades locais. O edifício é gerido profissionalmente, garantindo uma experiência de vida agradável. Ideal para solteiros ou casais que procuram uma localização privilegiada à beira-mar.',
-    images: ['https://placehold.co/800x600.png', 'https://placehold.co/600x450.png', 'https://placehold.co/700x500.png'],
+    images: ['https://placehold.co/800x600.png', 'https://placehold.co/1024x768.png', 'https://placehold.co/600x800.png'],
     sq_m: 30,
     bedrooms: 1,
     bathrooms: 1,
@@ -52,7 +54,7 @@ export const mockProperties: Property[] = [
     zip: '58037-000',
     description: 'Espaçoso apartamento de 3 quartos em Manaira.',
     longDescription: 'Experimente o luxo de viver neste espaçoso apartamento de 3 quartos no Manaira Prime Residence. Esta unidade moderna possui acabamentos de alta qualidade, ampla luz natural e varanda privativa. As comodidades do edifício incluem piscina, academia e segurança 24 horas. Perfeitamente situado perto de opções de compras, restaurantes e entretenimento.',
-    images: ['https://placehold.co/1024x768.png', 'https://placehold.co/800x500.png', 'https://placehold.co/600x800.png'],
+    images: ['https://placehold.co/1024x768.png', 'https://placehold.co/700x550.png', 'https://placehold.co/800x500.png'],
     sq_m: 120,
     bedrooms: 3,
     bathrooms: 2,
@@ -70,7 +72,7 @@ export const mockProperties: Property[] = [
     zip: '50000-000',
     description: 'Moderno condomínio de 2 quartos com vista para a cidade.',
     longDescription: 'Desfrute da vida urbana neste elegante condomínio de 2 quartos no Condomínio Sunrise. Esta unidade possui um layout de conceito aberto, design contemporâneo e grandes janelas que oferecem vistas panorâmicas da cidade. Os moradores têm acesso a um terraço na cobertura e a uma academia. Convenientemente localizado no coração de Recife, perto de transporte público e atrações culturais.',
-    images: ['https://placehold.co/700x550.png', 'https://placehold.co/900x600.png', 'https://placehold.co/500x700.png'],
+    images: ['https://placehold.co/700x550.png', 'https://placehold.co/900x600.png', 'https://placehold.co/600x400.png'],
     sq_m: 75,
     bedrooms: 2,
     bathrooms: 2,
@@ -88,7 +90,7 @@ export const mockProperties: Property[] = [
     zip: '58400-000',
     description: 'Charmosa casa de 4 quartos com jardim.',
     longDescription: 'Esta bela casa de 4 quartos no Vale Verde oferece um refúgio tranquilo com um jardim espaçoso e área de entretenimento ao ar livre. A casa apresenta um design tradicional com atualizações modernas, incluindo cozinha totalmente equipada e banheiros reformados. Amplo espaço de estacionamento disponível. Ideal para famílias que procuram um bairro tranquilo.',
-    images: ['https://placehold.co/850x500.png', 'https://placehold.co/650x450.png', 'https://placehold.co/1000x600.png'],
+    images: ['https://placehold.co/850x500.png', 'https://placehold.co/650x450.png', 'https://placehold.co/1200x700.png'],
     sq_m: 200,
     bedrooms: 4,
     bathrooms: 3,
@@ -177,7 +179,7 @@ export const mockTenants: Tenant[] = [
     iptuStatus: 'Pendente',
     tcrAmount: 60.70,
     tcrDueDate: '2024-11-20', 
-    tcrStatus: 'Pendente',
+    tcrStatus: 'Vencido',
   },
 ];
 
@@ -218,5 +220,105 @@ export const mockServices: ServiceItem[] = [
 
 export const getTenantById = (id: string): Tenant | undefined => {
   return mockTenants.find(t => t.id === id);
+};
+
+// --- Novas definições para Manutenção e Propostas ---
+
+export type MaintenanceRequestStatus = 'Pendente' | 'Em Andamento' | 'Concluído' | 'Cancelado';
+export type ProposalStatus = 'Nova' | 'Em Análise' | 'Aceita' | 'Recusada';
+
+export interface MaintenanceRequest {
+  id: string;
+  tenantId: string; // ID do inquilino que solicitou
+  propertyId: string; // ID do imóvel relacionado
+  unit: string; // Unidade específica (ex: Apto 309)
+  description: string; // Descrição do problema
+  dateSubmitted: string; // YYYY-MM-DD
+  status: MaintenanceRequestStatus;
+  priority?: 'Baixa' | 'Média' | 'Alta';
+  assignedTo?: string; // Nome do técnico ou responsável
+  resolutionDetails?: string; // Detalhes da solução aplicada
+  dateCompleted?: string; // YYYY-MM-DD
 }
 
+export interface Proposal {
+  id: string;
+  prospectName: string;
+  prospectEmail: string;
+  prospectPhone?: string;
+  propertyId: string; // ID do imóvel desejado
+  dateSubmitted: string; // YYYY-MM-DD
+  status: ProposalStatus;
+  message?: string; // Mensagem adicional do proponente
+  moveInDate?: string; // Data desejada para mudança (YYYY-MM-DD)
+  leaseTerm?: number; // Prazo do contrato desejado em meses
+}
+
+export const mockMaintenanceRequests: MaintenanceRequest[] = [
+  {
+    id: 'mr1',
+    tenantId: 't2', // João Santos
+    propertyId: '1', // Edifício Lest Ville
+    unit: '309',
+    description: 'Vazamento na pia da cozinha. A torneira está pingando constantemente.',
+    dateSubmitted: '2024-07-10',
+    status: 'Pendente',
+    priority: 'Alta',
+  },
+  {
+    id: 'mr2',
+    tenantId: 't1', // Maria Silva
+    propertyId: '2', // Manaira Prime Residence
+    unit: '12B',
+    description: 'Ar condicionado do quarto principal não está gelando.',
+    dateSubmitted: '2024-07-08',
+    status: 'Em Andamento',
+    priority: 'Média',
+    assignedTo: 'Refrigeração Silva',
+  },
+  {
+    id: 'mr3',
+    tenantId: 't3', // Ana Costa
+    propertyId: '3', // Condomínio Sunrise
+    unit: '2A',
+    description: 'Luz do corredor da área comum queimada (próximo à minha porta).',
+    dateSubmitted: '2024-06-25',
+    status: 'Concluído',
+    priority: 'Baixa',
+    resolutionDetails: 'Lâmpada substituída.',
+    dateCompleted: '2024-06-26',
+  },
+];
+
+export const mockProposals: Proposal[] = [
+  {
+    id: 'prop1',
+    prospectName: 'Carlos Andrade',
+    prospectEmail: 'carlos.andrade@email.com',
+    prospectPhone: '(83) 98877-6655',
+    propertyId: '4', // Casa Vale Verde (disponível)
+    dateSubmitted: '2024-07-12',
+    status: 'Nova',
+    message: 'Gostaria de saber mais sobre a casa e agendar uma visita.',
+    moveInDate: '2024-08-01',
+    leaseTerm: 12,
+  },
+  {
+    id: 'prop2',
+    prospectName: 'Beatriz Lima',
+    prospectEmail: 'beatriz.lima@email.com',
+    propertyId: '1', // Edifício Lest Ville (atualmente alugado, mas poderia ser proposta para lista de espera)
+    dateSubmitted: '2024-07-05',
+    status: 'Em Análise',
+    message: 'Tenho interesse neste apartamento para quando estiver disponível.',
+  },
+  {
+    id: 'prop3',
+    prospectName: 'Fernanda Souza',
+    prospectEmail: 'fernanda.s@email.com',
+    propertyId: '4',
+    dateSubmitted: '2024-06-20',
+    status: 'Recusada',
+    message: 'Proposta para aluguel com valor abaixo do solicitado.',
+  },
+];
