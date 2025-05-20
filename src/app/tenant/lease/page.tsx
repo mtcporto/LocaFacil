@@ -3,14 +3,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, CalendarDays, UserCircle, Home, Download, Landmark } from "lucide-react";
+import { FileText, CalendarDays, UserCircle, Home, Download, Landmark, CircleDollarSign, Building, Users } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import React from "react";
 import { getTenantById, getPropertyById, type Tenant, type Property } from "@/lib/mockData";
+import { useToast } from "@/hooks/use-toast";
 
 // Simulação do ID do inquilino logado. Em um app real, viria do contexto de autenticação.
-const MOCK_LOGGED_IN_TENANT_ID = 't2'; // João Santos (anteriormente Patrícia Medeiros Cantisani)
+const MOCK_LOGGED_IN_TENANT_ID = 't2'; // João Santos (dados genéricos)
 
 const constructorDetails = {
   nome: "CONSTRUTORA EARLEN LTDA",
@@ -28,6 +29,7 @@ const formatDateForDisplay = (dateString: string | undefined): string => {
   const day = parseInt(parts[2], 10);
   
   const localDate = new Date(year, month, day);
+  if (isNaN(localDate.getTime())) return dateString; // Retorna original se data inválida
   return localDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
@@ -40,6 +42,8 @@ const formatDateForContract = (dateString: string | undefined): string => {
   const month = parseInt(parts[1], 10) - 1; // Mês (0-indexado)
   const day = parseInt(parts[2], 10);
   const date = new Date(year, month, day);
+  
+  if (isNaN(date.getTime())) return dateString; // Retorna original se data inválida
   
   const dayFormatted = date.getDate();
   const monthFormatted = date.toLocaleDateString('pt-BR', { month: 'long' });
@@ -56,9 +60,11 @@ const getLeaseTemplate = (tenant: Tenant, property: Property) => {
   if (tenant.leaseStartDate && tenant.leaseEndDate) {
     const start = new Date(tenant.leaseStartDate);
     const end = new Date(tenant.leaseEndDate);
-    const adjustedEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate() + 1);
-    durationMonths = (adjustedEnd.getFullYear() - start.getFullYear()) * 12 + (adjustedEnd.getMonth() - start.getMonth());
-    if (durationMonths <= 0) durationMonths = 6; 
+    if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+        const adjustedEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate() + 1);
+        durationMonths = (adjustedEnd.getFullYear() - start.getFullYear()) * 12 + (adjustedEnd.getMonth() - start.getMonth());
+        if (durationMonths <= 0) durationMonths = 6; 
+    }
   }
 
 
@@ -67,7 +73,7 @@ CONTRATO DE LOCAÇÃO DE IMÓVEL
 
 LOCADORA: ${constructorDetails.nome}, pessoa jurídica de direito privado, inscrita no CNPJ/MF sob o n.° ${constructorDetails.cnpj}, estabelecida na ${constructorDetails.enderecoCompleto}, doravante nominada LOCADORA.
 
-LOCATÁRIO(A): ${tenant.name}, brasileiro(a), [ESTADO_CIVIL_LOCATARIO], [PROFISSAO_LOCATARIO], portador(a) da cédula de identidade nº [RG_LOCATARIO] SSP/PB, inscrito(a) no CPF/MF nº ${tenant.cpf} e seu cônjuge (se aplicável) Cônjuge Exemplo, brasileiro(a), portador(a) da cédula de identidade nº [RG_CONJUGE_EXEMPLO] SSP/PB, inscrito(a) no CPF/MF nº [CPF_CONJUGE_EXEMPLO], residentes e domiciliados na ${property.address} Apto ${tenant.apartmentUnit} ${property.city} - CEP: ${property.zip} - ${property.state}, Fone: ${tenant.phone} e-mail: ${tenant.email} doravante nominado(a) LOCATÁRIO(A).
+LOCATÁRIO(A): ${tenant.name}, brasileiro(a), ${tenant.maritalStatus || '[ESTADO_CIVIL_LOCATARIO]'}, ${tenant.profession || '[PROFISSAO_LOCATARIO]'}, portador(a) da cédula de identidade nº ${tenant.rg || '[RG_LOCATARIO]'} SSP/PB, inscrito(a) no CPF/MF nº ${tenant.cpf} e seu cônjuge (se aplicável) Cônjuge Exemplo, brasileiro(a), portador(a) da cédula de identidade nº [RG_CONJUGE_EXEMPLO] SSP/PB, inscrito(a) no CPF/MF nº [CPF_CONJUGE_EXEMPLO], residentes e domiciliados na ${property.address} Apto ${tenant.apartmentUnit} ${property.city} - CEP: ${property.zip} - ${property.state}, Fone: ${tenant.phone} e-mail: ${tenant.email} doravante nominado(a) LOCATÁRIO(A).
 
 CLÁUSULA 1ª – OBJETO DO CONTRATO
 
@@ -167,6 +173,7 @@ Nome: CPF:
 
 
 export default function TenantLeasePage() {
+  const { toast } = useToast();
   const [tenant, setTenant] = React.useState<Tenant | null>(null);
   const [property, setProperty] = React.useState<Property | null>(null);
   const [fullContractText, setFullContractText] = React.useState<string>("");
@@ -192,7 +199,7 @@ export default function TenantLeasePage() {
     leaseEndDate: tenant.leaseEndDate,
     rentAmount: property.rent_amount,
     rentDueDate: "Dia 15 de cada mês", 
-    securityDeposit: 0, 
+    securityDeposit: 0, // Placeholder, not in mockData
   } : null;
 
 
@@ -200,6 +207,12 @@ export default function TenantLeasePage() {
     if (tenant && property) {
       const contractText = getLeaseTemplate(tenant, property);
       setFullContractText(contractText);
+    } else {
+         toast({
+            variant: "destructive",
+            title: "Erro ao Gerar Contrato",
+            description: "Não foi possível carregar os dados do inquilino ou do imóvel.",
+        });
     }
   };
   
@@ -258,11 +271,11 @@ export default function TenantLeasePage() {
               <p className="text-sm text-muted-foreground">{formatDateForDisplay(leaseDetails.leaseEndDate)}</p>
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground">Aluguel Mensal</h3>
+              <h3 className="font-medium text-foreground flex items-center"><CircleDollarSign className="h-5 w-5 mr-2 text-accent" />Aluguel Mensal</h3>
               <p className="text-sm text-muted-foreground">R$ {leaseDetails.rentAmount.toFixed(2)}</p>
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground">Data de Vencimento do Aluguel</h3>
+              <h3 className="font-medium text-foreground flex items-center"><CalendarDays className="h-5 w-5 mr-2 text-accent" />Data de Vencimento do Aluguel</h3>
               <p className="text-sm text-muted-foreground">{leaseDetails.rentDueDate}</p>
             </div>
             {leaseDetails.securityDeposit > 0 && (
@@ -279,7 +292,7 @@ export default function TenantLeasePage() {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button className="w-full md:w-auto" onClick={handleShowContract}>
-                  <Download className="mr-2 h-4 w-4" /> Mostrar Contrato Completo
+                  <FileText className="mr-2 h-4 w-4" /> Mostrar Contrato Completo
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent className="max-w-3xl"> 
@@ -305,3 +318,4 @@ export default function TenantLeasePage() {
     </div>
   );
 }
+

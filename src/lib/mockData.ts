@@ -113,6 +113,9 @@ export type Tenant = {
   email: string;
   phone: string;
   cpf: string;
+  rg: string;
+  maritalStatus: string;
+  profession: string;
   propertyId: string;
   apartmentUnit: string;
   leaseStartDate: string; // YYYY-MM-DD
@@ -133,6 +136,9 @@ export const mockTenants: Tenant[] = [
     email: 'maria.silva@example.com',
     phone: '(83) 99999-1111',
     cpf: '111.222.333-44',
+    rg: '1.111.111 SSP/PB',
+    maritalStatus: 'Casado(a)',
+    profession: 'Engenheira',
     propertyId: '2', // Manaira Prime Residence
     apartmentUnit: '12B',
     leaseStartDate: '2023-01-15',
@@ -147,12 +153,15 @@ export const mockTenants: Tenant[] = [
   },
   {
     id: 't2', 
-    name: 'João Santos', 
-    email: 'joao.santos@example.com',
-    phone: '(83) 91234-5678',
-    cpf: '123.456.789-00',
+    name: 'João Santos', // Nome genérico
+    email: 'joao.santos@example.com', // Email genérico
+    phone: '(83) 91234-5678', // Telefone genérico
+    cpf: '123.456.789-00', // CPF genérico
+    rg: '2.222.222 SSP/PB', // RG genérico
+    maritalStatus: 'Solteiro(a)', // Estado Civil genérico
+    profession: 'Jornalista', // Profissão genérica (mantida do original para contexto)
     propertyId: '1', // Edificio Lest Ville
-    apartmentUnit: '309',
+    apartmentUnit: '309', // Conforme contrato
     leaseStartDate: '2024-10-15', 
     leaseEndDate: '2025-04-14',   
     rent_paid_status: 'Pendente', 
@@ -169,6 +178,9 @@ export const mockTenants: Tenant[] = [
     email: 'ana.costa@example.com',
     phone: '(83) 97777-3333',
     cpf: '555.666.777-88',
+    rg: '3.333.333 SSP/PB',
+    maritalStatus: 'Divorciado(a)',
+    profession: 'Designer',
     propertyId: '3', 
     apartmentUnit: '2A',
     leaseStartDate: '2024-01-01',
@@ -322,3 +334,4 @@ export const mockProposals: Proposal[] = [
     message: 'Proposta para aluguel com valor abaixo do solicitado.',
   },
 ];
+

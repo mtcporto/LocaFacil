@@ -26,11 +26,16 @@ import { mockProperties, type TaxStatus } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { format, isValid } from "date-fns";
 
+const maritalStatusOptions = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"];
+
 const addTenantFormSchema = z.object({
   name: z.string().min(3, { message: "Nome completo deve ter pelo menos 3 caracteres." }),
   email: z.string().email({ message: "Endereço de email inválido." }),
   phone: z.string().min(10, { message: "Telefone deve ter pelo menos 10 dígitos." }),
   cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, { message: "CPF inválido. Formato: XXX.XXX.XXX-XX." }),
+  rg: z.string().min(5, { message: "RG deve ter pelo menos 5 caracteres." }),
+  maritalStatus: z.string({ required_error: "Selecione o estado civil." }),
+  profession: z.string().min(3, { message: "Profissão deve ter pelo menos 3 caracteres." }),
   propertyId: z.string({ required_error: "Selecione o imóvel." }),
   apartmentUnit: z.string().min(1, { message: "Unidade do apartamento é obrigatória." }),
   leaseStartDate: z.date({ required_error: "Data de início do contrato é obrigatória." }),
@@ -64,6 +69,9 @@ export default function AddTenantForm() {
       email: "",
       phone: "",
       cpf: "",
+      rg: "",
+      maritalStatus: undefined,
+      profession: "",
       propertyId: undefined,
       apartmentUnit: "",
       leaseStartDate: undefined,
@@ -157,6 +165,49 @@ export default function AddTenantForm() {
             )}
           />
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FormField
+            control={form.control}
+            name="rg"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>RG</FormLabel>
+                <FormControl><Input placeholder="0.000.000 SSP/PB" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+           <FormField
+            control={form.control}
+            name="maritalStatus"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Estado Civil</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="Selecione o estado civil" /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    {maritalStatusOptions.map(status => (
+                      <SelectItem key={status} value={status}>{status}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+           <FormField
+            control={form.control}
+            name="profession"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Profissão</FormLabel>
+                <FormControl><Input placeholder="Ex: Engenheiro(a), Professor(a)" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
 
         <h3 className="text-lg font-medium text-primary border-b pb-2 pt-4">Detalhes da Locação</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
