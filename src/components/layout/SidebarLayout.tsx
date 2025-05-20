@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -15,7 +16,7 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Home, Building, Users, Bell, Settings, LogOut, LayoutDashboard, FileText, CreditCard } from 'lucide-react';
+import { Home, Building, Users, Bell, Settings, LogOut } from 'lucide-react'; // Removidos LayoutDashboard, FileText, CreditCard que eram específicos
 import React from 'react';
 
 interface NavItem {
@@ -51,7 +52,7 @@ export default function SidebarLayout({ children, navItems, userRole }: SidebarL
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname === item.href || (item.href !== `/${userRole}/dashboard` && pathname.startsWith(item.href))}
+                  isActive={pathname === item.href || (item.href !== `/${userRole}/dashboard` && item.href !== '/' && pathname.startsWith(item.href))}
                   tooltip={item.tooltip || item.label}
                 >
                   <Link href={item.href}>
@@ -64,12 +65,16 @@ export default function SidebarLayout({ children, navItems, userRole }: SidebarL
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="p-2 mt-auto">
-           <SidebarMenuButton tooltip="Settings">
-            <Settings /> <span>Settings</span>
-          </SidebarMenuButton>
-          <SidebarMenuButton tooltip="Logout" asChild>
+           {userRole === 'landlord' && (
+            <SidebarMenuButton tooltip="Configurações" asChild>
+              <Link href="/landlord/settings">
+                <Settings /> <span>Configurações</span>
+              </Link>
+            </SidebarMenuButton>
+           )}
+          <SidebarMenuButton tooltip="Sair" asChild>
             <Link href="/auth/login"> {/* Mock logout */}
-                <LogOut /> <span>Logout</span>
+                <LogOut /> <span>Sair</span>
             </Link>
           </SidebarMenuButton>
         </SidebarFooter>
