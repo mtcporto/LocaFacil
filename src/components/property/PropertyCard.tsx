@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MapPin, BedDouble, Bath, Home, DollarSign, CheckCircle, XCircle } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Home, DollarSign } from 'lucide-react';
 import type { Property } from '@/lib/mockData';
 import { Badge } from '@/components/ui/badge';
 
@@ -17,7 +17,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <Image
           src={property.images[0]}
           alt={property.name}
-          data-ai-hint="exterior apartamento"
+          data-ai-hint="imovel exterior"
           layout="fill"
           objectFit="cover"
         />

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, BedDouble, Bath, Home, DollarSign, Check, Building, Layers } from 'lucide-react';
+import { ArrowLeft, MapPin, BedDouble, Bath, Home, DollarSign, Check, Building } from 'lucide-react';
 
 export default function PropertyDetailPage({ params }: { params: { id: string } }) {
   const property = getPropertyById(params.id);
@@ -23,7 +23,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
   }
 
   const amenityIcons: Record<PropertyAmenity, React.ElementType> = {
-    "Estacionamento": ({className})=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9 18V7.5a3.5 3.5 0 0 1 7 0V18"/><circle cx="12" cy="18" r="3"/><path d="M12 15v- строительный3"/></svg>, // simple P icon
+    "Estacionamento": ({className})=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9 18V7.5a3.5 3.5 0 0 1 7 0V18"/><circle cx="12" cy="18" r="3"/><path d="M12 15v-3"/></svg>, // simple P icon - corrected "строительный" to "3"
     "Piscina": ({className})=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 12H8a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2z"/><path d="M12 4v2"/><path d="M12 20v-2"/><path d="M4 12h2"/><path d="M20 12h-2"/><path d="M7.05 7.05l1.414 1.414"/><path d="M15.536 15.536l1.414 1.414"/><path d="M7.05 16.95l1.414 -1.414"/><path d="M15.536 8.464l1.414 -1.414"/></svg>, // pool / umbrella like
     "Academia": ({className})=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg>, // dumbbell
     "Aceita Pets": ({className})=><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 14s-3 -2 -3 -5a3 3 0 0 1 6 0c0 3 -3 5 -3 5z"/><path d="M12 14v6"/><path d="M10 12h4"/></svg>, // paw
@@ -62,7 +62,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                 <Image
                   src={src}
                   alt={`${property.name} - Imagem ${index + 1}`}
-                  data-ai-hint="interior apartamento"
+                  data-ai-hint="imovel interior"
                   layout="fill"
                   objectFit="cover"
                   className="rounded-md shadow-md"
