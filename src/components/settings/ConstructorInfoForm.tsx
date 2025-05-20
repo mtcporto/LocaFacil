@@ -31,7 +31,11 @@ const constructorData = {
   cep: "58037-000",
   telefone: "(83) 3246-1640",
   whatsapp: "+55 83 8884-0081",
-  email: "contato@earlen.com.br" // Adicionando um email de exemplo
+  email: "contato@earlen.com.br",
+  banco: "Nome do Banco",
+  agencia: "0001",
+  conta: "12345-6",
+  pix: "08.315.079/0001-51", // Chave PIX da construtora
 };
 
 const constructorFormSchema = z.object({
@@ -41,11 +45,15 @@ const constructorFormSchema = z.object({
   complemento: z.string().optional(),
   bairro: z.string().min(1, { message: "Bairro é obrigatório." }),
   cidade: z.string().min(1, { message: "Cidade é obrigatória." }),
-  estado: z.string().min(1, { message: "Estado é obrigatório." }).max(2, { message: "Use a sigla do estado (ex: PB)." }),
-  cep: z.string().min(8, { message: "CEP deve ter 8 dígitos." }).regex(/^\d{5}-\d{3}$|^\d{8}$/, { message: "CEP inválido. Use XXXXX-XXX ou XXXXXXXX." }),
+  estado: z.string().min(2, { message: "Use a sigla do estado (ex: PB)." }).max(2, { message: "Use a sigla do estado (ex: PB)." }),
+  cep: z.string().min(8, { message: "CEP deve ter 8 dígitos." }).regex(/^\d{5}-?\d{3}$/, { message: "CEP inválido. Use XXXXX-XXX ou XXXXXXXX." }),
   telefone: z.string().min(10, { message: "Telefone inválido." }),
   whatsapp: z.string().min(10, { message: "WhatsApp inválido." }),
   email: z.string().email({ message: "Email inválido." }).optional().or(z.literal('')),
+  banco: z.string().optional(),
+  agencia: z.string().optional(),
+  conta: z.string().optional(),
+  pix: z.string().min(1, { message: "Chave PIX é obrigatória."}),
 });
 
 export default function ConstructorInfoForm() {
@@ -66,6 +74,10 @@ export default function ConstructorInfoForm() {
       telefone: constructorData.telefone,
       whatsapp: constructorData.whatsapp,
       email: constructorData.email,
+      banco: constructorData.banco,
+      agencia: constructorData.agencia,
+      conta: constructorData.conta,
+      pix: constructorData.pix,
     },
   });
 
@@ -244,6 +256,66 @@ export default function ConstructorInfoForm() {
           )}
         />
 
+        <h3 className="text-lg font-medium pt-4 border-t">Dados Bancários (para PIX)</h3>
+         <FormField
+          control={form.control}
+          name="pix"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Chave PIX (CNPJ)</FormLabel>
+              <FormControl>
+                <Input placeholder="00.000.000/0000-00" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FormField
+            control={form.control}
+            name="banco"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Banco</FormLabel>
+                <FormControl>
+                    <Input placeholder="Nome do Banco" {...field} />
+                </FormControl>
+                <FormDescription>Opcional.</FormDescription>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="agencia"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Agência</FormLabel>
+                <FormControl>
+                    <Input placeholder="0001" {...field} />
+                </FormControl>
+                <FormDescription>Opcional.</FormDescription>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="conta"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Conta Corrente</FormLabel>
+                <FormControl>
+                    <Input placeholder="12345-6" {...field} />
+                </FormControl>
+                <FormDescription>Opcional.</FormDescription>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
+
+
         <Button type="submit" className="w-full md:w-auto" disabled={isLoading}>
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Salvar Alterações
@@ -252,3 +324,5 @@ export default function ConstructorInfoForm() {
     </Form>
   );
 }
+
+    

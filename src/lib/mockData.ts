@@ -176,3 +176,40 @@ export const mockTenants: Tenant[] = [
     tcrStatus: 'Pendente',
   },
 ];
+
+export type ServiceItem = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  icon?: React.ElementType; // Opcional, para um ícone visual
+};
+
+export const mockServices: ServiceItem[] = [
+  {
+    id: 'serv1',
+    name: 'Cópia de Chave Simples',
+    description: 'Cópia adicional para chave comum (porta/portão).',
+    price: 15.00,
+  },
+  {
+    id: 'serv2',
+    name: 'Controle Remoto do Portão',
+    description: 'Novo controle remoto para acesso à garagem.',
+    price: 50.00,
+  },
+  {
+    id: 'serv3',
+    name: 'Chaveiro de Acesso (TAG)',
+    description: 'Chaveiro eletrônico para acesso ao prédio/áreas comuns.',
+    price: 25.00,
+  },
+  {
+    id: 'serv4',
+    name: 'Limpeza Pós-Obra (Pequena)',
+    description: 'Limpeza básica após pequenas instalações ou reparos na unidade.',
+    price: 150.00,
+  },
+];
+
+    

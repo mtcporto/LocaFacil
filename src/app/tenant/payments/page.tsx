@@ -4,12 +4,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock, Copy, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import React from "react";
+
+const PIX_KEY = "08.315.079/0001-51"; // CNPJ
+const PIX_KEY_TYPE = "CNPJ";
 
 export default function TenantPaymentsPage() {
   const { toast } = useToast();
+  const [isPixCopied, setIsPixCopied] = React.useState(false);
 
   const paymentHistory = [
     { id: "pay_1", date: "2024-06-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, 
@@ -42,11 +48,15 @@ export default function TenantPaymentsPage() {
     return "secondary";
   };
 
-  const handleMakePayment = () => {
-    toast({
-      title: "Redirecionando para Pagamento",
-      description: "Em uma aplicação real, você seria direcionado para um portal de pagamentos seguro.",
-    });
+  const handleCopyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setIsPixCopied(true);
+      toast({ title: "Chave PIX copiada!", description: "Use no seu app bancário." });
+      setTimeout(() => setIsPixCopied(false), 3000);
+    } catch (err) {
+      toast({ variant: "destructive", title: "Erro ao copiar", description: "Não foi possível copiar a chave PIX." });
+    }
   };
 
   const handleViewReceipt = (paymentId: string) => {
@@ -81,9 +91,38 @@ export default function TenantPaymentsPage() {
               {getStatusIcon(nextPayment.status)}<span className="ml-1">{nextPayment.status}</span>
             </Badge>
           </div>
-          <Button className="w-full md:w-auto" onClick={handleMakePayment}>
-            <CreditCard className="mr-2 h-4 w-4" /> Fazer Pagamento
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="w-full md:w-auto">
+                <CreditCard className="mr-2 h-4 w-4" /> Fazer Pagamento
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Pagamento via PIX</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Para concluir seu pagamento de <strong className="text-foreground">R$ {nextPayment.amount.toFixed(2)}</strong>, utilize a chave PIX abaixo em seu aplicativo bancário.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="my-4 p-4 bg-secondary rounded-md space-y-2">
+                <p className="text-sm text-muted-foreground">Chave PIX ({PIX_KEY_TYPE}):</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-mono text-primary break-all">{PIX_KEY}</p>
+                  <Button variant="ghost" size="sm" onClick={() => handleCopyToClipboard(PIX_KEY)}>
+                    {isPixCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    <span className="ml-2">{isPixCopied ? "Copiada!" : "Copiar"}</span>
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">Beneficiário: CONSTRUTORA EARLEN LTDA</p>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Fechar</AlertDialogCancel>
+                <AlertDialogAction onClick={() => toast({ title: "Pagamento em Processamento", description: "Seu pagamento via PIX está sendo processado (simulação)." })}>
+                  Já Paguei
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
 
@@ -130,3 +169,5 @@ export default function TenantPaymentsPage() {
     </div>
   );
 }
+
+    
