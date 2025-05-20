@@ -15,24 +15,21 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SuggestNotificationInputSchema = z.object({
-  weatherForecast: z.string().optional().describe('The weather forecast for the next few days. Optional.'),
-  cityEvents: z.string().optional().describe('Upcoming city events that may affect tenants. Optional.'),
+  weatherForecast: z.string().optional().describe('A previsão do tempo para os próximos dias. Opcional.'),
+  cityEvents: z.string().optional().describe('Eventos futuros na cidade que podem afetar os inquilinos. Opcional.'),
   maintenanceSchedule: z
     .string()
     .optional()
-    .describe('The planned maintenance schedule for the building. Optional.'),
+    .describe('O cronograma de manutenção planejado para o edifício. Opcional.'),
   pastNotifications: z
     .string()
-    .describe('A list of past notifications that were sent to tenants.')
+    .describe('Uma lista de notificações passadas que foram enviadas aos inquilinos.')
     .optional(),
 });
 export type SuggestNotificationInput = z.infer<typeof SuggestNotificationInputSchema>;
 
 const SuggestNotificationOutputSchema = z.object({
-  notificationMessage: z.string().describe('The suggested notification message to send to tenants.'),
-  reasoning: z
-    .string()
-    .describe('Reasoning for the suggested notification, including which factors were considered.'),
+  notificationMessage: z.string().describe('A mensagem de notificação sugerida para enviar aos inquilinos.'),
 });
 export type SuggestNotificationOutput = z.infer<typeof SuggestNotificationOutputSchema>;
 
@@ -44,28 +41,25 @@ const suggestNotificationPrompt = ai.definePrompt({
   name: 'suggestNotificationPrompt',
   input: {schema: SuggestNotificationInputSchema},
   output: {schema: SuggestNotificationOutputSchema},
-  prompt: `You are an AI assistant that helps landlords create relevant and timely notifications for their tenants.
+  prompt: `Você é um assistente de IA que ajuda proprietários a criar notificações relevantes e oportunas para seus inquilinos.
 
-  Based on any of the following real-time data provided, suggest a notification message to send to tenants:
+  Baseado em qualquer um dos seguintes dados em tempo real fornecidos, sugira uma mensagem de notificação para enviar aos inquilinos:
 
-  Weather Forecast: {{{weatherForecast}}}
-  City Events: {{{cityEvents}}}
-  Maintenance Schedule: {{{maintenanceSchedule}}}
-  Past Notifications: {{{pastNotifications}}}
+  Previsão do Tempo: {{{weatherForecast}}}
+  Eventos da Cidade: {{{cityEvents}}}
+  Cronograma de Manutenção: {{{maintenanceSchedule}}}
+  Notificações Anteriores: {{{pastNotifications}}}
 
-  Consider these factors when drafting the notification: urgency, relevance to tenants,
-  and potential impact on their daily lives. Use the information that is available and most relevant.
-  Avoid sending duplicate or unnecessary notifications if past notifications are provided.
+  Considere estes fatores ao redigir a notificação: urgência, relevância para os inquilinos,
+  e potencial impacto em suas vidas diárias. Use a informação que está disponível e é mais relevante.
+  Evite enviar notificações duplicadas ou desnecessárias se notificações anteriores forem fornecidas.
 
-  Reason your notification suggestion step by step. Your final answer should include:
-  * A concise notification message that can be directly sent to tenants.
-  * A brief explanation of why this notification is important and which data points you considered.
+  Sua resposta final deve ser APENAS a mensagem de notificação concisa que pode ser diretamente enviada aos inquilinos.
 
   Responda sempre em português brasileiro.
 
-  Format your answer as a JSON object with the following keys:
-  - notificationMessage: The suggested notification message.
-  - reasoning: Explanation for the notification.
+  Formate sua resposta como um objeto JSON com a seguinte chave:
+  - notificationMessage: A mensagem de notificação sugerida.
   `,
 });
 
@@ -76,8 +70,6 @@ const suggestNotificationFlow = ai.defineFlow(
     outputSchema: SuggestNotificationOutputSchema,
   },
   async input => {
-    // A validação para garantir que pelo menos um dos campos de contexto está presente
-    // é feita no frontend pelo Zod refine.
     const {output} = await suggestNotificationPrompt(input);
     return output!;
   }

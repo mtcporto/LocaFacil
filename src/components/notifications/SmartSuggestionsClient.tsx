@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { suggestNotification, type SuggestNotificationInput, type SuggestNotificationOutput } from '@/ai/flows/smart-notification-suggestions';
@@ -22,11 +22,7 @@ const SuggestionSchema = z.object({
   return !!data.weatherForecast || !!data.cityEvents || !!data.maintenanceSchedule;
 }, {
   message: "Forneça informações para pelo menos um dos seguintes: Previsão do Tempo, Eventos da Cidade ou Cronograma de Manutenção.",
-  // Você pode direcionar a mensagem de erro para um campo específico se desejar,
-  // mas como é uma validação de nível de objeto, pode ser melhor exibi-la de forma geral
-  // ou associar a um dos campos (ex: path: ["weatherForecast"]) e ajustar a UI para mostrar erros globais.
-  // Por simplicidade, a mensagem de erro aparecerá abaixo do último campo se não houver path.
-  // Vamos exibir manualmente um erro geral no formulário.
+  path: ["weatherForecast"], // Associar o erro ao primeiro campo para melhor UX ou criar um erro global
 });
 
 export default function SmartSuggestionsClient() {
@@ -34,7 +30,6 @@ export default function SmartSuggestionsClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [suggestion, setSuggestion] = useState<SuggestNotificationOutput | null>(null);
   const [copiedMessage, setCopiedMessage] = useState(false);
-  const [copiedReasoning, setCopiedReasoning] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof SuggestionSchema>>({
@@ -48,18 +43,14 @@ export default function SmartSuggestionsClient() {
   });
 
   async function onSubmit(values: z.infer<typeof SuggestionSchema>) {
-    setFormError(null); // Limpa erros anteriores
-    if (!values.weatherForecast && !values.cityEvents && !values.maintenanceSchedule) {
-        setFormError("Forneça informações para pelo menos um dos seguintes: Previsão do Tempo, Eventos da Cidade ou Cronograma de Manutenção.");
-        // A validação refine do Zod já deve pegar isso, mas uma verificação explícita pode ser útil.
-        // O resolver do Zod deve colocar a mensagem do refine no formState.errors,
-        // mas pode ser que precise ser manualmente extraída e exibida.
-        // Se a mensagem do refine não aparecer automaticamente, esta lógica de setFormError garante feedback.
-        if (form.formState.errors.root) {
-             setFormError(form.formState.errors.root.message || "Erro de validação.");
-        }
+    setFormError(null);
+     // A validação do Zod resolver deve lidar com o `refine` e popular `formState.errors`
+    // Se formState.errors tiver algo (especificamente o path definido no refine), o Zod já tratou
+    if (form.formState.errors.weatherForecast) { // Checa erro no path do refine
+        setFormError(form.formState.errors.weatherForecast.message);
         return;
     }
+
 
     setIsLoading(true);
     setSuggestion(null);
@@ -82,15 +73,13 @@ export default function SmartSuggestionsClient() {
     }
   }
 
-  const handleCopy = async (text: string, type: 'message' | 'reasoning') => {
+  const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      if (type === 'message') setCopiedMessage(true);
-      if (type === 'reasoning') setCopiedReasoning(true);
+      setCopiedMessage(true);
       toast({ title: 'Copiado para a área de transferência!' });
       setTimeout(() => {
-        if (type === 'message') setCopiedMessage(false);
-        if (type === 'reasoning') setCopiedReasoning(false);
+        setCopiedMessage(false);
       }, 2000);
     } catch (err) {
       toast({ variant: 'destructive', title: 'Falha ao copiar' });
@@ -160,17 +149,12 @@ export default function SmartSuggestionsClient() {
                     <FormControl>
                       <Textarea placeholder="Ex: Aviso de falta de água enviado semana passada." {...field} />
                     </FormControl>
-                    <FormDescription>Ajuda a evitar mensagens duplicadas ou muito frequentes.</FormDescription>
+                    {/* <FormDescription>Ajuda a evitar mensagens duplicadas ou muito frequentes.</FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {form.formState.errors.root && (
-                <p className="text-sm font-medium text-destructive">
-                  {form.formState.errors.root.message}
-                </p>
-              )}
-               {formError && !form.formState.errors.root && (
+               {formError && (
                 <p className="text-sm font-medium text-destructive">
                   {formError}
                 </p>
@@ -199,29 +183,17 @@ export default function SmartSuggestionsClient() {
             <div>
               <div className="flex justify-between items-center mb-1">
                 <h4 className="font-semibold">Mensagem da Notificação:</h4>
-                <Button variant="ghost" size="sm" onClick={() => handleCopy(suggestion.notificationMessage, 'message')}>
+                <Button variant="ghost" size="sm" onClick={() => handleCopy(suggestion.notificationMessage)}>
                   {copiedMessage ? <ClipboardCheck className="h-4 w-4 text-green-500" /> : <ClipboardCopy className="h-4 w-4" />}
                   <span className="ml-1">{copiedMessage ? 'Copiado!' : 'Copiar'}</span>
                 </Button>
               </div>
               <p className="p-3 bg-background rounded-md border whitespace-pre-wrap">{suggestion.notificationMessage}</p>
             </div>
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <h4 className="font-semibold">Justificativa:</h4>
-                <Button variant="ghost" size="sm" onClick={() => handleCopy(suggestion.reasoning, 'reasoning')}>
-                  {copiedReasoning ? <ClipboardCheck className="h-4 w-4 text-green-500" /> : <ClipboardCopy className="h-4 w-4" />}
-                  <span className="ml-1">{copiedReasoning ? 'Copiado!' : 'Copiar'}</span>
-                </Button>
-              </div>
-              <p className="p-3 bg-background rounded-md border text-sm text-muted-foreground whitespace-pre-wrap">{suggestion.reasoning}</p>
-            </div>
           </CardContent>
           <CardFooter>
             <Button variant="outline" onClick={() => {
-                // Lógica para usar esta sugestão, ex: preencher o formulário de composição manual
-                // Por enquanto, apenas um toast.
-                toast({ title: "Sugestão pronta para uso!", description: "Você pode copiar o texto ou implementar outras ações."});
+                toast({ title: "Sugestão pronta para uso!", description: "Você pode copiar o texto e colá-lo no campo de mensagem manual."});
             }}>Usar Esta Sugestão</Button>
           </CardFooter>
         </Card>
@@ -229,5 +201,3 @@ export default function SmartSuggestionsClient() {
     </div>
   );
 }
-
-    
