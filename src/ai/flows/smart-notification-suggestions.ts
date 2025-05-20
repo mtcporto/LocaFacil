@@ -1,3 +1,4 @@
+
 // src/ai/flows/smart-notification-suggestions.ts
 'use server';
 
@@ -14,11 +15,12 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SuggestNotificationInputSchema = z.object({
-  weatherForecast: z.string().describe('The weather forecast for the next few days.'),
-  cityEvents: z.string().describe('Upcoming city events that may affect tenants.'),
+  weatherForecast: z.string().optional().describe('The weather forecast for the next few days. Optional.'),
+  cityEvents: z.string().optional().describe('Upcoming city events that may affect tenants. Optional.'),
   maintenanceSchedule: z
     .string()
-    .describe('The planned maintenance schedule for the building.'),
+    .optional()
+    .describe('The planned maintenance schedule for the building. Optional.'),
   pastNotifications: z
     .string()
     .describe('A list of past notifications that were sent to tenants.')
@@ -44,7 +46,7 @@ const suggestNotificationPrompt = ai.definePrompt({
   output: {schema: SuggestNotificationOutputSchema},
   prompt: `You are an AI assistant that helps landlords create relevant and timely notifications for their tenants.
 
-  Based on the following real-time data, suggest a notification message to send to tenants:
+  Based on any of the following real-time data provided, suggest a notification message to send to tenants:
 
   Weather Forecast: {{{weatherForecast}}}
   City Events: {{{cityEvents}}}
@@ -52,7 +54,8 @@ const suggestNotificationPrompt = ai.definePrompt({
   Past Notifications: {{{pastNotifications}}}
 
   Consider these factors when drafting the notification: urgency, relevance to tenants,
-  and potential impact on their daily lives. Avoid sending duplicate or unnecessary notifications.
+  and potential impact on their daily lives. Use the information that is available and most relevant.
+  Avoid sending duplicate or unnecessary notifications if past notifications are provided.
 
   Reason your notification suggestion step by step. Your final answer should include:
   * A concise notification message that can be directly sent to tenants.
@@ -71,7 +74,16 @@ const suggestNotificationFlow = ai.defineFlow(
     outputSchema: SuggestNotificationOutputSchema,
   },
   async input => {
+    // Adicionar uma verificação para garantir que pelo menos um dos campos de contexto principais está presente
+    if (!input.weatherForecast && !input.cityEvents && !input.maintenanceSchedule) {
+      // Poderia retornar um erro ou uma resposta padrão indicando que mais informações são necessárias.
+      // Por enquanto, vamos deixar o prompt tentar lidar com isso, mas em um cenário real,
+      // uma validação mais robusta aqui ou no frontend é ideal.
+      // O Zod refine no frontend já deve prevenir isso.
+    }
     const {output} = await suggestNotificationPrompt(input);
     return output!;
   }
 );
+
+    

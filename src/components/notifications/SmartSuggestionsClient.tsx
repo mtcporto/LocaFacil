@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -13,10 +14,19 @@ import { suggestNotification, type SuggestNotificationInput, type SuggestNotific
 import { Loader2, Sparkles, ClipboardCopy, ClipboardCheck } from 'lucide-react';
 
 const SuggestionSchema = z.object({
-  weatherForecast: z.string().min(10, "Forneça alguns detalhes sobre o clima."),
-  cityEvents: z.string().min(5, "Forneça alguns detalhes sobre eventos na cidade."),
-  maintenanceSchedule: z.string().min(5, "Forneça detalhes do cronograma de manutenção."),
+  weatherForecast: z.string().optional(),
+  cityEvents: z.string().optional(),
+  maintenanceSchedule: z.string().optional(),
   pastNotifications: z.string().optional(),
+}).refine(data => {
+  return !!data.weatherForecast || !!data.cityEvents || !!data.maintenanceSchedule;
+}, {
+  message: "Forneça informações para pelo menos um dos seguintes: Previsão do Tempo, Eventos da Cidade ou Cronograma de Manutenção.",
+  // Você pode direcionar a mensagem de erro para um campo específico se desejar,
+  // mas como é uma validação de nível de objeto, pode ser melhor exibi-la de forma geral
+  // ou associar a um dos campos (ex: path: ["weatherForecast"]) e ajustar a UI para mostrar erros globais.
+  // Por simplicidade, a mensagem de erro aparecerá abaixo do último campo se não houver path.
+  // Vamos exibir manualmente um erro geral no formulário.
 });
 
 export default function SmartSuggestionsClient() {
@@ -25,6 +35,7 @@ export default function SmartSuggestionsClient() {
   const [suggestion, setSuggestion] = useState<SuggestNotificationOutput | null>(null);
   const [copiedMessage, setCopiedMessage] = useState(false);
   const [copiedReasoning, setCopiedReasoning] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof SuggestionSchema>>({
     resolver: zodResolver(SuggestionSchema),
@@ -37,6 +48,19 @@ export default function SmartSuggestionsClient() {
   });
 
   async function onSubmit(values: z.infer<typeof SuggestionSchema>) {
+    setFormError(null); // Limpa erros anteriores
+    if (!values.weatherForecast && !values.cityEvents && !values.maintenanceSchedule) {
+        setFormError("Forneça informações para pelo menos um dos seguintes: Previsão do Tempo, Eventos da Cidade ou Cronograma de Manutenção.");
+        // A validação refine do Zod já deve pegar isso, mas uma verificação explícita pode ser útil.
+        // O resolver do Zod deve colocar a mensagem do refine no formState.errors,
+        // mas pode ser que precise ser manualmente extraída e exibida.
+        // Se a mensagem do refine não aparecer automaticamente, esta lógica de setFormError garante feedback.
+        if (form.formState.errors.root) {
+             setFormError(form.formState.errors.root.message || "Erro de validação.");
+        }
+        return;
+    }
+
     setIsLoading(true);
     setSuggestion(null);
     try {
@@ -82,7 +106,7 @@ export default function SmartSuggestionsClient() {
             Sugestões de Notificação com IA
           </CardTitle>
           <CardDescription>
-            Forneça algum contexto e nossa IA ajudará a redigir notificações relevantes e oportunas para seus inquilinos.
+            Forneça algum contexto (pelo menos um dos três primeiros campos) e nossa IA ajudará a redigir notificações relevantes e oportunas para seus inquilinos.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -93,7 +117,7 @@ export default function SmartSuggestionsClient() {
                 name="weatherForecast"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Previsão do Tempo</FormLabel>
+                    <FormLabel>Previsão do Tempo (Opcional)</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Ex: Chuva forte esperada amanhã, possíveis alagamentos..." {...field} />
                     </FormControl>
@@ -106,7 +130,7 @@ export default function SmartSuggestionsClient() {
                 name="cityEvents"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Eventos da Cidade</FormLabel>
+                    <FormLabel>Eventos da Cidade (Opcional)</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Ex: Maratona no domingo, Rua Principal fechada das 8h às 14h." {...field} />
                     </FormControl>
@@ -119,7 +143,7 @@ export default function SmartSuggestionsClient() {
                 name="maintenanceSchedule"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cronograma de Manutenção</FormLabel>
+                    <FormLabel>Cronograma de Manutenção (Opcional)</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Ex: Manutenção do elevador na quarta-feira, 10h - 12h." {...field} />
                     </FormControl>
@@ -141,6 +165,16 @@ export default function SmartSuggestionsClient() {
                   </FormItem>
                 )}
               />
+              {form.formState.errors.root && (
+                <p className="text-sm font-medium text-destructive">
+                  {form.formState.errors.root.message}
+                </p>
+              )}
+               {formError && !form.formState.errors.root && (
+                <p className="text-sm font-medium text-destructive">
+                  {formError}
+                </p>
+              )}
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
@@ -195,3 +229,5 @@ export default function SmartSuggestionsClient() {
     </div>
   );
 }
+
+    
