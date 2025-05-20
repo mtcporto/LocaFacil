@@ -103,6 +103,8 @@ export const getPropertyById = (id: string): Property | undefined => {
   return mockProperties.find(p => p.id === id);
 };
 
+export type TaxStatus = 'Pago' | 'Pendente' | 'Vencido';
+
 export type Tenant = {
   id: string;
   name: string;
@@ -112,7 +114,13 @@ export type Tenant = {
   apartmentUnit: string;
   leaseStartDate: string;
   leaseEndDate: string;
-  rent_paid_status: 'Pago' | 'Pendente' | 'Atrasado';
+  rent_paid_status: TaxStatus;
+  iptuAmount: number;
+  iptuDueDate: string; // YYYY-MM-DD
+  iptuStatus: TaxStatus;
+  tcrAmount: number;
+  tcrDueDate: string; // YYYY-MM-DD
+  tcrStatus: TaxStatus;
 };
 
 export const mockTenants: Tenant[] = [
@@ -126,6 +134,12 @@ export const mockTenants: Tenant[] = [
     leaseStartDate: '2023-01-15',
     leaseEndDate: '2025-01-14',
     rent_paid_status: 'Pago',
+    iptuAmount: 120.50,
+    iptuDueDate: '2024-03-10',
+    iptuStatus: 'Pago',
+    tcrAmount: 85.00,
+    tcrDueDate: '2024-04-15',
+    tcrStatus: 'Pago',
   },
   {
     id: 't2',
@@ -135,7 +149,30 @@ export const mockTenants: Tenant[] = [
     propertyId: '1', // Edificio Lest Ville
     apartmentUnit: '301',
     leaseStartDate: '2022-06-01',
-    leaseEndDate: '2024-05-31',
+    leaseEndDate: '2024-08-31', // Ajustado para não estar vencido ainda
     rent_paid_status: 'Pendente',
+    iptuAmount: 75.00,
+    iptuDueDate: '2024-09-10', 
+    iptuStatus: 'Pendente',
+    tcrAmount: 55.25,
+    tcrDueDate: '2024-03-15', 
+    tcrStatus: 'Vencido',
+  },
+  {
+    id: 't3',
+    name: 'Ana Costa',
+    email: 'ana.costa@example.com',
+    phone: '(83) 97777-3333',
+    propertyId: '3', 
+    apartmentUnit: '2A',
+    leaseStartDate: '2024-01-01',
+    leaseEndDate: '2024-12-31',
+    rent_paid_status: 'Pago',
+    iptuAmount: 90.00,
+    iptuDueDate: '2024-10-05', 
+    iptuStatus: 'Pendente',
+    tcrAmount: 60.70,
+    tcrDueDate: '2024-11-20', 
+    tcrStatus: 'Pendente',
   },
 ];
