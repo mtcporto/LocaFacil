@@ -1,3 +1,5 @@
+"use client";
+
 import SidebarLayout from '@/components/layout/SidebarLayout';
 import { LayoutDashboard, Building, Users, Bell } from 'lucide-react';
 

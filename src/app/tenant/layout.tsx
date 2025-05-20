@@ -1,3 +1,5 @@
+"use client";
+
 import SidebarLayout from '@/components/layout/SidebarLayout';
 import { LayoutDashboard, FileText, CreditCard, Bell } from 'lucide-react';
 
