@@ -7,16 +7,16 @@ import { Badge } from "@/components/ui/badge";
 export default function TenantPaymentsPage() {
   // Mock payment history data
   const paymentHistory = [
-    { id: "pay_1", date: "2024-06-05", amount: 1200.00, status: "Pago", method: "Cartão de Crédito" },
-    { id: "pay_2", date: "2024-05-05", amount: 1200.00, status: "Pago", method: "Transferência Bancária" },
-    { id: "pay_3", date: "2024-04-05", amount: 1200.00, status: "Pago", method: "Cartão de Crédito" },
-    { id: "pay_4", date: "2024-03-07", amount: 1250.00, status: "Atrasado", method: "Cartão de Crédito" }, // Example of late payment
+    { id: "pay_1", date: "2024-06-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, // Alterado de 1200 para 950
+    { id: "pay_2", date: "2024-05-05", amount: 950.00, status: "Pago", method: "Transferência Bancária" }, // Alterado de 1200 para 950
+    { id: "pay_3", date: "2024-04-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, // Alterado de 1200 para 950
+    { id: "pay_4", date: "2024-03-07", amount: 1000.00, status: "Atrasado", method: "Cartão de Crédito" }, // Exemplo de pagamento atrasado com valor diferente
   ];
 
   const nextPayment = {
     dueDate: "2024-07-05",
-    amount: 1200.00,
-    status: "Pendente", // "Due"
+    amount: 950.00, // Alterado de 1200 para 950
+    status: "Pendente", 
   };
   
   const formatDate = (dateString: string) => {

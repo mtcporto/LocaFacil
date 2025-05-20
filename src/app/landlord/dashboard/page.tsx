@@ -1,14 +1,28 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Building, Users, Bell, PlusCircle, ArrowRight } from "lucide-react";
+import { Building, Users, Bell, PlusCircle, ArrowRight, DollarSign } from "lucide-react";
+import { mockProperties, mockTenants } from "@/lib/mockData";
 
 export default function LandlordDashboardPage() {
+  
+  const occupiedUnits = mockTenants.length; // Simple count of tenants as occupied units
+  const totalProperties = mockProperties.length;
+  // Calculate estimated monthly revenue
+  // This assumes each tenant in mockTenants is paying rent for their associated property.
+  const estimatedMonthlyRevenue = mockTenants.reduce((totalRevenue, tenant) => {
+    const property = mockProperties.find(p => p.id === tenant.propertyId);
+    if (property) {
+      return totalRevenue + property.rent_amount;
+    }
+    return totalRevenue;
+  }, 0);
+
   const stats = [
-    { title: "Total de Imóveis", value: "12", icon: Building, color: "text-primary" },
-    { title: "Unidades Ocupadas", value: "150", icon: Users, color: "text-green-500" },
-    { title: "Unidades Vagas", value: "8", icon: Users, color: "text-orange-500" },
-    { title: "Notificações Pendentes", value: "3", icon: Bell, color: "text-yellow-500" },
+    { title: "Total de Imóveis", value: totalProperties.toString(), icon: Building, color: "text-primary" },
+    { title: "Unidades Ocupadas", value: occupiedUnits.toString(), icon: Users, color: "text-green-500" },
+    { title: "Receita Mensal Estimada", value: `R$ ${estimatedMonthlyRevenue.toFixed(2)}`, icon: DollarSign, color: "text-blue-500" },
+    { title: "Notificações Pendentes", value: "3", icon: Bell, color: "text-yellow-500" }, // Placeholder value
   ];
 
   const quickLinks = [
@@ -33,7 +47,7 @@ export default function LandlordDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">Status atual</p>
+              {/* <p className="text-xs text-muted-foreground">Status atual</p> */}
             </CardContent>
           </Card>
         ))}

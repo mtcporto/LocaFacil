@@ -1,3 +1,4 @@
+
 export type PropertyAmenity = "Estacionamento" | "Piscina" | "Academia" | "Aceita Pets" | "Mobiliado" | "Varanda";
 
 export type Property = {
@@ -35,7 +36,7 @@ export const mockProperties: Property[] = [
     sq_m: 30,
     bedrooms: 1,
     bathrooms: 1,
-    rent_amount: 1200,
+    rent_amount: 950, // Alterado de 1200 para 950
     available: true,
     amenities: ['Estacionamento', 'Aceita Pets', 'Mobiliado'],
     type: "Apartamento",
@@ -107,7 +108,7 @@ export type Tenant = {
   name: string;
   email: string;
   phone: string;
-  propertyId: string; 
+  propertyId: string;
   apartmentUnit: string;
   leaseStartDate: string;
   leaseEndDate: string;
@@ -132,7 +133,7 @@ export const mockTenants: Tenant[] = [
     email: 'joao.santos@example.com',
     phone: '(83) 98888-2222',
     propertyId: '1', // Edificio Lest Ville
-    apartmentUnit: '301', 
+    apartmentUnit: '301',
     leaseStartDate: '2022-06-01',
     leaseEndDate: '2024-05-31',
     rent_paid_status: 'Pendente',

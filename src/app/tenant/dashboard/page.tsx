@@ -5,7 +5,7 @@ import { FileText, CreditCard, Bell, AlertTriangle, CheckCircle, DollarSign } fr
 import { Badge } from "@/components/ui/badge";
 
 export default function TenantDashboardPage() {
-  const rentStatus = { status: "Pago", dueDate: "5 de Julho, 2024", amount: 1200 }; // Mock data
+  const rentStatus = { status: "Pago", dueDate: "5 de Julho, 2024", amount: 950 }; // Mock data, amount alterado de 1200 para 950
   const leaseEndDate = "14 de Janeiro, 2025"; // Mock data
 
   const recentNotifications = [
@@ -35,12 +35,12 @@ export default function TenantDashboardPage() {
                 <CheckCircle className="mr-2 h-6 w-6" />
                 <span className="text-xl font-semibold">Aluguel Pago</span>
               </div>
-            ) : rentStatus.status === "Pendente" ? ( // Assuming "Due" is "Pendente"
+            ) : rentStatus.status === "Pendente" ? ( 
               <div className="flex items-center text-orange-600">
                 <AlertTriangle className="mr-2 h-6 w-6" />
                 <span className="text-xl font-semibold">Aluguel Pendente</span>
               </div>
-            ) : ( // Assuming any other status like "Overdue"
+            ) : ( 
                <div className="flex items-center text-red-600">
                 <AlertTriangle className="mr-2 h-6 w-6" />
                 <span className="text-xl font-semibold">Aluguel Atrasado</span>
