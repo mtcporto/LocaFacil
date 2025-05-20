@@ -54,7 +54,7 @@ export const mockProperties: Property[] = [
     zip: '58037-000',
     description: 'Espaçoso apartamento de 3 quartos em Manaira.',
     longDescription: 'Experimente o luxo de viver neste espaçoso apartamento de 3 quartos no Manaira Prime Residence. Esta unidade moderna possui acabamentos de alta qualidade, ampla luz natural e varanda privativa. As comodidades do edifício incluem piscina, academia e segurança 24 horas. Perfeitamente situado perto de opções de compras, restaurantes e entretenimento.',
-    images: ['https://placehold.co/1024x768.png', 'https://placehold.co/700x550.png', 'https://placehold.co/800x500.png'],
+    images: ['https://placehold.co/1000x700.png', 'https://placehold.co/700x500.png', 'https://placehold.co/800x550.png'],
     sq_m: 120,
     bedrooms: 3,
     bathrooms: 2,
@@ -72,7 +72,7 @@ export const mockProperties: Property[] = [
     zip: '50000-000',
     description: 'Moderno condomínio de 2 quartos com vista para a cidade.',
     longDescription: 'Desfrute da vida urbana neste elegante condomínio de 2 quartos no Condomínio Sunrise. Esta unidade possui um layout de conceito aberto, design contemporâneo e grandes janelas que oferecem vistas panorâmicas da cidade. Os moradores têm acesso a um terraço na cobertura e a uma academia. Convenientemente localizado no coração de Recife, perto de transporte público e atrações culturais.',
-    images: ['https://placehold.co/700x550.png', 'https://placehold.co/900x600.png', 'https://placehold.co/600x400.png'],
+    images: ['https://placehold.co/750x550.png', 'https://placehold.co/950x650.png', 'https://placehold.co/650x450.png'],
     sq_m: 75,
     bedrooms: 2,
     bathrooms: 2,
@@ -90,7 +90,7 @@ export const mockProperties: Property[] = [
     zip: '58400-000',
     description: 'Charmosa casa de 4 quartos com jardim.',
     longDescription: 'Esta bela casa de 4 quartos no Vale Verde oferece um refúgio tranquilo com um jardim espaçoso e área de entretenimento ao ar livre. A casa apresenta um design tradicional com atualizações modernas, incluindo cozinha totalmente equipada e banheiros reformados. Amplo espaço de estacionamento disponível. Ideal para famílias que procuram um bairro tranquilo.',
-    images: ['https://placehold.co/850x500.png', 'https://placehold.co/650x450.png', 'https://placehold.co/1200x700.png'],
+    images: ['https://placehold.co/850x550.png', 'https://placehold.co/650x400.png', 'https://placehold.co/1200x750.png'],
     sq_m: 200,
     bedrooms: 4,
     bathrooms: 3,
@@ -129,6 +129,7 @@ export type Tenant = {
   tcrAmount: number;
   tcrDueDate: string; // YYYY-MM-DD
   tcrStatus: TaxStatus;
+  guarantorId?: string; // ID do fiador associado
 };
 
 export const mockTenants: Tenant[] = [
@@ -154,6 +155,7 @@ export const mockTenants: Tenant[] = [
     tcrAmount: 85.00,
     tcrDueDate: '2024-04-15',
     tcrStatus: 'Pago',
+    guarantorId: 'g2',
   },
   {
     id: 't2',
@@ -177,6 +179,7 @@ export const mockTenants: Tenant[] = [
     tcrAmount: 55.25,
     tcrDueDate: '2025-03-15',
     tcrStatus: 'Pendente',
+    guarantorId: 'g1',
   },
   {
     id: 't3',
@@ -380,6 +383,27 @@ export interface ServiceProvider {
   lastServiceDate?: string; // YYYY-MM-DD
 }
 
+// --- Definição para Fiadores ---
+export interface Guarantor {
+  id: string;
+  name: string;
+  cpf: string;
+  rg: string;
+  maritalStatus: string; // Ex: "Solteiro(a)", "Casado(a)"
+  profession: string;
+  email: string;
+  phone: string;
+  address: {
+    street: string;
+    number: string;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string; // Sigla UF
+    zip: string; // XXXXX-XXX ou XXXXXXXX
+  };
+}
+
 export const mockExpenses: Expense[] = [
   { id: 'ex1', description: 'Reparo hidráulico - Apto 309', amount: 150.75, date: '2024-07-11', category: 'Manutenção', propertyId: '1', notes: 'Encanador João.' },
   { id: 'ex2', description: 'Salário Portaria - Junho', amount: 2800.00, date: '2024-07-05', category: 'Pessoal' },
@@ -399,9 +423,57 @@ export const mockServiceProviders: ServiceProvider[] = [
   { id: 'sp3', companyName: 'Jardins & Cia', serviceType: 'Jardinagem', contactName: 'Sra. Flora', phone: '(83) 95555-4321', email: 'flora@jardinsecia.com.br' },
 ];
 
+export const mockGuarantors: Guarantor[] = [
+  {
+    id: 'g1',
+    name: 'Pedro Rafael Diniz Marinho',
+    cpf: '079.374.854-26',
+    rg: '3.081.721 SSP/PB',
+    maritalStatus: 'Casado(a)',
+    profession: 'Contador',
+    email: 'pedro.rafael.marinho@example.com',
+    phone: '(83) 99676-8715',
+    address: {
+      street: 'Rua Desportista Jose de Farias',
+      number: '237',
+      complement: 'Apto 101, Edf Ksdoshi',
+      neighborhood: 'Altiplano Cabo Branco',
+      city: 'João Pessoa',
+      state: 'PB',
+      zip: '58030-001',
+    },
+  },
+  {
+    id: 'g2',
+    name: 'Ana Carolina Oliveira',
+    cpf: '111.222.333-44',
+    rg: '4.000.001 SSP/PE',
+    maritalStatus: 'Solteiro(a)',
+    profession: 'Advogada',
+    email: 'ana.carolina@example.com',
+    phone: '(81) 98888-7777',
+    address: {
+      street: 'Avenida Boa Viagem',
+      number: '1200',
+      neighborhood: 'Boa Viagem',
+      city: 'Recife',
+      state: 'PE',
+      zip: '51020-001',
+    },
+  },
+];
+
 // Função para buscar nome do imóvel, para ser usada nas listagens
 export const getPropertyNameById = (propertyId: string | undefined): string => {
   if (!propertyId) return "N/A";
   const property = mockProperties.find(p => p.id === propertyId);
   return property ? property.name : "Imóvel Desconhecido";
 };
+
+export const getGuarantorNameById = (guarantorId: string | undefined): string => {
+  if (!guarantorId) return "Nenhum";
+  const guarantor = mockGuarantors.find(g => g.id === guarantorId);
+  return guarantor ? guarantor.name : "Fiador Desconhecido";
+};
+
+    
