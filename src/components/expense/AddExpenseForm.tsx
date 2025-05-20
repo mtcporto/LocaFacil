@@ -61,6 +61,7 @@ export default function AddExpenseForm() {
     const formattedValues = {
         ...values,
         date: format(values.date, "yyyy-MM-dd"),
+        propertyId: values.propertyId === "none" ? undefined : values.propertyId,
     };
 
     console.log("Dados da nova despesa (simulado):", formattedValues);
@@ -180,7 +181,7 @@ export default function AddExpenseForm() {
                     <SelectTrigger><SelectValue placeholder="Nenhum imóvel específico" /></SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                    <SelectItem value="">Nenhum</SelectItem>
+                    <SelectItem value="none">Nenhum</SelectItem>
                     {mockProperties.map(prop => (
                         <SelectItem key={prop.id} value={prop.id}>{prop.name} - {prop.address}</SelectItem>
                     ))}

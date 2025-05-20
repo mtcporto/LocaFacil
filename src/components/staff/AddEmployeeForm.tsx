@@ -62,6 +62,7 @@ export default function AddEmployeeForm() {
     const formattedValues = {
         ...values,
         hireDate: format(values.hireDate, "yyyy-MM-dd"),
+        propertyId: values.propertyId === "none" ? undefined : values.propertyId,
     };
 
     console.log("Dados do novo colaborador (simulado):", formattedValues);
@@ -208,7 +209,7 @@ export default function AddEmployeeForm() {
                 <SelectTrigger><SelectValue placeholder="Nenhum imóvel específico" /></SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                <SelectItem value="">Nenhum</SelectItem>
+                <SelectItem value="none">Nenhum</SelectItem>
                 {mockProperties.map(prop => (
                     <SelectItem key={prop.id} value={prop.id}>{prop.name} - {prop.address}</SelectItem>
                 ))}
