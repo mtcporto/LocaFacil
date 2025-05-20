@@ -10,22 +10,23 @@ import React from "react";
 import { getTenantById, getPropertyById, type Tenant, type Property } from "@/lib/mockData";
 
 // Simulação do ID do inquilino logado. Em um app real, viria do contexto de autenticação.
-const MOCK_LOGGED_IN_TENANT_ID = 't2'; // Patrícia Medeiros Cantisani
+const MOCK_LOGGED_IN_TENANT_ID = 't2'; // João Santos (anteriormente Patrícia Medeiros Cantisani)
 
 const constructorDetails = {
   nome: "CONSTRUTORA EARLEN LTDA",
   cnpj: "08.315.079/0001-51",
   enderecoCompleto: "Avenida Flávio Ribeiro Coutinho, 707, Manaíra, João Pessoa, Paraíba",
-  // Adicionar outros dados se necessário para o contrato
 };
 
 const formatDateForDisplay = (dateString: string | undefined): string => {
   if (!dateString) return '-';
   const parts = dateString.split('-');
   if (parts.length !== 3) return dateString;
+  
   const year = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) -1; // Month is 0-indexed
+  const month = parseInt(parts[1], 10) -1; // Mês (0-indexado)
   const day = parseInt(parts[2], 10);
+  
   const localDate = new Date(year, month, day);
   return localDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
 };
@@ -34,8 +35,9 @@ const formatDateForContract = (dateString: string | undefined): string => {
   if (!dateString) return 'Data não definida';
   const parts = dateString.split('-');
   if (parts.length !== 3) return dateString;
+
   const year = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+  const month = parseInt(parts[1], 10) - 1; // Mês (0-indexado)
   const day = parseInt(parts[2], 10);
   const date = new Date(year, month, day);
   
@@ -50,17 +52,13 @@ const getLeaseTemplate = (tenant: Tenant, property: Property) => {
   const contractEndDateFormatted = formatDateForContract(tenant.leaseEndDate);
   const todayFormatted = formatDateForContract(new Date().toISOString().split('T')[0]); // Data da "assinatura"
 
-  // Calcula a duração do contrato em meses
-  let durationMonths = 6; // Padrão do contrato
+  let durationMonths = 6; 
   if (tenant.leaseStartDate && tenant.leaseEndDate) {
     const start = new Date(tenant.leaseStartDate);
     const end = new Date(tenant.leaseEndDate);
-    // Adiciona 1 dia ao final para incluir o último mês corretamente no cálculo de diferença
-    // já que o contrato termina em 14/04 (inclusive), não 15/04 (exclusive)
     const adjustedEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate() + 1);
-
     durationMonths = (adjustedEnd.getFullYear() - start.getFullYear()) * 12 + (adjustedEnd.getMonth() - start.getMonth());
-    if (durationMonths <= 0) durationMonths = 6; // Fallback se o cálculo for inesperado
+    if (durationMonths <= 0) durationMonths = 6; 
   }
 
 
@@ -69,7 +67,7 @@ CONTRATO DE LOCAÇÃO DE IMÓVEL
 
 LOCADORA: ${constructorDetails.nome}, pessoa jurídica de direito privado, inscrita no CNPJ/MF sob o n.° ${constructorDetails.cnpj}, estabelecida na ${constructorDetails.enderecoCompleto}, doravante nominada LOCADORA.
 
-LOCATÁRIO(A): ${tenant.name}, brasileira, casada, jornalista, portadora da cédula de identidade nº [RG_LOCATARIO] 2ª via 2SSP/PB, inscrita no CPF/MF nº ${tenant.cpf} e seu esposo Marco Tulio Cicero de Mesquita Porto, brasileiro, portador da cédula de identidade nº [RG_CONJUGE_LOCATARIO] 2ª via, inscrito no CPF/MF nº [CPF_CONJUGE_LOCATARIO], residentes e domiciliados na ${property.address} Apto ${tenant.apartmentUnit} ${property.city} - CEP: ${property.zip} - ${property.state}, Fone: ${tenant.phone} e-mail: ${tenant.email} doravante nominado(a) LOCATÁRIO(A).
+LOCATÁRIO(A): ${tenant.name}, brasileiro(a), [ESTADO_CIVIL_LOCATARIO], [PROFISSAO_LOCATARIO], portador(a) da cédula de identidade nº [RG_LOCATARIO] SSP/PB, inscrito(a) no CPF/MF nº ${tenant.cpf} e seu cônjuge (se aplicável) Cônjuge Exemplo, brasileiro(a), portador(a) da cédula de identidade nº [RG_CONJUGE_EXEMPLO] SSP/PB, inscrito(a) no CPF/MF nº [CPF_CONJUGE_EXEMPLO], residentes e domiciliados na ${property.address} Apto ${tenant.apartmentUnit} ${property.city} - CEP: ${property.zip} - ${property.state}, Fone: ${tenant.phone} e-mail: ${tenant.email} doravante nominado(a) LOCATÁRIO(A).
 
 CLÁUSULA 1ª – OBJETO DO CONTRATO
 
@@ -95,7 +93,7 @@ CLÁUSULA 4ª – PRAZO DE LOCAÇÃO
 
 CLÁUSULA 5ª – RETRIBUIÇÃO DO CONTRATO
 
-5.1. O valor mensal da locação será de R$ ${property.rent_amount.toFixed(2)} (novecentos e cinquenta reais) e deve ser pago até o dia 15 (quinze) de cada mês. Se esta data cair em dia não útil, o vencimento será prorrogado para o primeiro dia útil seguinte.
+5.1. O valor mensal da locação será de R$ ${property.rent_amount.toFixed(2)} (${(property.rent_amount).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace("R$", "").trim()} reais) e deve ser pago até o dia 15 (quinze) de cada mês. Se esta data cair em dia não útil, o vencimento será prorrogado para o primeiro dia útil seguinte.
 
 5.2. Em caso de atraso, o(a) LOCATÁRIO(A) pagará multa de 10% sobre o valor do débito, além de correção monetária e juros moratórios de 1% (um por cento) ao mês; observando-se a inadimplência no pagamento do aluguel mensal, dentro do prazo estabelecido neste contrato, fica a CONSTRUTORA EARLEN LTDA, desde já, autorizada a emitir TÍTULO DE CRÉDITO em nome dos coobrigações (LOCATÁRIO/FIADOR), abaixo assinados, representativo do valor do aluguel e mais despesas inerentes. Não havendo pagamento do débito incluimos seus nomes no serviço de proteção de crédito ou similares.
 
@@ -135,7 +133,7 @@ CLÁUSULA 10ª – DAS PENALIDADES E MULTAS CONTRATUAIS
 
 CLÁUSULA 11ª – GARANTIAS LOCATÍCIAS
 
-11.1. O contrato conta com garantia pessoal através de fiança prestada por Pedro Rafael Diniz Marinho, brasileiro, casado, contador, professor, portador da cédula de identidade nº 3.081.721 2ª via SSP/PB, inscrito no CPF/MF nº 079.374.854-26, e sua esposa Emanuelle Waleska Almeida de Farias, brasileira, portadora da cédula de identidade nº 3.025.404 2ª via, inscrita no CPF/MF nº 058.243.154-93 residentes e domiciliados na Rua Desportista Jose de Farias, 00237- Edf Ksdoshi, apto 101 - Altiplano Cabo Branco – CEP: 58.030-001 João Pessoa, Paraíba, Fone:(83) 99676-8715, e-mail: Pedro.Rafael.marinho@gmail.com Esta fiança é solidária e perdura mesmo após o término do prazo contratual.
+11.1. O contrato conta com garantia pessoal através de fiança prestada por [NOME_FIADOR], brasileiro(a), [ESTADO_CIVIL_FIADOR], [PROFISSAO_FIADOR], portador(a) da cédula de identidade nº [RG_FIADOR] SSP/PB, inscrito(a) no CPF/MF nº [CPF_FIADOR], e seu cônjuge (se aplicável) [NOME_CONJUGE_FIADOR], brasileiro(a), portador(a) da cédula de identidade nº [RG_CONJUGE_FIADOR], inscrito(a) no CPF/MF nº [CPF_CONJUGE_FIADOR] residentes e domiciliados em [ENDERECO_FIADOR], Fone:[TELEFONE_FIADOR], e-mail: [EMAIL_FIADOR]. Esta fiança é solidária e perdura mesmo após o término do prazo contratual.
 
 CLÁUSULA 12ª – LEGISLAÇÃO APLICÁVEL
 
@@ -155,9 +153,9 @@ João Pessoa, ${todayFormatted}.
 
 CONSTRUTORA EARLEN LTDA LOCADORA
 
-LOCATÁRIO(A) CÔNJUGE
+LOCATÁRIO(A) CÔNJUGE (se aplicável)
 
-FIADOR(A) CÔNJUGE
+FIADOR(A) CÔNJUGE (se aplicável)
 
 TESTEMUNHAS:
 
@@ -193,8 +191,8 @@ export default function TenantLeasePage() {
     leaseStartDate: tenant.leaseStartDate,
     leaseEndDate: tenant.leaseEndDate,
     rentAmount: property.rent_amount,
-    rentDueDate: "Dia 15 de cada mês", // Conforme contrato
-    securityDeposit: 0, // Contrato não especifica, ou pode ser calculado (ex: 2x aluguel)
+    rentDueDate: "Dia 15 de cada mês", 
+    securityDeposit: 0, 
   } : null;
 
 
@@ -202,7 +200,6 @@ export default function TenantLeasePage() {
     if (tenant && property) {
       const contractText = getLeaseTemplate(tenant, property);
       setFullContractText(contractText);
-      // O AlertDialog será aberto pelo AlertDialogTrigger
     }
   };
   
@@ -285,7 +282,7 @@ export default function TenantLeasePage() {
                   <Download className="mr-2 h-4 w-4" /> Mostrar Contrato Completo
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="max-w-3xl"> {/* Aumentar a largura do diálogo */}
+              <AlertDialogContent className="max-w-3xl"> 
                 <AlertDialogHeader>
                   <AlertDialogTitle>Contrato de Locação Completo</AlertDialogTitle>
                   <AlertDialogDescription asChild>
@@ -308,4 +305,3 @@ export default function TenantLeasePage() {
     </div>
   );
 }
-

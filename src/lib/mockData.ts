@@ -33,15 +33,15 @@ export const mockProperties: Property[] = [
     description: 'Aconchegante apartamento com vista para o mar.',
     longDescription: 'Descubra o conforto de viver neste bem conservado apartamento no Edifício Lest Ville. Localizado no vibrante bairro de Cabo Branco, esta unidade oferece vistas deslumbrantes do oceano e fácil acesso às comodidades locais. O edifício é gerido profissionalmente, garantindo uma experiência de vida agradável. Ideal para solteiros ou casais que procuram uma localização privilegiada à beira-mar.',
     images: ['https://placehold.co/600x400.png', 'https://placehold.co/600x400.png', 'https://placehold.co/600x400.png'],
-    sq_m: 30, // Ajustar se a unidade 309 for diferente da 305 original
+    sq_m: 30,
     bedrooms: 1,
     bathrooms: 1,
     rent_amount: 950,
-    available: false, // Patrícia está ocupando
+    available: false,
     amenities: ['Estacionamento', 'Aceita Pets', 'Mobiliado'],
     type: "Apartamento",
-    floors: 3, // Assumindo que o apto 309 está no 3º andar
-    unitsPerFloor: {"1":26, "2":26, "3":26} // Exemplo
+    floors: 3,
+    unitsPerFloor: {"1":26, "2":26, "3":26}
   },
   {
     id: '2',
@@ -57,7 +57,7 @@ export const mockProperties: Property[] = [
     bedrooms: 3,
     bathrooms: 2,
     rent_amount: 3500,
-    available: false, // Maria Silva está ocupando
+    available: false,
     amenities: ['Estacionamento', 'Piscina', 'Academia', 'Varanda'],
     type: "Apartamento",
   },
@@ -75,7 +75,7 @@ export const mockProperties: Property[] = [
     bedrooms: 2,
     bathrooms: 2,
     rent_amount: 2200,
-    available: false, // Ana Costa está ocupando
+    available: false,
     amenities: ['Estacionamento', 'Academia', 'Varanda'],
     type: "Condomínio",
   },
@@ -110,12 +110,7 @@ export type Tenant = {
   name: string;
   email: string;
   phone: string;
-  cpf: string; // Adicionado para o contrato
-  // Adicionar mais campos do contrato se necessário no futuro
-  // nacionalidade: string;
-  // estadoCivil: string;
-  // profissao: string;
-  // rg: string;
+  cpf: string;
   propertyId: string;
   apartmentUnit: string;
   leaseStartDate: string; // YYYY-MM-DD
@@ -149,20 +144,20 @@ export const mockTenants: Tenant[] = [
     tcrStatus: 'Pago',
   },
   {
-    id: 't2', // Patrícia Medeiros Cantisani
-    name: 'Patrícia Medeiros Cantisani',
-    email: 'patricia.cantisani@gmail.com',
-    phone: '(83) 99317-2212',
-    cpf: '826.160.434-91',
+    id: 't2', 
+    name: 'João Santos', // Nome genérico
+    email: 'joao.santos@example.com', // Email genérico
+    phone: '(83) 91234-5678', // Telefone genérico
+    cpf: '123.456.789-00', // CPF genérico
     propertyId: '1', // Edificio Lest Ville
     apartmentUnit: '309',
-    leaseStartDate: '2024-10-15', // Conforme contrato
-    leaseEndDate: '2025-04-14',   // Conforme contrato
-    rent_paid_status: 'Pendente', // Novo contrato, ainda não pago
-    iptuAmount: 75.00, // Exemplo
+    leaseStartDate: '2024-10-15', 
+    leaseEndDate: '2025-04-14',   
+    rent_paid_status: 'Pendente', 
+    iptuAmount: 75.00, 
     iptuDueDate: '2025-02-10', 
     iptuStatus: 'Pendente',
-    tcrAmount: 55.25, // Exemplo
+    tcrAmount: 55.25, 
     tcrDueDate: '2025-03-15', 
     tcrStatus: 'Pendente',
   },
