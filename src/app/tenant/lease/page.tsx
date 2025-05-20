@@ -1,9 +1,15 @@
+
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, CalendarDays, UserCircle, Home, Download } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 export default function TenantLeasePage() {
+  const { toast } = useToast();
+
   // Mock lease data - in a real app, this would be fetched
   const leaseDetails = {
     propertyName: "Edificio Lest Ville - Unidade 305",
@@ -12,7 +18,7 @@ export default function TenantLeasePage() {
     landlordName: "Construtora Earlen Ltda",
     leaseStartDate: "2023-07-01",
     leaseEndDate: "2024-06-30",
-    rentAmount: 1200.00,
+    rentAmount: 950.00,
     rentDueDate: "Dia 5 de cada mês",
     securityDeposit: 2400.00,
     leaseDocumentUrl: "/path/to/mock-lease-document.pdf", // Placeholder
@@ -20,6 +26,16 @@ export default function TenantLeasePage() {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const handleDownloadLease = () => {
+    // Em uma aplicação real, isso iniciaria o download do arquivo em leaseDetails.leaseDocumentUrl
+    // Exemplo: window.open(leaseDetails.leaseDocumentUrl, '_blank');
+    // ou <a href={leaseDetails.leaseDocumentUrl} download="contrato.pdf">Baixar</a>
+    toast({
+      title: "Download Simulado",
+      description: `Em uma aplicação real, o download do contrato (${leaseDetails.leaseDocumentUrl}) seria iniciado.`,
+    });
   };
 
   return (
@@ -83,7 +99,7 @@ export default function TenantLeasePage() {
           <Separator />
 
           <div>
-            <Button className="w-full md:w-auto">
+            <Button className="w-full md:w-auto" onClick={handleDownloadLease}>
               <Download className="mr-2 h-4 w-4" /> Baixar Contrato Completo
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
