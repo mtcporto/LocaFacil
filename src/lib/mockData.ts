@@ -34,7 +34,11 @@ export const mockProperties: Property[] = [
     zip: '58045-010',
     description: 'Aconchegante apartamento com vista para o mar.',
     longDescription: 'Descubra o conforto de viver neste bem conservado apartamento no Edifício Lest Ville. Localizado no vibrante bairro de Cabo Branco, esta unidade oferece vistas deslumbrantes do oceano e fácil acesso às comodidades locais. O edifício é gerido profissionalmente, garantindo uma experiência de vida agradável. Ideal para solteiros ou casais que procuram uma localização privilegiada à beira-mar.',
-    images: ['https://placehold.co/800x600.png', 'https://placehold.co/1024x768.png', 'https://placehold.co/600x800.png'],
+    images: [
+        'https://placehold.co/800x600.png',
+        'https://placehold.co/1024x768.png',
+        'https://placehold.co/600x800.png'
+    ],
     sq_m: 30,
     bedrooms: 1,
     bathrooms: 1,
@@ -54,7 +58,11 @@ export const mockProperties: Property[] = [
     zip: '58037-000',
     description: 'Espaçoso apartamento de 3 quartos em Manaira.',
     longDescription: 'Experimente o luxo de viver neste espaçoso apartamento de 3 quartos no Manaira Prime Residence. Esta unidade moderna possui acabamentos de alta qualidade, ampla luz natural e varanda privativa. As comodidades do edifício incluem piscina, academia e segurança 24 horas. Perfeitamente situado perto de opções de compras, restaurantes e entretenimento.',
-    images: ['https://placehold.co/1000x700.png', 'https://placehold.co/700x500.png', 'https://placehold.co/800x550.png'],
+    images: [
+        'https://placehold.co/1000x700.png',
+        'https://placehold.co/700x500.png',
+        'https://placehold.co/800x550.png'
+    ],
     sq_m: 120,
     bedrooms: 3,
     bathrooms: 2,
@@ -72,7 +80,11 @@ export const mockProperties: Property[] = [
     zip: '50000-000',
     description: 'Moderno condomínio de 2 quartos com vista para a cidade.',
     longDescription: 'Desfrute da vida urbana neste elegante condomínio de 2 quartos no Condomínio Sunrise. Esta unidade possui um layout de conceito aberto, design contemporâneo e grandes janelas que oferecem vistas panorâmicas da cidade. Os moradores têm acesso a um terraço na cobertura e a uma academia. Convenientemente localizado no coração de Recife, perto de transporte público e atrações culturais.',
-    images: ['https://placehold.co/750x550.png', 'https://placehold.co/950x650.png', 'https://placehold.co/650x450.png'],
+    images: [
+        'https://placehold.co/750x550.png',
+        'https://placehold.co/950x650.png',
+        'https://placehold.co/650x450.png'
+    ],
     sq_m: 75,
     bedrooms: 2,
     bathrooms: 2,
@@ -90,7 +102,11 @@ export const mockProperties: Property[] = [
     zip: '58400-000',
     description: 'Charmosa casa de 4 quartos com jardim.',
     longDescription: 'Esta bela casa de 4 quartos no Vale Verde oferece um refúgio tranquilo com um jardim espaçoso e área de entretenimento ao ar livre. A casa apresenta um design tradicional com atualizações modernas, incluindo cozinha totalmente equipada e banheiros reformados. Amplo espaço de estacionamento disponível. Ideal para famílias que procuram um bairro tranquilo.',
-    images: ['https://placehold.co/850x550.png', 'https://placehold.co/650x400.png', 'https://placehold.co/1200x750.png'],
+    images: [
+        'https://placehold.co/850x550.png',
+        'https://placehold.co/650x400.png',
+        'https://placehold.co/1200x750.png'
+    ],
     sq_m: 200,
     bedrooms: 4,
     bathrooms: 3,
@@ -106,6 +122,8 @@ export const getPropertyById = (id: string): Property | undefined => {
 };
 
 export type TaxStatus = 'Pago' | 'Pendente' | 'Vencido';
+
+export const maritalStatusOptions = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"];
 
 export type Tenant = {
   id: string;
@@ -159,14 +177,14 @@ export const mockTenants: Tenant[] = [
   },
   {
     id: 't2',
-    name: 'João Santos', 
-    email: 'joao.santos@example.com', 
+    name: 'João Santos', // Nome genérico
+    email: 'joao.santos@example.com', // Email genérico
     password: 'password123',
     role: 'tenant',
-    phone: '(83) 91234-5678', 
-    cpf: '123.456.789-00', 
-    rg: '2.222.222 SSP/PB',
-    maritalStatus: 'Solteiro(a)',
+    phone: '(83) 91234-5678', // Telefone genérico
+    cpf: '123.456.789-00', // CPF genérico
+    rg: '2.222.222 SSP/PB', // RG genérico
+    maritalStatus: 'Casado(a)', // Mantido como casado para o template do contrato
     profession: 'Jornalista',
     propertyId: '1', // Edificio Lest Ville
     apartmentUnit: '309',
