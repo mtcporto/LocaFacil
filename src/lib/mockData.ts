@@ -111,8 +111,8 @@ export type Tenant = {
   id: string;
   name: string;
   email: string;
-  password?: string; // Adicionado
-  role: 'tenant'; // Adicionado
+  password?: string; 
+  role: 'tenant'; 
   phone: string;
   cpf: string;
   rg: string;
@@ -157,12 +157,12 @@ export const mockTenants: Tenant[] = [
   },
   {
     id: 't2',
-    name: 'João Santos', // Nome genérico
-    email: 'joao.santos@example.com', // Email genérico
+    name: 'João Santos', 
+    email: 'joao.santos@example.com', 
     password: 'password123',
     role: 'tenant',
-    phone: '(83) 91234-5678', // Telefone genérico
-    cpf: '123.456.789-00', // CPF genérico
+    phone: '(83) 91234-5678', 
+    cpf: '123.456.789-00', 
     rg: '2.222.222 SSP/PB',
     maritalStatus: 'Solteiro(a)',
     profession: 'Jornalista',

@@ -21,12 +21,13 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon, Loader2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React from "react";
-import { mockProperties, type TaxStatus } from "@/lib/mockData";
+import React, { useEffect } from "react";
+import { mockProperties, type TaxStatus, type Tenant } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
-import { format, isValid } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 
 const maritalStatusOptions = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"];
+const taxStatusOptions: TaxStatus[] = ['Pago', 'Pendente', 'Vencido'];
 
 const addTenantFormSchema = z.object({
   name: z.string().min(3, { message: "Nome completo deve ter pelo menos 3 caracteres." }),
@@ -36,19 +37,19 @@ const addTenantFormSchema = z.object({
   rg: z.string().min(5, { message: "RG deve ter pelo menos 5 caracteres." }),
   maritalStatus: z.string({ required_error: "Selecione o estado civil." }),
   profession: z.string().min(3, { message: "Profissão deve ter pelo menos 3 caracteres." }),
-  password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
-  confirmPassword: z.string().min(6, { message: "A confirmação de senha deve ter pelo menos 6 caracteres." }),
+  password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }).optional().or(z.literal('')),
+  confirmPassword: z.string().min(6, { message: "A confirmação de senha deve ter pelo menos 6 caracteres." }).optional().or(z.literal('')),
   propertyId: z.string({ required_error: "Selecione o imóvel." }),
   apartmentUnit: z.string().min(1, { message: "Unidade do apartamento é obrigatória." }),
   leaseStartDate: z.date({ required_error: "Data de início do contrato é obrigatória." }),
   leaseEndDate: z.date({ required_error: "Data de fim do contrato é obrigatória." }),
-  rent_paid_status: z.enum(['Pago', 'Pendente', 'Vencido'], { required_error: "Selecione o status do aluguel." }),
-  iptuAmount: z.coerce.number().positive({ message: "Valor do IPTU deve ser positivo." }).optional().or(z.literal(0)),
+  rent_paid_status: z.enum(taxStatusOptions, { required_error: "Selecione o status do aluguel." }),
+  iptuAmount: z.coerce.number().nonnegative({ message: "Valor do IPTU não pode ser negativo." }).optional().or(z.literal(0)),
   iptuDueDate: z.date().optional(),
-  iptuStatus: z.enum(['Pago', 'Pendente', 'Vencido']).optional(),
-  tcrAmount: z.coerce.number().positive({ message: "Valor da TCR deve ser positivo." }).optional().or(z.literal(0)),
+  iptuStatus: z.enum(taxStatusOptions).optional(),
+  tcrAmount: z.coerce.number().nonnegative({ message: "Valor da TCR não pode ser negativo." }).optional().or(z.literal(0)),
   tcrDueDate: z.date().optional(),
-  tcrStatus: z.enum(['Pago', 'Pendente', 'Vencido']).optional(),
+  tcrStatus: z.enum(taxStatusOptions).optional(),
 }).refine(data => {
     if (data.leaseEndDate && data.leaseStartDate) {
         return data.leaseEndDate > data.leaseStartDate;
@@ -57,46 +58,60 @@ const addTenantFormSchema = z.object({
 }, {
     message: "Data de fim do contrato deve ser posterior à data de início.",
     path: ["leaseEndDate"],
-}).refine(data => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem.",
-    path: ["confirmPassword"],
-  });
+}).refine(data => {
+  if (data.password || data.confirmPassword) { // Se uma senha for fornecida (nova ou alteração)
+    if (!data.password || data.password.length < 6) {
+      // Este erro será pego pela validação individual do campo password
+      return true; 
+    }
+    return data.password === data.confirmPassword;
+  }
+  return true; // Se nenhuma senha for fornecida (no modo de edição, por exemplo), não há erro de confirmação
+}, {
+  message: "As senhas não coincidem.",
+  path: ["confirmPassword"],
+});
 
-export default function AddTenantForm() {
+
+interface AddTenantFormProps {
+  tenantToEdit?: Tenant;
+}
+
+export default function AddTenantForm({ tenantToEdit }: AddTenantFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
+  const isEditing = !!tenantToEdit;
 
   const form = useForm<z.infer<typeof addTenantFormSchema>>({
     resolver: zodResolver(addTenantFormSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      cpf: "",
-      rg: "",
-      maritalStatus: undefined,
-      profession: "",
-      password: "",
+      name: tenantToEdit?.name || "",
+      email: tenantToEdit?.email || "",
+      phone: tenantToEdit?.phone || "",
+      cpf: tenantToEdit?.cpf || "",
+      rg: tenantToEdit?.rg || "",
+      maritalStatus: tenantToEdit?.maritalStatus || undefined,
+      profession: tenantToEdit?.profession || "",
+      password: "", // Senha sempre vazia no início (edição ou adição)
       confirmPassword: "",
-      propertyId: undefined,
-      apartmentUnit: "",
-      leaseStartDate: undefined,
-      leaseEndDate: undefined,
-      rent_paid_status: "Pendente" as TaxStatus,
-      iptuAmount: 0,
-      iptuDueDate: undefined,
-      iptuStatus: "Pendente" as TaxStatus,
-      tcrAmount: 0,
-      tcrDueDate: undefined,
-      tcrStatus: "Pendente" as TaxStatus,
+      propertyId: tenantToEdit?.propertyId || undefined,
+      apartmentUnit: tenantToEdit?.apartmentUnit || "",
+      leaseStartDate: tenantToEdit?.leaseStartDate ? parseISO(tenantToEdit.leaseStartDate) : undefined,
+      leaseEndDate: tenantToEdit?.leaseEndDate ? parseISO(tenantToEdit.leaseEndDate) : undefined,
+      rent_paid_status: tenantToEdit?.rent_paid_status || "Pendente",
+      iptuAmount: tenantToEdit?.iptuAmount || 0,
+      iptuDueDate: tenantToEdit?.iptuDueDate ? parseISO(tenantToEdit.iptuDueDate) : undefined,
+      iptuStatus: tenantToEdit?.iptuStatus || "Pendente",
+      tcrAmount: tenantToEdit?.tcrAmount || 0,
+      tcrDueDate: tenantToEdit?.tcrDueDate ? parseISO(tenantToEdit.tcrDueDate) : undefined,
+      tcrStatus: tenantToEdit?.tcrStatus || "Pendente",
     },
   });
 
   async function onSubmit(values: z.infer<typeof addTenantFormSchema>) {
     setIsLoading(true);
     
-    // Remover confirmPassword antes de "salvar"
     const { confirmPassword, ...submissionValues } = values;
 
     const formattedValues = {
@@ -105,24 +120,35 @@ export default function AddTenantForm() {
         leaseEndDate: format(values.leaseEndDate, "yyyy-MM-dd"),
         iptuDueDate: values.iptuDueDate ? format(values.iptuDueDate, "yyyy-MM-dd") : undefined,
         tcrDueDate: values.tcrDueDate ? format(values.tcrDueDate, "yyyy-MM-dd") : undefined,
-        role: 'tenant' as const, // Adiciona o role fixo
+        role: 'tenant' as const,
+        // Apenas inclui a senha se ela foi fornecida (ou seja, não é vazia)
+        password: values.password ? values.password : (isEditing ? tenantToEdit?.password : undefined),
     };
+    
+    // Se estiver editando e a senha não foi alterada, não enviar o campo password
+    if (isEditing && !values.password) {
+      delete (formattedValues as any).password;
+    }
 
-    console.log("Dados do novo inquilino (simulado):", formattedValues);
-    // Aqui você adicionaria o novo inquilino ao mockData ou enviaria para uma API
-    // Por exemplo: mockTenants.push({ id: `t${mockTenants.length + 1}`, ...formattedValues });
+
+    if (isEditing) {
+      console.log("Dados do inquilino atualizados (simulado):", { ...tenantToEdit, ...formattedValues, id: tenantToEdit.id });
+      // Em uma app real: mockTenants = mockTenants.map(t => t.id === tenantToEdit.id ? { ...t, ...formattedValues, id: tenantToEdit.id } : t);
+    } else {
+      console.log("Dados do novo inquilino (simulado):", { id: `t${Date.now()}`, ...formattedValues });
+      // Em uma app real: mockTenants.push({ id: `t${Date.now()}`, ...formattedValues });
+    }
 
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     setIsLoading(false);
     toast({
-      title: "Inquilino Adicionado!",
-      description: `O inquilino "${values.name}" foi cadastrado com sucesso (simulação).`,
+      title: isEditing ? "Inquilino Atualizado!" : "Inquilino Adicionado!",
+      description: `O inquilino "${values.name}" foi ${isEditing ? 'atualizado' : 'cadastrado'} com sucesso (simulação).`,
     });
     router.push("/landlord/tenants");
   }
 
-  const taxStatusOptions: TaxStatus[] = ['Pago', 'Pendente', 'Vencido'];
 
   return (
     <Form {...form}>
@@ -152,30 +178,30 @@ export default function AddTenantForm() {
             )}
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Senha</FormLabel>
-                    <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Confirmar Senha</FormLabel>
-                    <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-        </div>
+        
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Senha</FormLabel>
+              <FormControl><Input type="password" placeholder={isEditing ? "Deixe em branco para não alterar" : "••••••••"} {...field} /></FormControl>
+              {isEditing && <FormDescription>Deixe em branco se não desejar alterar a senha.</FormDescription>}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirmar Senha</FormLabel>
+              <FormControl><Input type="password" placeholder={isEditing ? "Deixe em branco para não alterar" : "••••••••"} {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -359,7 +385,7 @@ export default function AddTenantForm() {
           />
         </div>
 
-        <h3 className="text-lg font-medium text-primary border-b pb-2 pt-4">Status Financeiro Inicial</h3>
+        <h3 className="text-lg font-medium text-primary border-b pb-2 pt-4">Status Financeiro</h3>
         <FormField
             control={form.control}
             name="rent_paid_status"
@@ -488,11 +514,10 @@ export default function AddTenantForm() {
         <div className="flex justify-end pt-4">
           <Button type="submit" disabled={isLoading} size="lg">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            Salvar Inquilino
+            {isEditing ? "Salvar Alterações" : "Salvar Inquilino"}
           </Button>
         </div>
       </form>
     </Form>
   );
 }
-

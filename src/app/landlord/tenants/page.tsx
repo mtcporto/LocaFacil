@@ -1,24 +1,25 @@
 
-"use client"; // Adicionado para permitir o uso de hooks
+"use client"; 
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockTenants, mockProperties, type TaxStatus, type Tenant } from "@/lib/mockData";
+import { mockTenants, mockProperties, type TaxStatus, type Tenant, getTenantById } from "@/lib/mockData";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { PlusCircle, Edit, Trash2, MessageSquare, CheckCircle, Clock, AlertTriangle, Circle, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type React from "react";
-import { useToast } from "@/hooks/use-toast"; // Importado
+import { useToast } from "@/hooks/use-toast"; 
+import { useRouter } from 'next/navigation';
 
-// Helper function to format date string (YYYY-MM-DD) to DD/MM/YYYY
+
 const formatDateForDisplay = (dateString: string | undefined): string => {
   if (!dateString) return '-';
   const parts = dateString.split('-');
   if (parts.length !== 3) return dateString; 
   
   const year = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) - 1; // Mês (0-indexado) para o construtor Date
+  const month = parseInt(parts[1], 10) - 1; 
   const day = parseInt(parts[2], 10);
   
   const localDate = new Date(year, month, day);
@@ -26,7 +27,7 @@ const formatDateForDisplay = (dateString: string | undefined): string => {
   return localDate.toLocaleDateString('pt-BR'); 
 };
 
-// Helper function to get badge variant, class, and icon for tax status
+
 const getTaxDisplayInfo = (status: TaxStatus | undefined): { variant: "default" | "outline" | "destructive" | "secondary", className: string, icon: React.ElementType, text: string } => {
   switch (status) {
     case 'Pago':
@@ -42,7 +43,8 @@ const getTaxDisplayInfo = (status: TaxStatus | undefined): { variant: "default" 
 
 
 export default function LandlordTenantsPage() {
-  const { toast } = useToast(); // Instanciado o hook
+  const { toast } = useToast(); 
+  const router = useRouter();
 
   const getPropertyName = (propertyId: string) => {
     const prop = mockProperties.find(p => p.id === propertyId);
@@ -53,13 +55,6 @@ export default function LandlordTenantsPage() {
     toast({
       title: "Enviar Mensagem",
       description: `Funcionalidade de mensagem para ${tenant.name} em desenvolvimento.`,
-    });
-  };
-
-  const handleEditTenant = (tenant: Tenant) => {
-    toast({
-      title: "Editar Inquilino",
-      description: `Página para editar ${tenant.name} em desenvolvimento.`,
     });
   };
   
@@ -141,8 +136,10 @@ export default function LandlordTenantsPage() {
                         <Button variant="ghost" size="icon" title="Mensagem ao Inquilino" onClick={() => handleSendMessage(tenant)}>
                           <MessageSquare className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" title="Editar Inquilino" onClick={() => handleEditTenant(tenant)}>
-                          <Edit className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" title="Editar Inquilino" asChild>
+                          <Link href={`/landlord/tenants/${tenant.id}/edit`}>
+                            <Edit className="h-4 w-4" />
+                          </Link>
                         </Button>
                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" title="Excluir Inquilino" onClick={() => handleDeleteTenant(tenant)}>
                           <Trash2 className="h-4 w-4" />
