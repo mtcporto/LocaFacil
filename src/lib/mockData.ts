@@ -1,4 +1,4 @@
-export type PropertyAmenity = "Parking" | "Pool" | "Gym" | "Pet Friendly" | "Furnished" | "Balcony";
+export type PropertyAmenity = "Estacionamento" | "Piscina" | "Academia" | "Aceita Pets" | "Mobiliado" | "Varanda";
 
 export type Property = {
   id: string;
@@ -16,7 +16,7 @@ export type Property = {
   rent_amount: number;
   available: boolean;
   amenities: PropertyAmenity[];
-  type: "Apartment" | "House" | "Condo";
+  type: "Apartamento" | "Casa" | "Condomínio";
   floors?: number; // For buildings
   unitsPerFloor?: Record<string, number>; // e.g. { "1": 10, "2": 8 }
 };
@@ -24,77 +24,77 @@ export type Property = {
 export const mockProperties: Property[] = [
   {
     id: '1',
-    name: 'Edificio Lest Ville - Unit 305',
+    name: 'Edifício Lest Ville - Unidade 305',
     address: 'Av. Cabo Branco, 2834',
     city: 'João Pessoa',
     state: 'PB',
     zip: '58045-010',
-    description: 'Cozy 1-bedroom apartment with ocean views.',
-    longDescription: 'Discover comfortable living in this well-maintained 1-bedroom apartment at Edificio Lest Ville. Located in the vibrant Cabo Branco neighborhood, this unit offers stunning ocean views and easy access to local amenities. The building is professionally managed, ensuring a pleasant living experience. Ideal for singles or couples looking for a prime beachfront location.',
-    images: ['https://placehold.co/600x400.png?text=Ocean+View+Apt', 'https://placehold.co/600x400.png?text=Living+Room', 'https://placehold.co/600x400.png?text=Bedroom'],
+    description: 'Aconchegante apartamento de 1 quarto com vista para o mar.',
+    longDescription: 'Descubra o conforto de viver neste bem conservado apartamento de 1 quarto no Edifício Lest Ville. Localizado no vibrante bairro de Cabo Branco, esta unidade oferece vistas deslumbrantes do oceano e fácil acesso às comodidades locais. O edifício é gerido profissionalmente, garantindo uma experiência de vida agradável. Ideal para solteiros ou casais que procuram uma localização privilegiada à beira-mar.',
+    images: ['https://placehold.co/600x400.png?text=Apto+Vista+Mar', 'https://placehold.co/600x400.png?text=Sala+de+Estar', 'https://placehold.co/600x400.png?text=Quarto'],
     sq_m: 30,
     bedrooms: 1,
     bathrooms: 1,
     rent_amount: 1200,
     available: true,
-    amenities: ['Parking', 'Pet Friendly', 'Furnished'],
-    type: "Apartment",
+    amenities: ['Estacionamento', 'Aceita Pets', 'Mobiliado'],
+    type: "Apartamento",
     floors: 3,
     unitsPerFloor: {"1":26, "2":26, "3":26}
   },
   {
     id: '2',
-    name: 'Manaira Prime Residence - Apt 12B',
+    name: 'Manaira Prime Residence - Apto 12B',
     address: 'Av. Gov. Flavio Ribeiro Coutinho, 707',
     city: 'João Pessoa',
     state: 'PB',
     zip: '58037-000',
-    description: 'Spacious 3-bedroom apartment in Manaira.',
-    longDescription: 'Experience luxury living in this spacious 3-bedroom apartment at Manaira Prime Residence. This modern unit features high-end finishes, ample natural light, and a private balcony. Building amenities include a swimming pool, gym, and 24-hour security. Perfectly situated near shopping, dining, and entertainment options.',
-    images: ['https://placehold.co/600x400.png?text=Luxury+Apt+Manaira', 'https://placehold.co/600x400.png?text=Kitchen', 'https://placehold.co/600x400.png?text=Master+Bedroom'],
+    description: 'Espaçoso apartamento de 3 quartos em Manaira.',
+    longDescription: 'Experimente o luxo de viver neste espaçoso apartamento de 3 quartos no Manaira Prime Residence. Esta unidade moderna possui acabamentos de alta qualidade, ampla luz natural e varanda privativa. As comodidades do edifício incluem piscina, academia e segurança 24 horas. Perfeitamente situado perto de opções de compras, restaurantes e entretenimento.',
+    images: ['https://placehold.co/600x400.png?text=Apto+Luxo+Manaira', 'https://placehold.co/600x400.png?text=Cozinha', 'https://placehold.co/600x400.png?text=Quarto+Principal'],
     sq_m: 120,
     bedrooms: 3,
     bathrooms: 2,
     rent_amount: 3500,
     available: false,
-    amenities: ['Parking', 'Pool', 'Gym', 'Balcony'],
-    type: "Apartment",
+    amenities: ['Estacionamento', 'Piscina', 'Academia', 'Varanda'],
+    type: "Apartamento",
   },
   {
     id: '3',
-    name: 'Sunrise Condos - Unit 2A',
+    name: 'Condomínio Sunrise - Unidade 2A',
     address: 'Rua das Palmeiras, 123',
     city: 'Recife',
     state: 'PE',
     zip: '50000-000',
-    description: 'Modern 2-bedroom condo with city views.',
-    longDescription: 'Enjoy urban living in this stylish 2-bedroom condo at Sunrise Condos. This unit boasts an open-concept layout, contemporary design, and large windows offering panoramic city views. Residents have access to a rooftop terrace and a fitness center. Conveniently located in the heart of Recife, close to public transport and cultural attractions.',
-    images: ['https://placehold.co/600x400.png?text=City+View+Condo', 'https://placehold.co/600x400.png?text=Dining+Area', 'https://placehold.co/600x400.png?text=Bathroom'],
+    description: 'Moderno condomínio de 2 quartos com vista para a cidade.',
+    longDescription: 'Desfrute da vida urbana neste elegante condomínio de 2 quartos no Condomínio Sunrise. Esta unidade possui um layout de conceito aberto, design contemporâneo e grandes janelas que oferecem vistas panorâmicas da cidade. Os moradores têm acesso a um terraço na cobertura e a uma academia. Convenientemente localizado no coração de Recife, perto de transporte público e atrações culturais.',
+    images: ['https://placehold.co/600x400.png?text=Condo+Vista+Cidade', 'https://placehold.co/600x400.png?text=Sala+Jantar', 'https://placehold.co/600x400.png?text=Banheiro'],
     sq_m: 75,
     bedrooms: 2,
     bathrooms: 2,
     rent_amount: 2200,
     available: true,
-    amenities: ['Parking', 'Gym', 'Balcony'],
-    type: "Condo",
+    amenities: ['Estacionamento', 'Academia', 'Varanda'],
+    type: "Condomínio",
   },
   {
     id: '4',
-    name: 'Green Valley House',
+    name: 'Casa Vale Verde',
     address: 'Alameda dos Bosques, 456',
     city: 'Campina Grande',
     state: 'PB',
     zip: '58400-000',
-    description: 'Charming 4-bedroom house with garden.',
-    longDescription: 'This beautiful 4-bedroom house in Green Valley offers a tranquil retreat with a spacious garden and outdoor entertaining area. The home features a traditional design with modern updates, including a fully equipped kitchen and renovated bathrooms. Ample parking space is available. Ideal for families seeking a peaceful neighborhood.',
-    images: ['https://placehold.co/600x400.png?text=Family+House+Garden', 'https://placehold.co/600x400.png?text=Garden+View', 'https://placehold.co/600x400.png?text=Interior+Shot'],
+    description: 'Charmosa casa de 4 quartos com jardim.',
+    longDescription: 'Esta bela casa de 4 quartos no Vale Verde oferece um refúgio tranquilo com um jardim espaçoso e área de entretenimento ao ar livre. A casa apresenta um design tradicional com atualizações modernas, incluindo cozinha totalmente equipada e banheiros reformados. Amplo espaço de estacionamento disponível. Ideal para famílias que procuram um bairro tranquilo.',
+    images: ['https://placehold.co/600x400.png?text=Casa+Familia+Jardim', 'https://placehold.co/600x400.png?text=Vista+Jardim', 'https://placehold.co/600x400.png?text=Foto+Interior'],
     sq_m: 200,
     bedrooms: 4,
     bathrooms: 3,
     rent_amount: 4500,
     available: true,
-    amenities: ['Parking', 'Pet Friendly', 'Balcony', 'Furnished'],
-    type: "House",
+    amenities: ['Estacionamento', 'Aceita Pets', 'Varanda', 'Mobiliado'],
+    type: "Casa",
   },
 ];
 
@@ -111,7 +111,7 @@ export type Tenant = {
   apartmentUnit: string;
   leaseStartDate: string;
   leaseEndDate: string;
-  rent_paid_status: 'Paid' | 'Due' | 'Overdue';
+  rent_paid_status: 'Pago' | 'Pendente' | 'Atrasado';
 };
 
 export const mockTenants: Tenant[] = [
@@ -124,7 +124,7 @@ export const mockTenants: Tenant[] = [
     apartmentUnit: '12B',
     leaseStartDate: '2023-01-15',
     leaseEndDate: '2025-01-14',
-    rent_paid_status: 'Paid',
+    rent_paid_status: 'Pago',
   },
   {
     id: 't2',
@@ -132,9 +132,9 @@ export const mockTenants: Tenant[] = [
     email: 'joao.santos@example.com',
     phone: '(83) 98888-2222',
     propertyId: '1', // Edificio Lest Ville
-    apartmentUnit: '301', // Assuming 301 is occupied
+    apartmentUnit: '301', 
     leaseStartDate: '2022-06-01',
     leaseEndDate: '2024-05-31',
-    rent_paid_status: 'Due',
+    rent_paid_status: 'Pendente',
   },
 ];

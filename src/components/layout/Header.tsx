@@ -12,24 +12,24 @@ export default function Header() {
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4">
           <Button variant="ghost" asChild>
-            <Link href="/properties">Properties</Link>
+            <Link href="/properties">Imóveis</Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/landlord/dashboard">Landlord</Link>
+            <Link href="/landlord/dashboard">Proprietário</Link>
           </Button>
            <Button variant="ghost" asChild>
-            <Link href="/tenant/dashboard">Tenant</Link>
+            <Link href="/tenant/dashboard">Inquilino</Link>
           </Button>
           <Button variant="outline" asChild>
             <Link href="/auth/login" className="flex items-center gap-2">
               <LogIn size={18} />
-              Login
+              Entrar
             </Link>
           </Button>
           {/* <Button asChild>
             <Link href="/auth/signup" className="flex items-center gap-2">
               <UserPlus size={18} />
-              Sign Up
+              Cadastrar
             </Link>
           </Button> */}
         </nav>

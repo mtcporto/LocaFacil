@@ -13,9 +13,9 @@ import { suggestNotification, type SuggestNotificationInput, type SuggestNotific
 import { Loader2, Sparkles, ClipboardCopy, ClipboardCheck } from 'lucide-react';
 
 const SuggestionSchema = z.object({
-  weatherForecast: z.string().min(10, "Please provide some weather details."),
-  cityEvents: z.string().min(5, "Please provide some city event details."),
-  maintenanceSchedule: z.string().min(5, "Please provide maintenance schedule details."),
+  weatherForecast: z.string().min(10, "Forneça alguns detalhes sobre o clima."),
+  cityEvents: z.string().min(5, "Forneça alguns detalhes sobre eventos na cidade."),
+  maintenanceSchedule: z.string().min(5, "Forneça detalhes do cronograma de manutenção."),
   pastNotifications: z.string().optional(),
 });
 
@@ -43,15 +43,15 @@ export default function SmartSuggestionsClient() {
       const result = await suggestNotification(values as SuggestNotificationInput);
       setSuggestion(result);
       toast({
-        title: "Suggestion Generated!",
-        description: "AI has crafted a notification for you.",
+        title: "Sugestão Gerada!",
+        description: "A IA elaborou uma notificação para você.",
       });
     } catch (error) {
-      console.error("Error generating suggestion:", error);
+      console.error("Erro ao gerar sugestão:", error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to generate suggestion. Please try again.",
+        title: "Erro",
+        description: "Falha ao gerar sugestão. Por favor, tente novamente.",
       });
     } finally {
       setIsLoading(false);
@@ -63,13 +63,13 @@ export default function SmartSuggestionsClient() {
       await navigator.clipboard.writeText(text);
       if (type === 'message') setCopiedMessage(true);
       if (type === 'reasoning') setCopiedReasoning(true);
-      toast({ title: 'Copied to clipboard!' });
+      toast({ title: 'Copiado para a área de transferência!' });
       setTimeout(() => {
         if (type === 'message') setCopiedMessage(false);
         if (type === 'reasoning') setCopiedReasoning(false);
       }, 2000);
     } catch (err) {
-      toast({ variant: 'destructive', title: 'Failed to copy' });
+      toast({ variant: 'destructive', title: 'Falha ao copiar' });
     }
   };
 
@@ -79,10 +79,10 @@ export default function SmartSuggestionsClient() {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Sparkles className="h-6 w-6 mr-2 text-primary" />
-            AI-Powered Notification Suggestions
+            Sugestões de Notificação com IA
           </CardTitle>
           <CardDescription>
-            Provide some context, and our AI will help you draft relevant and timely notifications for your tenants.
+            Forneça algum contexto e nossa IA ajudará a redigir notificações relevantes e oportunas para seus inquilinos.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -93,9 +93,9 @@ export default function SmartSuggestionsClient() {
                 name="weatherForecast"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Weather Forecast</FormLabel>
+                    <FormLabel>Previsão do Tempo</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="E.g., Heavy rain expected tomorrow, possible flooding..." {...field} />
+                      <Textarea placeholder="Ex: Chuva forte esperada amanhã, possíveis alagamentos..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -106,9 +106,9 @@ export default function SmartSuggestionsClient() {
                 name="cityEvents"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>City Events</FormLabel>
+                    <FormLabel>Eventos da Cidade</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="E.g., Marathon on Sunday, Main Street will be closed from 8 AM to 2 PM." {...field} />
+                      <Textarea placeholder="Ex: Maratona no domingo, Rua Principal fechada das 8h às 14h." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,9 +119,9 @@ export default function SmartSuggestionsClient() {
                 name="maintenanceSchedule"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Maintenance Schedule</FormLabel>
+                    <FormLabel>Cronograma de Manutenção</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="E.g., Elevator maintenance on Wednesday, 10 AM - 12 PM." {...field} />
+                      <Textarea placeholder="Ex: Manutenção do elevador na quarta-feira, 10h - 12h." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -132,11 +132,11 @@ export default function SmartSuggestionsClient() {
                 name="pastNotifications"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Past Notifications (Optional)</FormLabel>
+                    <FormLabel>Notificações Anteriores (Opcional)</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="E.g., Sent water outage notice last week." {...field} />
+                      <Textarea placeholder="Ex: Aviso de falta de água enviado semana passada." {...field} />
                     </FormControl>
-                    <FormDescription>Helps avoid duplicate or overly frequent messages.</FormDescription>
+                    <FormDescription>Ajuda a evitar mensagens duplicadas ou muito frequentes.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -149,7 +149,7 @@ export default function SmartSuggestionsClient() {
                 ) : (
                   <Sparkles className="mr-2 h-4 w-4" />
                 )}
-                Generate Suggestion
+                Gerar Sugestão
               </Button>
             </CardFooter>
           </form>
@@ -159,25 +159,25 @@ export default function SmartSuggestionsClient() {
       {suggestion && (
         <Card className="shadow-lg bg-primary/5">
           <CardHeader>
-            <CardTitle className="text-primary">Generated Suggestion</CardTitle>
+            <CardTitle className="text-primary">Sugestão Gerada</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <div className="flex justify-between items-center mb-1">
-                <h4 className="font-semibold">Notification Message:</h4>
+                <h4 className="font-semibold">Mensagem da Notificação:</h4>
                 <Button variant="ghost" size="sm" onClick={() => handleCopy(suggestion.notificationMessage, 'message')}>
                   {copiedMessage ? <ClipboardCheck className="h-4 w-4 text-green-500" /> : <ClipboardCopy className="h-4 w-4" />}
-                  <span className="ml-1">{copiedMessage ? 'Copied!' : 'Copy'}</span>
+                  <span className="ml-1">{copiedMessage ? 'Copiado!' : 'Copiar'}</span>
                 </Button>
               </div>
               <p className="p-3 bg-background rounded-md border whitespace-pre-wrap">{suggestion.notificationMessage}</p>
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
-                <h4 className="font-semibold">Reasoning:</h4>
+                <h4 className="font-semibold">Justificativa:</h4>
                 <Button variant="ghost" size="sm" onClick={() => handleCopy(suggestion.reasoning, 'reasoning')}>
                   {copiedReasoning ? <ClipboardCheck className="h-4 w-4 text-green-500" /> : <ClipboardCopy className="h-4 w-4" />}
-                  <span className="ml-1">{copiedReasoning ? 'Copied!' : 'Copy'}</span>
+                  <span className="ml-1">{copiedReasoning ? 'Copiado!' : 'Copiar'}</span>
                 </Button>
               </div>
               <p className="p-3 bg-background rounded-md border text-sm text-muted-foreground whitespace-pre-wrap">{suggestion.reasoning}</p>
@@ -185,10 +185,10 @@ export default function SmartSuggestionsClient() {
           </CardContent>
           <CardFooter>
             <Button variant="outline" onClick={() => {
-                // Logic to use this suggestion, e.g., populate the manual compose form
-                // For now, just a toast.
-                toast({ title: "Suggestion ready to use!", description: "You can copy the text or implement further actions."});
-            }}>Use This Suggestion</Button>
+                // Lógica para usar esta sugestão, ex: preencher o formulário de composição manual
+                // Por enquanto, apenas um toast.
+                toast({ title: "Sugestão pronta para uso!", description: "Você pode copiar o texto ou implementar outras ações."});
+            }}>Usar Esta Sugestão</Button>
           </CardFooter>
         </Card>
       )}

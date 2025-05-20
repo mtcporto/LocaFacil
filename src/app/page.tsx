@@ -10,20 +10,20 @@ export default function HomePage() {
       <section className="text-center py-12 md:py-20 bg-gradient-to-br from-primary/10 via-background to-accent/10 rounded-xl shadow-lg">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6">
-            DomusLink: Seamless Property Management
+            DomusLink: Gestão de Imóveis Descomplicada
           </h1>
           <p className="text-lg md:text-xl text-foreground/80 mb-10 max-w-3xl mx-auto">
-            Empowering landlords with smart tools and providing tenants with a transparent, modern rental experience.
+            Capacitando proprietários com ferramentas inteligentes e oferecendo aos inquilinos uma experiência de aluguel transparente e moderna.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
             <Button size="lg" asChild className="shadow-md hover:shadow-lg transition-shadow">
               <Link href="/properties">
-                Browse Available Properties <ArrowRight className="ml-2 h-5 w-5" />
+                Ver Imóveis Disponíveis <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="shadow-md hover:shadow-lg transition-shadow">
               <Link href="/auth/login">
-                Access Your Portal
+                Acessar seu Portal
               </Link>
             </Button>
           </div>
@@ -31,18 +31,18 @@ export default function HomePage() {
       </section>
 
       <section className="container mx-auto px-4">
-        <h2 className="text-3xl font-semibold text-center mb-10 text-primary">Why Choose DomusLink?</h2>
+        <h2 className="text-3xl font-semibold text-center mb-10 text-primary">Por que escolher o DomusLink?</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <Card className="shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader className="items-center">
               <div className="p-3 bg-accent/20 rounded-full mb-3">
                 <Search className="h-8 w-8 text-accent" />
               </div>
-              <CardTitle className="text-xl text-center">For Prospective Tenants</CardTitle>
+              <CardTitle className="text-xl text-center">Para Futuros Inquilinos</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-center">
-                Easily find your next home. Browse detailed listings, view photos, and submit your application digitally.
+                Encontre seu próximo lar facilmente. Navegue por anúncios detalhados, veja fotos e envie sua proposta digitalmente.
               </CardDescription>
             </CardContent>
           </Card>
@@ -51,11 +51,11 @@ export default function HomePage() {
               <div className="p-3 bg-primary/20 rounded-full mb-3">
                  <UserCog className="h-8 w-8 text-primary" />
               </div>
-              <CardTitle className="text-xl text-center">For Landlords</CardTitle>
+              <CardTitle className="text-xl text-center">Para Proprietários</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-center">
-                Manage properties, tenants, and communications efficiently. Leverage AI for smart notification suggestions.
+                Gerencie imóveis, inquilinos e comunicações de forma eficiente. Use IA para sugestões de notificações inteligentes.
               </CardDescription>
             </CardContent>
           </Card>
@@ -64,11 +64,11 @@ export default function HomePage() {
               <div className="p-3 bg-secondary rounded-full mb-3">
                 <Users className="h-8 w-8 text-secondary-foreground" />
               </div>
-              <CardTitle className="text-xl text-center">For Current Tenants</CardTitle>
+              <CardTitle className="text-xl text-center">Para Inquilinos Atuais</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-center">
-                Access your lease information, receive important updates, and manage your tenancy through a dedicated portal.
+                Acesse informações do seu contrato, receba atualizações importantes e gerencie sua locação através de um portal dedicado.
               </CardDescription>
             </CardContent>
           </Card>
@@ -81,21 +81,21 @@ export default function HomePage() {
             <div className="md:w-1/2">
               <Image
                 src="https://placehold.co/800x600.png"
-                alt="Modern apartment building"
-                data-ai-hint="modern apartment building"
+                alt="Edifício de apartamentos moderno"
+                data-ai-hint="prédio moderno"
                 width={800}
                 height={600}
                 className="object-cover w-full h-64 md:h-full"
               />
             </div>
             <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-card">
-              <h3 className="text-3xl font-semibold text-primary mb-4">Discover Your Perfect Space</h3>
+              <h3 className="text-3xl font-semibold text-primary mb-4">Descubra Seu Espaço Perfeito</h3>
               <p className="text-foreground/80 mb-6">
-                Our platform features a diverse range of properties to suit your lifestyle. From cozy apartments to spacious homes, start your search with DomusLink today.
+                Nossa plataforma apresenta uma gama diversificada de imóveis para se adequar ao seu estilo de vida. De apartamentos aconchegantes a casas espaçosas, comece sua busca com DomusLink hoje.
               </p>
               <Button size="lg" asChild className="self-start shadow-md hover:shadow-lg transition-shadow">
                 <Link href="/properties">
-                  Explore Listings <ArrowRight className="ml-2 h-5 w-5" />
+                  Explorar Anúncios <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>

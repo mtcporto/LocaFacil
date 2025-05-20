@@ -10,33 +10,33 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-8">
       <section>
-        <h1 className="text-3xl font-bold text-primary mb-2">Manage Notifications</h1>
-        <p className="text-muted-foreground">Communicate with your tenants effectively. Use AI to craft smart notifications.</p>
+        <h1 className="text-3xl font-bold text-primary mb-2">Gerenciar Notificações</h1>
+        <p className="text-muted-foreground">Comunique-se com seus inquilinos de forma eficaz. Use IA para criar notificações inteligentes.</p>
       </section>
 
       <Tabs defaultValue="compose" className="w-full">
         <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
-          <TabsTrigger value="compose"><Send className="mr-2 h-4 w-4" />Compose Manually</TabsTrigger>
-          <TabsTrigger value="ai-suggest"><Sparkles className="mr-2 h-4 w-4" />AI Suggestions</TabsTrigger>
+          <TabsTrigger value="compose"><Send className="mr-2 h-4 w-4" />Escrever Manualmente</TabsTrigger>
+          <TabsTrigger value="ai-suggest"><Sparkles className="mr-2 h-4 w-4" />Sugestões da IA</TabsTrigger>
         </TabsList>
         <TabsContent value="compose">
           <Card className="shadow-md">
             <CardHeader>
-              <CardTitle>Compose New Notification</CardTitle>
-              <CardDescription>Write a message to send to your tenants.</CardDescription>
+              <CardTitle>Escrever Nova Notificação</CardTitle>
+              <CardDescription>Escreva uma mensagem para enviar aos seus inquilinos.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="notification-title">Title</Label>
-                <Textarea id="notification-title" placeholder="E.g., Important Maintenance Update" className="mt-1" />
+                <Label htmlFor="notification-title">Título</Label>
+                <Textarea id="notification-title" placeholder="Ex: Atualização Importante de Manutenção" className="mt-1" />
               </div>
               <div>
-                <Label htmlFor="notification-message">Message</Label>
-                <Textarea id="notification-message" placeholder="Enter your notification content here..." rows={5} className="mt-1" />
+                <Label htmlFor="notification-message">Mensagem</Label>
+                <Textarea id="notification-message" placeholder="Digite o conteúdo da sua notificação aqui..." rows={5} className="mt-1" />
               </div>
-              {/* Add audience selection (all, specific property, specific tenant) here */}
+              {/* Adicionar seleção de público (todos, imóvel específico, inquilino específico) aqui */}
               <Button className="w-full md:w-auto">
-                <Send className="mr-2 h-4 w-4" /> Send Notification
+                <Send className="mr-2 h-4 w-4" /> Enviar Notificação
               </Button>
             </CardContent>
           </Card>
@@ -48,12 +48,12 @@ export default function NotificationsPage() {
       
       <Card className="shadow-md">
         <CardHeader>
-            <CardTitle>Sent Notifications</CardTitle>
-            <CardDescription>History of notifications sent.</CardDescription>
+            <CardTitle>Notificações Enviadas</CardTitle>
+            <CardDescription>Histórico de notificações enviadas.</CardDescription>
         </CardHeader>
         <CardContent>
             {/* Placeholder for list of sent notifications */}
-            <p className="text-muted-foreground">No notifications sent yet.</p>
+            <p className="text-muted-foreground">Nenhuma notificação enviada ainda.</p>
         </CardContent>
       </Card>
     </div>

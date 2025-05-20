@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'DomusLink - Modern Property Management',
-  description: 'DomusLink helps landlords manage properties and tenants efficiently.',
+  title: 'DomusLink - Gestão Moderna de Imóveis',
+  description: 'DomusLink ajuda proprietários a gerenciar imóveis e inquilinos de forma eficiente.',
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <Header />
         <main className="flex-grow container mx-auto px-4 py-8">

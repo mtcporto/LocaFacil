@@ -5,23 +5,23 @@ import { Building, Users, Bell, PlusCircle, ArrowRight } from "lucide-react";
 
 export default function LandlordDashboardPage() {
   const stats = [
-    { title: "Total Properties", value: "12", icon: Building, color: "text-primary" },
-    { title: "Occupied Units", value: "150", icon: Users, color: "text-green-500" },
-    { title: "Vacant Units", value: "8", icon: Users, color: "text-orange-500" },
-    { title: "Pending Notifications", value: "3", icon: Bell, color: "text-yellow-500" },
+    { title: "Total de Imóveis", value: "12", icon: Building, color: "text-primary" },
+    { title: "Unidades Ocupadas", value: "150", icon: Users, color: "text-green-500" },
+    { title: "Unidades Vagas", value: "8", icon: Users, color: "text-orange-500" },
+    { title: "Notificações Pendentes", value: "3", icon: Bell, color: "text-yellow-500" },
   ];
 
   const quickLinks = [
-    { href: "/landlord/properties/add", label: "Add New Property", icon: PlusCircle },
-    { href: "/landlord/notifications", label: "Send Notification", icon: Bell },
-    { href: "/landlord/tenants", label: "View All Tenants", icon: Users },
+    { href: "/landlord/properties/add", label: "Adicionar Novo Imóvel", icon: PlusCircle },
+    { href: "/landlord/notifications", label: "Enviar Notificação", icon: Bell },
+    { href: "/landlord/tenants", label: "Ver Todos Inquilinos", icon: Users },
   ];
 
   return (
     <div className="space-y-8">
       <section>
-        <h1 className="text-3xl font-bold text-primary mb-2">Landlord Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here&apos;s an overview of your properties and activities.</p>
+        <h1 className="text-3xl font-bold text-primary mb-2">Painel do Proprietário</h1>
+        <p className="text-muted-foreground">Bem-vindo de volta! Aqui está um resumo de seus imóveis e atividades.</p>
       </section>
 
       <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -33,7 +33,7 @@ export default function LandlordDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">Current status</p>
+              <p className="text-xs text-muted-foreground">Status atual</p>
             </CardContent>
           </Card>
         ))}
@@ -42,8 +42,8 @@ export default function LandlordDashboardPage() {
       <section className="grid gap-6 md:grid-cols-2">
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Perform common tasks quickly.</CardDescription>
+            <CardTitle>Ações Rápidas</CardTitle>
+            <CardDescription>Execute tarefas comuns rapidamente.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {quickLinks.map((link) => (
@@ -59,18 +59,18 @@ export default function LandlordDashboardPage() {
 
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-             <CardDescription>Latest updates and tenant interactions.</CardDescription>
+            <CardTitle>Atividade Recente</CardTitle>
+             <CardDescription>Últimas atualizações e interações com inquilinos.</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Placeholder for recent activity feed */}
             <ul className="space-y-3 text-sm">
-                <li className="flex items-center justify-between p-2 bg-secondary/30 rounded-md"><span>New lease application for Unit 201, Lest Ville</span> <span className="text-muted-foreground">2h ago</span></li>
-                <li className="flex items-center justify-between p-2 bg-secondary/30 rounded-md"><span>Maintenance request for Apt 5B, Manaira Prime</span> <span className="text-muted-foreground">1d ago</span></li>
-                <li className="flex items-center justify-between p-2 bg-secondary/30 rounded-md"><span>Notification sent: "Holiday Greetings"</span> <span className="text-muted-foreground">3d ago</span></li>
+                <li className="flex items-center justify-between p-2 bg-secondary/30 rounded-md"><span>Nova proposta para Unidade 201, Lest Ville</span> <span className="text-muted-foreground">Há 2h</span></li>
+                <li className="flex items-center justify-between p-2 bg-secondary/30 rounded-md"><span>Solicitação de manutenção para Apto 5B, Manaira Prime</span> <span className="text-muted-foreground">Há 1d</span></li>
+                <li className="flex items-center justify-between p-2 bg-secondary/30 rounded-md"><span>Notificação enviada: "Boas Festas"</span> <span className="text-muted-foreground">Há 3d</span></li>
             </ul>
             <Button variant="link" className="mt-4 px-0 text-primary" asChild>
-              <Link href="#">View all activity <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              <Link href="#">Ver toda atividade <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </CardContent>
         </Card>

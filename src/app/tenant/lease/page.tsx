@@ -6,51 +6,51 @@ import { Separator } from "@/components/ui/separator";
 export default function TenantLeasePage() {
   // Mock lease data - in a real app, this would be fetched
   const leaseDetails = {
-    propertyName: "Edificio Lest Ville - Unit 305",
+    propertyName: "Edificio Lest Ville - Unidade 305",
     address: "Av. Cabo Branco, 2834, João Pessoa, PB",
-    tenantName: "Current Tenant Name",
+    tenantName: "Nome do Inquilino Atual",
     landlordName: "Construtora Earlen Ltda",
     leaseStartDate: "2023-07-01",
     leaseEndDate: "2024-06-30",
     rentAmount: 1200.00,
-    rentDueDate: "5th of each month",
+    rentDueDate: "Dia 5 de cada mês",
     securityDeposit: 2400.00,
     leaseDocumentUrl: "/path/to/mock-lease-document.pdf", // Placeholder
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    return new Date(dateString).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   return (
     <div className="space-y-8">
       <section>
-        <h1 className="text-3xl font-bold text-primary mb-2">My Lease Details</h1>
-        <p className="text-muted-foreground">Review the terms and conditions of your current lease agreement.</p>
+        <h1 className="text-3xl font-bold text-primary mb-2">Detalhes do Meu Contrato</h1>
+        <p className="text-muted-foreground">Revise os termos e condições do seu contrato de locação atual.</p>
       </section>
 
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center">
             <FileText className="mr-2 h-6 w-6 text-primary" />
-            Lease Agreement Overview
+            Resumo do Contrato de Locação
           </CardTitle>
           <CardDescription>
-            Property: {leaseDetails.propertyName}
+            Imóvel: {leaseDetails.propertyName}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><Home className="h-5 w-5 mr-2 text-accent"/>Property Address</h3>
+              <h3 className="font-medium text-foreground flex items-center"><Home className="h-5 w-5 mr-2 text-accent"/>Endereço do Imóvel</h3>
               <p className="text-sm text-muted-foreground">{leaseDetails.address}</p>
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><UserCircle className="h-5 w-5 mr-2 text-accent"/>Tenant</h3>
+              <h3 className="font-medium text-foreground flex items-center"><UserCircle className="h-5 w-5 mr-2 text-accent"/>Inquilino</h3>
               <p className="text-sm text-muted-foreground">{leaseDetails.tenantName}</p>
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><UserCircle className="h-5 w-5 mr-2 text-accent"/>Landlord/Agent</h3>
+              <h3 className="font-medium text-foreground flex items-center"><UserCircle className="h-5 w-5 mr-2 text-accent"/>Proprietário/Agente</h3>
               <p className="text-sm text-muted-foreground">{leaseDetails.landlordName}</p>
             </div>
           </div>
@@ -59,23 +59,23 @@ export default function TenantLeasePage() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><CalendarDays className="h-5 w-5 mr-2 text-accent"/>Lease Start Date</h3>
+              <h3 className="font-medium text-foreground flex items-center"><CalendarDays className="h-5 w-5 mr-2 text-accent"/>Data de Início do Contrato</h3>
               <p className="text-sm text-muted-foreground">{formatDate(leaseDetails.leaseStartDate)}</p>
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><CalendarDays className="h-5 w-5 mr-2 text-accent"/>Lease End Date</h3>
+              <h3 className="font-medium text-foreground flex items-center"><CalendarDays className="h-5 w-5 mr-2 text-accent"/>Data de Término do Contrato</h3>
               <p className="text-sm text-muted-foreground">{formatDate(leaseDetails.leaseEndDate)}</p>
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground">Monthly Rent</h3>
+              <h3 className="font-medium text-foreground">Aluguel Mensal</h3>
               <p className="text-sm text-muted-foreground">R$ {leaseDetails.rentAmount.toFixed(2)}</p>
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground">Rent Due Date</h3>
+              <h3 className="font-medium text-foreground">Data de Vencimento do Aluguel</h3>
               <p className="text-sm text-muted-foreground">{leaseDetails.rentDueDate}</p>
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-foreground">Security Deposit</h3>
+              <h3 className="font-medium text-foreground">Depósito de Segurança</h3>
               <p className="text-sm text-muted-foreground">R$ {leaseDetails.securityDeposit.toFixed(2)}</p>
             </div>
           </div>
@@ -84,10 +84,10 @@ export default function TenantLeasePage() {
 
           <div>
             <Button className="w-full md:w-auto">
-              <Download className="mr-2 h-4 w-4" /> Download Full Lease Document
+              <Download className="mr-2 h-4 w-4" /> Baixar Contrato Completo
             </Button>
             <p className="text-xs text-muted-foreground mt-2">
-              Note: This is a summary. For complete terms, please refer to the full lease document.
+              Observação: Este é um resumo. Para os termos completos, consulte o documento do contrato completo.
             </p>
           </div>
         </CardContent>

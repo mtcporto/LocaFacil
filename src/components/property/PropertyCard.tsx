@@ -17,17 +17,17 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <Image
           src={property.images[0]}
           alt={property.name}
-          data-ai-hint="apartment exterior"
+          data-ai-hint="exterior apartamento"
           layout="fill"
           objectFit="cover"
         />
         {property.available ? (
           <Badge variant="default" className="absolute top-2 right-2 bg-green-500 hover:bg-green-600 text-white">
-            Available
+            Disponível
           </Badge>
         ) : (
           <Badge variant="destructive" className="absolute top-2 right-2">
-            Rented
+            Alugado
           </Badge>
         )}
       </div>
@@ -44,25 +44,25 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             <Home className="h-4 w-4 mr-2 text-accent shrink-0" /> {property.sq_m} m²
           </div>
           <div className="flex items-center">
-            <BedDouble className="h-4 w-4 mr-2 text-accent shrink-0" /> {property.bedrooms} bed(s)
+            <BedDouble className="h-4 w-4 mr-2 text-accent shrink-0" /> {property.bedrooms} quarto(s)
           </div>
           <div className="flex items-center">
-            <Bath className="h-4 w-4 mr-2 text-accent shrink-0" /> {property.bathrooms} bath(s)
+            <Bath className="h-4 w-4 mr-2 text-accent shrink-0" /> {property.bathrooms} banheiro(s)
           </div>
           <div className="flex items-center font-semibold">
-            <DollarSign className="h-4 w-4 mr-2 text-accent shrink-0" /> R$ {property.rent_amount}/month
+            <DollarSign className="h-4 w-4 mr-2 text-accent shrink-0" /> R$ {property.rent_amount.toFixed(2)}/mês
           </div>
         </div>
         <div className="pt-2">
             {property.amenities.slice(0,3).map(amenity => (
                 <Badge key={amenity} variant="secondary" className="mr-1 mb-1">{amenity}</Badge>
             ))}
-            {property.amenities.length > 3 && <Badge variant="secondary">+{property.amenities.length - 3} more</Badge>}
+            {property.amenities.length > 3 && <Badge variant="secondary">+{property.amenities.length - 3} mais</Badge>}
         </div>
       </CardContent>
       <CardFooter>
         <Button asChild className="w-full transition-transform duration-150 hover:scale-105">
-          <Link href={`/properties/${property.id}`}>View Details</Link>
+          <Link href={`/properties/${property.id}`}>Ver Detalhes</Link>
         </Button>
       </CardFooter>
     </Card>

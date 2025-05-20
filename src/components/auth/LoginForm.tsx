@@ -14,13 +14,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation"; // Changed from 'next/navigation'
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import React from "react";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  email: z.string().email({ message: "Endereço de email inválido." }),
+  password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
 });
 
 export default function LoginForm() {
@@ -38,28 +38,28 @@ export default function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // Simulate API call
+    // Simula chamada de API
     await new Promise(resolve => setTimeout(resolve, 1500));
     setIsLoading(false);
 
-    // Simulate login logic
+    // Simula lógica de login
     if (values.email === "landlord@example.com") {
       toast({
-        title: "Login Successful",
-        description: "Redirecting to landlord dashboard...",
+        title: "Login Bem-sucedido",
+        description: "Redirecionando para o painel do proprietário...",
       });
       router.push("/landlord/dashboard");
     } else if (values.email === "tenant@example.com") {
       toast({
-        title: "Login Successful",
-        description: "Redirecting to tenant dashboard...",
+        title: "Login Bem-sucedido",
+        description: "Redirecionando para o painel do inquilino...",
       });
       router.push("/tenant/dashboard");
     } else {
       toast({
         variant: "destructive",
-        title: "Login Failed",
-        description: "Invalid email or password.",
+        title: "Falha no Login",
+        description: "Email ou senha inválidos.",
       });
     }
   }
@@ -74,7 +74,7 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="you@example.com" {...field} />
+                <Input placeholder="voce@exemplo.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -85,7 +85,7 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Senha</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
@@ -95,7 +95,7 @@ export default function LoginForm() {
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In
+          Entrar
         </Button>
       </form>
     </Form>

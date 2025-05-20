@@ -7,29 +7,33 @@ import { Badge } from "@/components/ui/badge";
 export default function TenantPaymentsPage() {
   // Mock payment history data
   const paymentHistory = [
-    { id: "pay_1", date: "2024-06-05", amount: 1200.00, status: "Paid", method: "Credit Card" },
-    { id: "pay_2", date: "2024-05-05", amount: 1200.00, status: "Paid", method: "Bank Transfer" },
-    { id: "pay_3", date: "2024-04-05", amount: 1200.00, status: "Paid", method: "Credit Card" },
-    { id: "pay_4", date: "2024-03-07", amount: 1250.00, status: "Late", method: "Credit Card" }, // Example of late payment
+    { id: "pay_1", date: "2024-06-05", amount: 1200.00, status: "Pago", method: "Cartão de Crédito" },
+    { id: "pay_2", date: "2024-05-05", amount: 1200.00, status: "Pago", method: "Transferência Bancária" },
+    { id: "pay_3", date: "2024-04-05", amount: 1200.00, status: "Pago", method: "Cartão de Crédito" },
+    { id: "pay_4", date: "2024-03-07", amount: 1250.00, status: "Atrasado", method: "Cartão de Crédito" }, // Example of late payment
   ];
 
   const nextPayment = {
     dueDate: "2024-07-05",
     amount: 1200.00,
-    status: "Due",
+    status: "Pendente", // "Due"
+  };
+  
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   const getStatusIcon = (status: string) => {
-    if (status === "Paid") return <CheckCircle className="h-4 w-4 text-green-500" />;
-    if (status === "Due") return <Clock className="h-4 w-4 text-yellow-500" />;
-    if (status === "Late" || status === "Overdue") return <AlertCircle className="h-4 w-4 text-red-500" />;
+    if (status === "Pago") return <CheckCircle className="h-4 w-4 text-green-500" />;
+    if (status === "Pendente") return <Clock className="h-4 w-4 text-yellow-500" />;
+    if (status === "Atrasado" || status === "Vencido") return <AlertCircle className="h-4 w-4 text-red-500" />;
     return null;
   };
   
   const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-    if (status === "Paid") return "default"; // Greenish badge
-    if (status === "Due") return "outline"; // Yellowish badge
-    if (status === "Late" || status === "Overdue") return "destructive"; // Reddish badge
+    if (status === "Pago") return "default"; 
+    if (status === "Pendente") return "outline"; 
+    if (status === "Atrasado" || status === "Vencido") return "destructive"; 
     return "secondary";
   };
 
@@ -37,70 +41,70 @@ export default function TenantPaymentsPage() {
   return (
     <div className="space-y-8">
       <section>
-        <h1 className="text-3xl font-bold text-primary mb-2">Payment Center</h1>
-        <p className="text-muted-foreground">View your payment history and manage upcoming payments.</p>
+        <h1 className="text-3xl font-bold text-primary mb-2">Central de Pagamentos</h1>
+        <p className="text-muted-foreground">Veja seu histórico de pagamentos e gerencie os próximos vencimentos.</p>
       </section>
 
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center">
             <DollarSign className="mr-2 h-6 w-6 text-primary" />
-            Next Payment
+            Próximo Pagamento
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-lg font-semibold">R$ {nextPayment.amount.toFixed(2)}</p>
-              <p className="text-sm text-muted-foreground">Due by: {new Date(nextPayment.dueDate).toLocaleDateString()}</p>
+              <p className="text-sm text-muted-foreground">Vencimento: {formatDate(nextPayment.dueDate)}</p>
             </div>
-            <Badge variant={getStatusBadgeVariant(nextPayment.status)} className={`px-3 py-1 text-sm ${nextPayment.status === "Paid" ? "bg-green-100 text-green-700 border-green-300" : nextPayment.status === "Due" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
+            <Badge variant={getStatusBadgeVariant(nextPayment.status)} className={`px-3 py-1 text-sm ${nextPayment.status === "Pago" ? "bg-green-100 text-green-700 border-green-300" : nextPayment.status === "Pendente" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
               {getStatusIcon(nextPayment.status)}<span className="ml-1">{nextPayment.status}</span>
             </Badge>
           </div>
           <Button className="w-full md:w-auto">
-            <CreditCard className="mr-2 h-4 w-4" /> Make a Payment
+            <CreditCard className="mr-2 h-4 w-4" /> Fazer Pagamento
           </Button>
         </CardContent>
       </Card>
 
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle>Payment History</CardTitle>
-          <CardDescription>Record of all your past rent payments.</CardDescription>
+          <CardTitle>Histórico de Pagamentos</CardTitle>
+          <CardDescription>Registro de todos os seus pagamentos de aluguel anteriores.</CardDescription>
         </CardHeader>
         <CardContent>
           {paymentHistory.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Amount (R$)</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead>Valor (R$)</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead className="text-right">Receipt</TableHead>
+                  <TableHead>Método</TableHead>
+                  <TableHead className="text-right">Recibo</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paymentHistory.map((payment) => (
                   <TableRow key={payment.id}>
-                    <TableCell>{new Date(payment.date).toLocaleDateString()}</TableCell>
+                    <TableCell>{formatDate(payment.date)}</TableCell>
                     <TableCell>{payment.amount.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusBadgeVariant(payment.status)} className={`px-2 py-0.5 ${payment.status === "Paid" ? "bg-green-100 text-green-700 border-green-300" : payment.status === "Due" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
+                      <Badge variant={getStatusBadgeVariant(payment.status)} className={`px-2 py-0.5 ${payment.status === "Pago" ? "bg-green-100 text-green-700 border-green-300" : payment.status === "Pendente" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
                         {getStatusIcon(payment.status)} <span className="ml-1">{payment.status}</span>
                       </Badge>
                     </TableCell>
                     <TableCell>{payment.method}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="link" size="sm" className="text-primary p-0 h-auto">View</Button>
+                      <Button variant="link" size="sm" className="text-primary p-0 h-auto">Ver</Button>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           ) : (
-            <p className="text-muted-foreground text-center py-8">No payment history available.</p>
+            <p className="text-muted-foreground text-center py-8">Nenhum histórico de pagamento disponível.</p>
           )}
         </CardContent>
       </Card>
