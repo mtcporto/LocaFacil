@@ -153,15 +153,15 @@ export const mockTenants: Tenant[] = [
   },
   {
     id: 't2', 
-    name: 'João Santos', // Nome genérico
-    email: 'joao.santos@example.com', // Email genérico
-    phone: '(83) 91234-5678', // Telefone genérico
-    cpf: '123.456.789-00', // CPF genérico
-    rg: '2.222.222 SSP/PB', // RG genérico
-    maritalStatus: 'Solteiro(a)', // Estado Civil genérico
-    profession: 'Jornalista', // Profissão genérica (mantida do original para contexto)
+    name: 'João Santos',
+    email: 'joao.santos@example.com',
+    phone: '(83) 91234-5678',
+    cpf: '123.456.789-00',
+    rg: '2.222.222 SSP/PB',
+    maritalStatus: 'Solteiro(a)',
+    profession: 'Jornalista',
     propertyId: '1', // Edificio Lest Ville
-    apartmentUnit: '309', // Conforme contrato
+    apartmentUnit: '309',
     leaseStartDate: '2024-10-15', 
     leaseEndDate: '2025-04-14',   
     rent_paid_status: 'Pendente', 
@@ -185,7 +185,7 @@ export const mockTenants: Tenant[] = [
     apartmentUnit: '2A',
     leaseStartDate: '2024-01-01',
     leaseEndDate: '2024-12-31',
-    rent_paid_status: 'Pago',
+    rent_paid_status: 'Vencido', // Alterado para 'Vencido' para testar o cálculo no dashboard
     iptuAmount: 90.00,
     iptuDueDate: '2024-10-05', 
     iptuStatus: 'Pendente',
@@ -334,4 +334,3 @@ export const mockProposals: Proposal[] = [
     message: 'Proposta para aluguel com valor abaixo do solicitado.',
   },
 ];
-

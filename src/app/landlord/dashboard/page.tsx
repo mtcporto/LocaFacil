@@ -1,27 +1,38 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Building, Users, Bell, PlusCircle, ArrowRight, DollarSign } from "lucide-react";
+import { Building, Users, Bell, PlusCircle, ArrowRight, DollarSign, CheckCircle, AlertTriangle } from "lucide-react";
 import { mockProperties, mockTenants } from "@/lib/mockData";
 
 export default function LandlordDashboardPage() {
   
-  const occupiedUnits = mockTenants.length; // Simple count of tenants as occupied units
   const totalProperties = mockProperties.length;
-  // Calculate estimated monthly revenue
-  // This assumes each tenant in mockTenants is paying rent for their associated property.
-  const estimatedMonthlyRevenue = mockTenants.reduce((totalRevenue, tenant) => {
+  const occupiedUnits = mockTenants.length;
+
+  // Calcular totais financeiros de aluguéis
+  let totalToReceiveRent = 0;
+  let totalReceivedRent = 0;
+  let totalPendingOrOverdueRent = 0;
+
+  mockTenants.forEach(tenant => {
     const property = mockProperties.find(p => p.id === tenant.propertyId);
     if (property) {
-      return totalRevenue + property.rent_amount;
+      totalToReceiveRent += property.rent_amount;
+      if (tenant.rent_paid_status === 'Pago') {
+        totalReceivedRent += property.rent_amount;
+      } else if (tenant.rent_paid_status === 'Pendente' || tenant.rent_paid_status === 'Vencido') {
+        totalPendingOrOverdueRent += property.rent_amount;
+      }
     }
-    return totalRevenue;
-  }, 0);
+  });
 
   const stats = [
     { title: "Total de Imóveis", value: totalProperties.toString(), icon: Building, color: "text-primary" },
-    { title: "Unidades Ocupadas", value: occupiedUnits.toString(), icon: Users, color: "text-green-500" },
-    { title: "Receita Mensal Estimada", value: `R$ ${estimatedMonthlyRevenue.toFixed(2)}`, icon: DollarSign, color: "text-blue-500" },
+    { title: "Unidades Ocupadas", value: occupiedUnits.toString(), icon: Users, color: "text-purple-500" }, // Cor alterada para diferenciar
+    { title: "Aluguéis a Receber (Mês)", value: `R$ ${totalToReceiveRent.toFixed(2)}`, icon: DollarSign, color: "text-blue-500" },
+    { title: "Aluguéis Recebidos (Mês)", value: `R$ ${totalReceivedRent.toFixed(2)}`, icon: CheckCircle, color: "text-green-500" },
+    { title: "Aluguéis Pendentes/Vencidos", value: `R$ ${totalPendingOrOverdueRent.toFixed(2)}`, icon: AlertTriangle, color: "text-red-500" },
     { title: "Notificações Pendentes", value: "3", icon: Bell, color: "text-yellow-500" }, // Placeholder value
   ];
 
@@ -38,7 +49,7 @@ export default function LandlordDashboardPage() {
         <p className="text-muted-foreground">Bem-vindo de volta! Aqui está um resumo de seus imóveis e atividades.</p>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"> 
         {stats.map((stat, index) => (
           <Card key={index} className="shadow-md hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

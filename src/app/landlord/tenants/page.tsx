@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { mockTenants, mockProperties, type TaxStatus } from "@/lib/mockData";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { PlusCircle, Edit, Trash2, MessageSquare, CheckCircle, Clock, AlertTriangle, Circle } from "lucide-react";
+import { PlusCircle, Edit, Trash2, MessageSquare, CheckCircle, Clock, AlertTriangle, Circle, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type React from "react";
 
@@ -14,7 +14,8 @@ const formatDateForDisplay = (dateString: string | undefined): string => {
   const parts = dateString.split('-');
   if (parts.length !== 3) return dateString; // Retorna original se não for YYYY-MM-DD
   const [year, month, day] = parts;
-  return `${day}/${month}/${year}`;
+  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  return date.toLocaleDateString('pt-BR'); // Usar toLocaleDateString para formato local
 };
 
 // Helper function to get badge variant, class, and icon for tax status
@@ -64,8 +65,9 @@ export default function LandlordTenantsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Nome</TableHead>
-                  <TableHead>Email</TableHead>
                   <TableHead>Imóvel / Unidade</TableHead>
+                  <TableHead>Início Contrato</TableHead>
+                  <TableHead>Fim Contrato</TableHead>
                   <TableHead>Aluguel</TableHead>
                   <TableHead>IPTU</TableHead>
                   <TableHead>TCR</TableHead>
@@ -81,8 +83,9 @@ export default function LandlordTenantsPage() {
                   return (
                     <TableRow key={tenant.id}>
                       <TableCell className="font-medium">{tenant.name}</TableCell>
-                      <TableCell>{tenant.email}</TableCell>
                       <TableCell>{getPropertyName(tenant.propertyId)} - Unidade {tenant.apartmentUnit}</TableCell>
+                      <TableCell>{formatDateForDisplay(tenant.leaseStartDate)}</TableCell>
+                      <TableCell>{formatDateForDisplay(tenant.leaseEndDate)}</TableCell>
                       <TableCell>
                         <Badge variant={rentInfo.variant} className={rentInfo.className}>
                           <rentInfo.icon className="mr-1 h-4 w-4" /> {rentInfo.text}
@@ -102,7 +105,7 @@ export default function LandlordTenantsPage() {
                         <p className="text-xs text-muted-foreground mt-1">Venc: {formatDateForDisplay(tenant.tcrDueDate)}</p>
                         <p className="text-xs text-muted-foreground">R$ {tenant.tcrAmount.toFixed(2)}</p>
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
+                      <TableCell className="text-right space-x-1"> {/* Reduced space for more columns */}
                         <Button variant="ghost" size="icon" title="Mensagem ao Inquilino">
                           <MessageSquare className="h-4 w-4" />
                         </Button>
