@@ -1,6 +1,4 @@
-# Firebase Studio
-
-## Sistema de Gestão de Propriedades
+# Sistema de Gestão de Propriedades
 
 Este projeto é um sistema completo para a gestão de propriedades, desenvolvido para atender tanto proprietários quanto locatários. O objetivo é simplificar e centralizar todas as operações relacionadas à locação de imóveis, desde o controle financeiro até a comunicação entre as partes.
 
