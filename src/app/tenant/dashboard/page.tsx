@@ -1,18 +1,30 @@
+
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FileText, CreditCard, Bell, AlertTriangle, CheckCircle, DollarSign } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 export default function TenantDashboardPage() {
-  const rentStatus = { status: "Pago", dueDate: "5 de Julho, 2024", amount: 950 }; // Mock data, amount alterado de 1200 para 950
-  const leaseEndDate = "14 de Janeiro, 2025"; // Mock data
+  const { toast } = useToast();
+  const rentStatus = { status: "Pago", dueDate: "5 de Julho, 2024", amount: 950 }; 
+  const leaseEndDate = "14 de Janeiro, 2025"; 
 
   const recentNotifications = [
     { id: 1, title: "Manutenção Agendada do Elevador", date: "28 de Junho, 2024", read: false, type: "Manutenção" },
     { id: 2, title: "Área da Piscina Reaberta", date: "25 de Junho, 2024", read: true, type: "Atualização de Comodidade" },
     { id: 3, title: "Atualização de Entrega de Pacotes", date: "20 de Junho, 2024", read: true, type: "Geral" },
   ];
+
+  const handleMakePayment = () => {
+    toast({
+      title: "Redirecionando para Pagamento",
+      description: "Em uma aplicação real, você seria direcionado para um portal de pagamentos seguro.",
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -48,7 +60,7 @@ export default function TenantDashboardPage() {
             )}
             <p className="text-muted-foreground">Próximo pagamento: R$ {rentStatus.amount.toFixed(2)}</p>
             <p className="text-muted-foreground">Vencimento: {rentStatus.dueDate}</p>
-            <Button className="w-full md:w-auto mt-2">
+            <Button className="w-full md:w-auto mt-2" onClick={handleMakePayment}>
               <CreditCard className="mr-2 h-4 w-4" /> Fazer Pagamento
             </Button>
           </CardContent>

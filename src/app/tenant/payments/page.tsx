@@ -1,21 +1,26 @@
+
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 export default function TenantPaymentsPage() {
-  // Mock payment history data
+  const { toast } = useToast();
+
   const paymentHistory = [
-    { id: "pay_1", date: "2024-06-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, // Alterado de 1200 para 950
-    { id: "pay_2", date: "2024-05-05", amount: 950.00, status: "Pago", method: "Transferência Bancária" }, // Alterado de 1200 para 950
-    { id: "pay_3", date: "2024-04-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, // Alterado de 1200 para 950
-    { id: "pay_4", date: "2024-03-07", amount: 1000.00, status: "Atrasado", method: "Cartão de Crédito" }, // Exemplo de pagamento atrasado com valor diferente
+    { id: "pay_1", date: "2024-06-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, 
+    { id: "pay_2", date: "2024-05-05", amount: 950.00, status: "Pago", method: "Transferência Bancária" }, 
+    { id: "pay_3", date: "2024-04-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, 
+    { id: "pay_4", date: "2024-03-07", amount: 1000.00, status: "Atrasado", method: "Cartão de Crédito" }, 
   ];
 
   const nextPayment = {
     dueDate: "2024-07-05",
-    amount: 950.00, // Alterado de 1200 para 950
+    amount: 950.00, 
     status: "Pendente", 
   };
   
@@ -35,6 +40,20 @@ export default function TenantPaymentsPage() {
     if (status === "Pendente") return "outline"; 
     if (status === "Atrasado" || status === "Vencido") return "destructive"; 
     return "secondary";
+  };
+
+  const handleMakePayment = () => {
+    toast({
+      title: "Redirecionando para Pagamento",
+      description: "Em uma aplicação real, você seria direcionado para um portal de pagamentos seguro.",
+    });
+  };
+
+  const handleViewReceipt = (paymentId: string) => {
+     toast({
+      title: "Visualizar Recibo",
+      description: `Em uma aplicação real, o recibo para o pagamento ${paymentId} seria exibido.`,
+    });
   };
 
 
@@ -62,7 +81,7 @@ export default function TenantPaymentsPage() {
               {getStatusIcon(nextPayment.status)}<span className="ml-1">{nextPayment.status}</span>
             </Badge>
           </div>
-          <Button className="w-full md:w-auto">
+          <Button className="w-full md:w-auto" onClick={handleMakePayment}>
             <CreditCard className="mr-2 h-4 w-4" /> Fazer Pagamento
           </Button>
         </CardContent>
@@ -97,7 +116,7 @@ export default function TenantPaymentsPage() {
                     </TableCell>
                     <TableCell>{payment.method}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="link" size="sm" className="text-primary p-0 h-auto">Ver</Button>
+                      <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => handleViewReceipt(payment.id)}>Ver</Button>
                     </TableCell>
                   </TableRow>
                 ))}
