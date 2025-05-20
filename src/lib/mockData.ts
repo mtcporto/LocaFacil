@@ -185,7 +185,7 @@ export const mockTenants: Tenant[] = [
     apartmentUnit: '2A',
     leaseStartDate: '2024-01-01',
     leaseEndDate: '2024-12-31',
-    rent_paid_status: 'Vencido', // Alterado para 'Vencido' para testar o cálculo no dashboard
+    rent_paid_status: 'Vencido', 
     iptuAmount: 90.00,
     iptuDueDate: '2024-10-05', 
     iptuStatus: 'Pendente',
@@ -234,22 +234,21 @@ export const getTenantById = (id: string): Tenant | undefined => {
   return mockTenants.find(t => t.id === id);
 };
 
-// --- Novas definições para Manutenção e Propostas ---
 
 export type MaintenanceRequestStatus = 'Pendente' | 'Em Andamento' | 'Concluído' | 'Cancelado';
 export type ProposalStatus = 'Nova' | 'Em Análise' | 'Aceita' | 'Recusada';
 
 export interface MaintenanceRequest {
   id: string;
-  tenantId: string; // ID do inquilino que solicitou
-  propertyId: string; // ID do imóvel relacionado
-  unit: string; // Unidade específica (ex: Apto 309)
-  description: string; // Descrição do problema
+  tenantId: string; 
+  propertyId: string; 
+  unit: string; 
+  description: string; 
   dateSubmitted: string; // YYYY-MM-DD
   status: MaintenanceRequestStatus;
   priority?: 'Baixa' | 'Média' | 'Alta';
-  assignedTo?: string; // Nome do técnico ou responsável
-  resolutionDetails?: string; // Detalhes da solução aplicada
+  assignedTo?: string; 
+  resolutionDetails?: string; 
   dateCompleted?: string; // YYYY-MM-DD
 }
 
@@ -258,19 +257,19 @@ export interface Proposal {
   prospectName: string;
   prospectEmail: string;
   prospectPhone?: string;
-  propertyId: string; // ID do imóvel desejado
+  propertyId: string; 
   dateSubmitted: string; // YYYY-MM-DD
   status: ProposalStatus;
-  message?: string; // Mensagem adicional do proponente
-  moveInDate?: string; // Data desejada para mudança (YYYY-MM-DD)
-  leaseTerm?: number; // Prazo do contrato desejado em meses
+  message?: string; 
+  moveInDate?: string; 
+  leaseTerm?: number; 
 }
 
 export const mockMaintenanceRequests: MaintenanceRequest[] = [
   {
     id: 'mr1',
-    tenantId: 't2', // João Santos
-    propertyId: '1', // Edifício Lest Ville
+    tenantId: 't2', 
+    propertyId: '1', 
     unit: '309',
     description: 'Vazamento na pia da cozinha. A torneira está pingando constantemente.',
     dateSubmitted: '2024-07-10',
@@ -279,8 +278,8 @@ export const mockMaintenanceRequests: MaintenanceRequest[] = [
   },
   {
     id: 'mr2',
-    tenantId: 't1', // Maria Silva
-    propertyId: '2', // Manaira Prime Residence
+    tenantId: 't1', 
+    propertyId: '2', 
     unit: '12B',
     description: 'Ar condicionado do quarto principal não está gelando.',
     dateSubmitted: '2024-07-08',
@@ -290,8 +289,8 @@ export const mockMaintenanceRequests: MaintenanceRequest[] = [
   },
   {
     id: 'mr3',
-    tenantId: 't3', // Ana Costa
-    propertyId: '3', // Condomínio Sunrise
+    tenantId: 't3', 
+    propertyId: '3', 
     unit: '2A',
     description: 'Luz do corredor da área comum queimada (próximo à minha porta).',
     dateSubmitted: '2024-06-25',
@@ -308,7 +307,7 @@ export const mockProposals: Proposal[] = [
     prospectName: 'Carlos Andrade',
     prospectEmail: 'carlos.andrade@email.com',
     prospectPhone: '(83) 98877-6655',
-    propertyId: '4', // Casa Vale Verde (disponível)
+    propertyId: '4', 
     dateSubmitted: '2024-07-12',
     status: 'Nova',
     message: 'Gostaria de saber mais sobre a casa e agendar uma visita.',
@@ -319,7 +318,7 @@ export const mockProposals: Proposal[] = [
     id: 'prop2',
     prospectName: 'Beatriz Lima',
     prospectEmail: 'beatriz.lima@email.com',
-    propertyId: '1', // Edifício Lest Ville (atualmente alugado, mas poderia ser proposta para lista de espera)
+    propertyId: '1', 
     dateSubmitted: '2024-07-05',
     status: 'Em Análise',
     message: 'Tenho interesse neste apartamento para quando estiver disponível.',
@@ -334,3 +333,67 @@ export const mockProposals: Proposal[] = [
     message: 'Proposta para aluguel com valor abaixo do solicitado.',
   },
 ];
+
+// --- Novas definições para Despesas, Colaboradores e Fornecedores ---
+
+export type ExpenseCategory = 'Manutenção' | 'Pessoal' | 'Administrativo' | 'Marketing' | 'Impostos' | 'Outros';
+
+export interface Expense {
+  id: string;
+  description: string;
+  amount: number;
+  date: string; // YYYY-MM-DD
+  category: ExpenseCategory;
+  propertyId?: string; // Opcional, se a despesa for específica de um imóvel
+  notes?: string;
+}
+
+export type EmployeeRole = 'Porteiro' | 'Zelador' | 'Faxineiro' | 'Administrativo' | 'Segurança' | 'Outro';
+
+export interface Employee {
+  id: string;
+  name: string;
+  role: EmployeeRole | string; // Permite string para "Outro"
+  phone: string;
+  email?: string;
+  salary: number;
+  hireDate: string; // YYYY-MM-DD
+  propertyId?: string; // Opcional, se alocado a um imóvel específico
+}
+
+export interface ServiceProvider {
+  id: string;
+  companyName: string;
+  serviceType: string; // Ex: "Dedetização", "Manutenção de Elevador", "Jardinagem"
+  contactName?: string;
+  phone: string;
+  email?: string;
+  notes?: string;
+  lastServiceDate?: string; // YYYY-MM-DD
+}
+
+export const mockExpenses: Expense[] = [
+  { id: 'ex1', description: 'Reparo hidráulico - Apto 309', amount: 150.75, date: '2024-07-11', category: 'Manutenção', propertyId: '1', notes: 'Encanador João.' },
+  { id: 'ex2', description: 'Salário Portaria - Junho', amount: 2800.00, date: '2024-07-05', category: 'Pessoal' },
+  { id: 'ex3', description: 'Material de limpeza geral', amount: 250.00, date: '2024-07-01', category: 'Administrativo' },
+  { id: 'ex4', description: 'Anúncio online - Imóvel 4', amount: 50.00, date: '2024-06-28', category: 'Marketing', propertyId: '4'},
+];
+
+export const mockEmployees: Employee[] = [
+  { id: 'emp1', name: 'Carlos Ferreira', role: 'Porteiro', phone: '(83) 98888-1234', salary: 1400.00, hireDate: '2022-03-10', propertyId: '1' },
+  { id: 'emp2', name: 'Ana Paula Lima', role: 'Zelador', phone: '(83) 97777-5678', salary: 1600.00, hireDate: '2021-08-15', propertyId: '2' },
+  { id: 'emp3', name: 'Roberto Alves', role: 'Faxineiro', phone: '(83) 96666-9012', salary: 1350.00, hireDate: '2023-01-20' },
+];
+
+export const mockServiceProviders: ServiceProvider[] = [
+  { id: 'sp1', companyName: 'Dedetizadora Confiança', serviceType: 'Dedetização', contactName: 'Sr. Jorge', phone: '(83) 3232-1010', email: 'contato@confianca.com', lastServiceDate: '2024-05-15' },
+  { id: 'sp2', companyName: 'Elevadores Atlas', serviceType: 'Manutenção de Elevador', phone: '0800 707 0707', notes: 'Contrato mensal, visita preventiva todo dia 10.', lastServiceDate: '2024-07-10'},
+  { id: 'sp3', companyName: 'Jardins & Cia', serviceType: 'Jardinagem', contactName: 'Sra. Flora', phone: '(83) 95555-4321', email: 'flora@jardinsecia.com.br' },
+];
+
+// Função para buscar nome do imóvel, para ser usada nas listagens
+export const getPropertyNameById = (propertyId: string | undefined): string => {
+  if (!propertyId) return "N/A";
+  const property = mockProperties.find(p => p.id === propertyId);
+  return property ? property.name : "Imóvel Desconhecido";
+};
