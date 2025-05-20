@@ -30,7 +30,7 @@ const employeeRoles: EmployeeRole[] = ['Porteiro', 'Zelador', 'Faxineiro', 'Admi
 
 const addEmployeeFormSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres." }),
-  role: z.string().min(3, { message: "Cargo é obrigatório." }),
+  role: z.string().min(3, { message: "Cargo é obrigatório." }), // Changed to string to allow for "Outro" input directly
   phone: z.string().min(10, { message: "Telefone deve ter pelo menos 10 dígitos." }),
   email: z.string().email({ message: "Email inválido." }).optional().or(z.literal('')),
   salary: z.coerce.number({ invalid_type_error: "Salário deve ser um número." }).positive({ message: "Salário deve ser positivo." }),
@@ -52,7 +52,7 @@ export default function AddEmployeeForm() {
       email: "",
       salary: 0,
       hireDate: new Date(),
-      propertyId: undefined,
+      propertyId: "none", // Default to "none"
     },
   });
 
@@ -111,7 +111,7 @@ export default function AddEmployeeForm() {
                         ))}
                         </SelectContent>
                     </Select>
-                    {/* Se precisar de input para "Outro", adicionar lógica aqui */}
+                    <FormDescription>Se o cargo for "Outro", especifique no campo de observações ou ajuste conforme necessário.</FormDescription>
                     <FormMessage />
                     </FormItem>
                 )}

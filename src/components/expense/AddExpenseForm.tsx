@@ -50,7 +50,7 @@ export default function AddExpenseForm() {
       amount: 0,
       date: new Date(),
       category: undefined,
-      propertyId: undefined,
+      propertyId: "none", // Default to "none"
       notes: "",
     },
   });
