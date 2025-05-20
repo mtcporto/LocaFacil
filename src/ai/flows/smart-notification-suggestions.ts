@@ -61,6 +61,8 @@ const suggestNotificationPrompt = ai.definePrompt({
   * A concise notification message that can be directly sent to tenants.
   * A brief explanation of why this notification is important and which data points you considered.
 
+  Responda sempre em português brasileiro.
+
   Format your answer as a JSON object with the following keys:
   - notificationMessage: The suggested notification message.
   - reasoning: Explanation for the notification.
@@ -74,16 +76,9 @@ const suggestNotificationFlow = ai.defineFlow(
     outputSchema: SuggestNotificationOutputSchema,
   },
   async input => {
-    // Adicionar uma verificação para garantir que pelo menos um dos campos de contexto principais está presente
-    if (!input.weatherForecast && !input.cityEvents && !input.maintenanceSchedule) {
-      // Poderia retornar um erro ou uma resposta padrão indicando que mais informações são necessárias.
-      // Por enquanto, vamos deixar o prompt tentar lidar com isso, mas em um cenário real,
-      // uma validação mais robusta aqui ou no frontend é ideal.
-      // O Zod refine no frontend já deve prevenir isso.
-    }
+    // A validação para garantir que pelo menos um dos campos de contexto está presente
+    // é feita no frontend pelo Zod refine.
     const {output} = await suggestNotificationPrompt(input);
     return output!;
   }
 );
-
-    
