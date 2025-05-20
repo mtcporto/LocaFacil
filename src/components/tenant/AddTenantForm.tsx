@@ -36,6 +36,8 @@ const addTenantFormSchema = z.object({
   rg: z.string().min(5, { message: "RG deve ter pelo menos 5 caracteres." }),
   maritalStatus: z.string({ required_error: "Selecione o estado civil." }),
   profession: z.string().min(3, { message: "Profissão deve ter pelo menos 3 caracteres." }),
+  password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
+  confirmPassword: z.string().min(6, { message: "A confirmação de senha deve ter pelo menos 6 caracteres." }),
   propertyId: z.string({ required_error: "Selecione o imóvel." }),
   apartmentUnit: z.string().min(1, { message: "Unidade do apartamento é obrigatória." }),
   leaseStartDate: z.date({ required_error: "Data de início do contrato é obrigatória." }),
@@ -55,7 +57,10 @@ const addTenantFormSchema = z.object({
 }, {
     message: "Data de fim do contrato deve ser posterior à data de início.",
     path: ["leaseEndDate"],
-});
+}).refine(data => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem.",
+    path: ["confirmPassword"],
+  });
 
 export default function AddTenantForm() {
   const { toast } = useToast();
@@ -72,6 +77,8 @@ export default function AddTenantForm() {
       rg: "",
       maritalStatus: undefined,
       profession: "",
+      password: "",
+      confirmPassword: "",
       propertyId: undefined,
       apartmentUnit: "",
       leaseStartDate: undefined,
@@ -89,12 +96,16 @@ export default function AddTenantForm() {
   async function onSubmit(values: z.infer<typeof addTenantFormSchema>) {
     setIsLoading(true);
     
+    // Remover confirmPassword antes de "salvar"
+    const { confirmPassword, ...submissionValues } = values;
+
     const formattedValues = {
-        ...values,
+        ...submissionValues,
         leaseStartDate: format(values.leaseStartDate, "yyyy-MM-dd"),
         leaseEndDate: format(values.leaseEndDate, "yyyy-MM-dd"),
         iptuDueDate: values.iptuDueDate ? format(values.iptuDueDate, "yyyy-MM-dd") : undefined,
         tcrDueDate: values.tcrDueDate ? format(values.tcrDueDate, "yyyy-MM-dd") : undefined,
+        role: 'tenant' as const, // Adiciona o role fixo
     };
 
     console.log("Dados do novo inquilino (simulado):", formattedValues);
@@ -116,7 +127,7 @@ export default function AddTenantForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <h3 className="text-lg font-medium text-primary border-b pb-2">Informações Pessoais</h3>
+        <h3 className="text-lg font-medium text-primary border-b pb-2">Informações Pessoais e de Acesso</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
@@ -134,13 +145,39 @@ export default function AddTenantForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Email (para login)</FormLabel>
                 <FormControl><Input type="email" placeholder="email@example.com" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Senha</FormLabel>
+                    <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Confirmar Senha</FormLabel>
+                    <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+        </div>
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}

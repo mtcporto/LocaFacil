@@ -111,6 +111,8 @@ export type Tenant = {
   id: string;
   name: string;
   email: string;
+  password?: string; // Adicionado
+  role: 'tenant'; // Adicionado
   phone: string;
   cpf: string;
   rg: string;
@@ -134,6 +136,8 @@ export const mockTenants: Tenant[] = [
     id: 't1',
     name: 'Maria Silva',
     email: 'maria.silva@example.com',
+    password: 'password123',
+    role: 'tenant',
     phone: '(83) 99999-1111',
     cpf: '111.222.333-44',
     rg: '1.111.111 SSP/PB',
@@ -152,45 +156,49 @@ export const mockTenants: Tenant[] = [
     tcrStatus: 'Pago',
   },
   {
-    id: 't2', 
-    name: 'João Santos',
-    email: 'joao.santos@example.com',
-    phone: '(83) 91234-5678',
-    cpf: '123.456.789-00',
+    id: 't2',
+    name: 'João Santos', // Nome genérico
+    email: 'joao.santos@example.com', // Email genérico
+    password: 'password123',
+    role: 'tenant',
+    phone: '(83) 91234-5678', // Telefone genérico
+    cpf: '123.456.789-00', // CPF genérico
     rg: '2.222.222 SSP/PB',
     maritalStatus: 'Solteiro(a)',
     profession: 'Jornalista',
     propertyId: '1', // Edificio Lest Ville
     apartmentUnit: '309',
-    leaseStartDate: '2024-10-15', 
-    leaseEndDate: '2025-04-14',   
-    rent_paid_status: 'Pendente', 
-    iptuAmount: 75.00, 
-    iptuDueDate: '2025-02-10', 
+    leaseStartDate: '2024-10-15',
+    leaseEndDate: '2025-04-14',
+    rent_paid_status: 'Pendente',
+    iptuAmount: 75.00,
+    iptuDueDate: '2025-02-10',
     iptuStatus: 'Pendente',
-    tcrAmount: 55.25, 
-    tcrDueDate: '2025-03-15', 
+    tcrAmount: 55.25,
+    tcrDueDate: '2025-03-15',
     tcrStatus: 'Pendente',
   },
   {
     id: 't3',
     name: 'Ana Costa',
     email: 'ana.costa@example.com',
+    password: 'password123',
+    role: 'tenant',
     phone: '(83) 97777-3333',
     cpf: '555.666.777-88',
     rg: '3.333.333 SSP/PB',
     maritalStatus: 'Divorciado(a)',
     profession: 'Designer',
-    propertyId: '3', 
+    propertyId: '3',
     apartmentUnit: '2A',
     leaseStartDate: '2024-01-01',
     leaseEndDate: '2024-12-31',
-    rent_paid_status: 'Vencido', 
+    rent_paid_status: 'Vencido',
     iptuAmount: 90.00,
-    iptuDueDate: '2024-10-05', 
+    iptuDueDate: '2024-10-05',
     iptuStatus: 'Pendente',
     tcrAmount: 60.70,
-    tcrDueDate: '2024-11-20', 
+    tcrDueDate: '2024-11-20',
     tcrStatus: 'Vencido',
   },
 ];
@@ -200,7 +208,7 @@ export type ServiceItem = {
   name: string;
   description: string;
   price: number;
-  icon?: React.ElementType; 
+  icon?: React.ElementType;
 };
 
 export const mockServices: ServiceItem[] = [
@@ -240,15 +248,15 @@ export type ProposalStatus = 'Nova' | 'Em Análise' | 'Aceita' | 'Recusada';
 
 export interface MaintenanceRequest {
   id: string;
-  tenantId: string; 
-  propertyId: string; 
-  unit: string; 
-  description: string; 
+  tenantId: string;
+  propertyId: string;
+  unit: string;
+  description: string;
   dateSubmitted: string; // YYYY-MM-DD
   status: MaintenanceRequestStatus;
   priority?: 'Baixa' | 'Média' | 'Alta';
-  assignedTo?: string; 
-  resolutionDetails?: string; 
+  assignedTo?: string;
+  resolutionDetails?: string;
   dateCompleted?: string; // YYYY-MM-DD
 }
 
@@ -257,19 +265,19 @@ export interface Proposal {
   prospectName: string;
   prospectEmail: string;
   prospectPhone?: string;
-  propertyId: string; 
+  propertyId: string;
   dateSubmitted: string; // YYYY-MM-DD
   status: ProposalStatus;
-  message?: string; 
-  moveInDate?: string; 
-  leaseTerm?: number; 
+  message?: string;
+  moveInDate?: string;
+  leaseTerm?: number;
 }
 
 export const mockMaintenanceRequests: MaintenanceRequest[] = [
   {
     id: 'mr1',
-    tenantId: 't2', 
-    propertyId: '1', 
+    tenantId: 't2',
+    propertyId: '1',
     unit: '309',
     description: 'Vazamento na pia da cozinha. A torneira está pingando constantemente.',
     dateSubmitted: '2024-07-10',
@@ -278,8 +286,8 @@ export const mockMaintenanceRequests: MaintenanceRequest[] = [
   },
   {
     id: 'mr2',
-    tenantId: 't1', 
-    propertyId: '2', 
+    tenantId: 't1',
+    propertyId: '2',
     unit: '12B',
     description: 'Ar condicionado do quarto principal não está gelando.',
     dateSubmitted: '2024-07-08',
@@ -289,8 +297,8 @@ export const mockMaintenanceRequests: MaintenanceRequest[] = [
   },
   {
     id: 'mr3',
-    tenantId: 't3', 
-    propertyId: '3', 
+    tenantId: 't3',
+    propertyId: '3',
     unit: '2A',
     description: 'Luz do corredor da área comum queimada (próximo à minha porta).',
     dateSubmitted: '2024-06-25',
@@ -307,7 +315,7 @@ export const mockProposals: Proposal[] = [
     prospectName: 'Carlos Andrade',
     prospectEmail: 'carlos.andrade@email.com',
     prospectPhone: '(83) 98877-6655',
-    propertyId: '4', 
+    propertyId: '4',
     dateSubmitted: '2024-07-12',
     status: 'Nova',
     message: 'Gostaria de saber mais sobre a casa e agendar uma visita.',
@@ -318,7 +326,7 @@ export const mockProposals: Proposal[] = [
     id: 'prop2',
     prospectName: 'Beatriz Lima',
     prospectEmail: 'beatriz.lima@email.com',
-    propertyId: '1', 
+    propertyId: '1',
     dateSubmitted: '2024-07-05',
     status: 'Em Análise',
     message: 'Tenho interesse neste apartamento para quando estiver disponível.',
