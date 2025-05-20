@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell, Circle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -31,8 +32,17 @@ export default function TenantNotificationsPage() {
     }
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return '-';
+    const parts = dateString.split('-');
+    if (parts.length !== 3) return dateString;
+    
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Mês (0-indexado) para o construtor Date
+    const day = parseInt(parts[2], 10);
+    
+    const localDate = new Date(year, month, day); // Interpreta como meia-noite local
+    return localDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
 

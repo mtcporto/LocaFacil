@@ -30,8 +30,17 @@ export default function TenantPaymentsPage() {
     status: "Pendente", 
   };
   
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' });
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return '-';
+    const parts = dateString.split('-');
+    if (parts.length !== 3) return dateString; // Retorna original se não for YYYY-MM-DD
+    
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Mês (0-indexado) para o construtor Date
+    const day = parseInt(parts[2], 10);
+    
+    const localDate = new Date(year, month, day);
+    return localDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   const getStatusIcon = (status: string) => {
@@ -169,5 +178,3 @@ export default function TenantPaymentsPage() {
     </div>
   );
 }
-
-    

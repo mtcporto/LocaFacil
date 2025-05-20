@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { mockTenants, type TaxStatus } from "@/lib/mockData"; // Importar mockTenants e TaxStatus
 import type React from "react";
 
-// Helper function to format date string (YYYY-MM-DD) to DD/MM/YYYY
+// Helper function to format date string (YYYY-MM-DD) to DD/MM/YYYY for general display
 const formatDateForDisplay = (dateString: string | undefined): string => {
   if (!dateString) return '-';
   const parts = dateString.split('-');
@@ -18,6 +18,21 @@ const formatDateForDisplay = (dateString: string | undefined): string => {
   const [year, month, day] = parts;
   return `${day}/${month}/${year}`;
 };
+
+// Safe date formatting for toLocaleDateString
+const formatLeaseEndDate = (dateString: string | undefined): string => {
+  if (!dateString) return 'N/A';
+  const parts = dateString.split('-');
+  if (parts.length !== 3) return dateString;
+
+  const year = parseInt(parts[0], 10);
+  const monthNum = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+  const dayNum = parseInt(parts[2], 10);
+  
+  const localDate = new Date(year, monthNum, dayNum);
+  return localDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+};
+
 
 // Helper function to get display info for tax status
 const getTaxStatusDisplayInfo = (status: TaxStatus | undefined): { text: string; Icon: React.ElementType; colorClass: string; badgeVariant: "default" | "outline" | "destructive" | "secondary"; badgeClassName: string } => {
@@ -42,7 +57,9 @@ export default function TenantDashboardPage() {
   const tenantData = mockTenants.find(t => t.id === MOCK_LOGGED_IN_TENANT_ID);
 
   const rentStatus = tenantData ? { status: tenantData.rent_paid_status, dueDate: "5 de Julho, 2024", amount: 950 } : { status: "Pendente" as TaxStatus, dueDate: "N/A", amount: 0}; // Mock dueDate and amount for rent
-  const leaseEndDate = tenantData ? new Date(tenantData.leaseEndDate).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A";
+  
+  const leaseEndDate = tenantData ? formatLeaseEndDate(tenantData.leaseEndDate) : "N/A";
+
 
   const recentNotifications = [
     { id: 1, title: "Manutenção Agendada do Elevador", date: "28 de Junho, 2024", read: false, type: "Manutenção" },
