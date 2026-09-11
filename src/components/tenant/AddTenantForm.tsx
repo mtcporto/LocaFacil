@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { format, isValid, parseISO } from "date-fns";
 
 const maritalStatusOptions = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"];
-const taxStatusOptions: TaxStatus[] = ['Pago', 'Pendente', 'Vencido'];
+const taxStatusOptions = ['Pago', 'Pendente', 'Vencido'] as const satisfies readonly TaxStatus[];
 
 const addTenantFormSchema = z.object({
   name: z.string().min(3, { message: "Nome completo deve ter pelo menos 3 caracteres." }),
@@ -112,7 +112,7 @@ export default function AddTenantForm({ tenantToEdit }: AddTenantFormProps) {
   async function onSubmit(values: z.infer<typeof addTenantFormSchema>) {
     setIsLoading(true);
     
-    const { confirmPassword, ...submissionValues } = values;
+    const { confirmPassword, password, ...submissionValues } = values;
 
     const formattedValues = {
         ...submissionValues,
@@ -121,14 +121,8 @@ export default function AddTenantForm({ tenantToEdit }: AddTenantFormProps) {
         iptuDueDate: values.iptuDueDate ? format(values.iptuDueDate, "yyyy-MM-dd") : undefined,
         tcrDueDate: values.tcrDueDate ? format(values.tcrDueDate, "yyyy-MM-dd") : undefined,
         role: 'tenant' as const,
-        // Apenas inclui a senha se ela foi fornecida (ou seja, não é vazia)
-        password: values.password ? values.password : (isEditing ? tenantToEdit?.password : undefined),
+        ...(password ? { password } : {}),
     };
-    
-    // Se estiver editando e a senha não foi alterada, não enviar o campo password
-    if (isEditing && !values.password) {
-      delete (formattedValues as any).password;
-    }
 
 
     if (isEditing) {

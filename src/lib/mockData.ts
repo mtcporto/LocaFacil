@@ -129,7 +129,6 @@ export type Tenant = {
   id: string;
   name: string;
   email: string;
-  password?: string; 
   role: 'tenant'; 
   phone: string;
   cpf: string;
@@ -150,16 +149,16 @@ export type Tenant = {
   guarantorId?: string; // ID do fiador associado
 };
 
+// DADOS FICTÍCIOS PARA DEMONSTRAÇÃO — não representam pessoas, documentos ou endereços reais.
 export const mockTenants: Tenant[] = [
   {
     id: 't1',
-    name: 'Maria Silva',
-    email: 'maria.silva@example.com',
-    password: 'password123',
+    name: 'Inquilina Exemplo 1',
+    email: 'inquilina1@example.com',
     role: 'tenant',
-    phone: '(83) 99999-1111',
-    cpf: '111.222.333-44',
-    rg: '1.111.111 SSP/PB',
+    phone: '(00) 90000-0001',
+    cpf: '000.000.000-00',
+    rg: 'RG-EXEMPLO-0001',
     maritalStatus: 'Casado(a)',
     profession: 'Engenheira',
     propertyId: '2', // Manaira Prime Residence
@@ -177,13 +176,12 @@ export const mockTenants: Tenant[] = [
   },
   {
     id: 't2',
-    name: 'João Santos', // Nome genérico
-    email: 'joao.santos@example.com', // Email genérico
-    password: 'password123',
+    name: 'Inquilino Exemplo 2',
+    email: 'inquilino2@example.com',
     role: 'tenant',
-    phone: '(83) 91234-5678', // Telefone genérico
-    cpf: '123.456.789-00', // CPF genérico
-    rg: '2.222.222 SSP/PB', // RG genérico
+    phone: '(00) 90000-0002',
+    cpf: '111.111.111-11',
+    rg: 'RG-EXEMPLO-0002',
     maritalStatus: 'Casado(a)', // Mantido como casado para o template do contrato
     profession: 'Jornalista',
     propertyId: '1', // Edificio Lest Ville
@@ -201,13 +199,12 @@ export const mockTenants: Tenant[] = [
   },
   {
     id: 't3',
-    name: 'Ana Costa',
-    email: 'ana.costa@example.com',
-    password: 'password123',
+    name: 'Inquilina Exemplo 3',
+    email: 'inquilina3@example.com',
     role: 'tenant',
-    phone: '(83) 97777-3333',
-    cpf: '555.666.777-88',
-    rg: '3.333.333 SSP/PB',
+    phone: '(00) 90000-0003',
+    cpf: '222.222.222-22',
+    rg: 'RG-EXEMPLO-0003',
     maritalStatus: 'Divorciado(a)',
     profession: 'Designer',
     propertyId: '3',
@@ -444,39 +441,39 @@ export const mockServiceProviders: ServiceProvider[] = [
 export const mockGuarantors: Guarantor[] = [
   {
     id: 'g1',
-    name: 'Pedro Rafael Diniz Marinho',
-    cpf: '079.374.854-26',
-    rg: '3.081.721 SSP/PB',
+    name: 'Fiador Exemplo 1',
+    cpf: '333.333.333-33',
+    rg: 'RG-EXEMPLO-1001',
     maritalStatus: 'Casado(a)',
     profession: 'Contador',
-    email: 'pedro.rafael.marinho@example.com',
-    phone: '(83) 99676-8715',
+    email: 'fiador1@example.com',
+    phone: '(00) 90000-1001',
     address: {
-      street: 'Rua Desportista Jose de Farias',
-      number: '237',
-      complement: 'Apto 101, Edf Ksdoshi',
-      neighborhood: 'Altiplano Cabo Branco',
-      city: 'João Pessoa',
+      street: 'Rua Fictícia das Acácias',
+      number: '100',
+      complement: 'Bloco Demo, Apto 1',
+      neighborhood: 'Bairro Exemplo',
+      city: 'Cidade Modelo',
       state: 'PB',
-      zip: '58030-001',
+      zip: '00000-001',
     },
   },
   {
     id: 'g2',
-    name: 'Ana Carolina Oliveira',
-    cpf: '111.222.333-44',
-    rg: '4.000.001 SSP/PE',
+    name: 'Fiadora Exemplo 2',
+    cpf: '444.444.444-44',
+    rg: 'RG-EXEMPLO-1002',
     maritalStatus: 'Solteiro(a)',
     profession: 'Advogada',
-    email: 'ana.carolina@example.com',
-    phone: '(81) 98888-7777',
+    email: 'fiadora2@example.com',
+    phone: '(00) 90000-1002',
     address: {
-      street: 'Avenida Boa Viagem',
-      number: '1200',
-      neighborhood: 'Boa Viagem',
-      city: 'Recife',
+      street: 'Avenida Ilustrativa Central',
+      number: '200',
+      neighborhood: 'Setor Demonstração',
+      city: 'Cidade Cenário',
       state: 'PE',
-      zip: '51020-001',
+      zip: '00000-002',
     },
   },
 ];
