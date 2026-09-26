@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, MapPin, BedDouble, Bath, Home, DollarSign, Check, Building } from 'lucide-react';
 
-export default function PropertyDetailPage({ params }: { params: { id: string } }) {
-  const property = getPropertyById(params.id);
+export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const property = getPropertyById(id);
 
   if (!property) {
     return (

@@ -27,7 +27,7 @@ import { mockProperties, type ExpenseCategory } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { format, isValid } from "date-fns";
 
-const expenseCategories: ExpenseCategory[] = ['Manutenção', 'Pessoal', 'Administrativo', 'Marketing', 'Impostos', 'Outros'];
+const expenseCategories = ['Manutenção', 'Pessoal', 'Administrativo', 'Marketing', 'Impostos', 'Outros'] as const satisfies readonly ExpenseCategory[];
 
 const addExpenseFormSchema = z.object({
   description: z.string().min(3, { message: "Descrição deve ter pelo menos 3 caracteres." }),

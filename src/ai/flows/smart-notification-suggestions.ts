@@ -15,14 +15,14 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SuggestNotificationInputSchema = z.object({
-  weatherForecast: z.string().optional().describe('A previsão do tempo para os próximos dias. Opcional.'),
-  cityEvents: z.string().optional().describe('Eventos futuros na cidade que podem afetar os inquilinos. Opcional.'),
+  weatherForecast: z.string().trim().max(4000).optional().describe('A previsão do tempo para os próximos dias. Opcional.'),
+  cityEvents: z.string().trim().max(4000).optional().describe('Eventos futuros na cidade que podem afetar os inquilinos. Opcional.'),
   maintenanceSchedule: z
-    .string()
+    .string().trim().max(4000)
     .optional()
     .describe('O cronograma de manutenção planejado para o edifício. Opcional.'),
   pastNotifications: z
-    .string()
+    .string().trim().max(6000)
     .describe('Uma lista de notificações passadas que foram enviadas aos inquilinos.')
     .optional(),
 });
@@ -71,6 +71,9 @@ const suggestNotificationFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await suggestNotificationPrompt(input);
-    return output!;
+    if (!output?.notificationMessage) {
+      throw new Error('A IA não retornou uma sugestão de notificação.');
+    }
+    return output;
   }
 );

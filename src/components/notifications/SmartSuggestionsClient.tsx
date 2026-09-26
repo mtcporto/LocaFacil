@@ -47,7 +47,7 @@ export default function SmartSuggestionsClient() {
      // A validação do Zod resolver deve lidar com o `refine` e popular `formState.errors`
     // Se formState.errors tiver algo (especificamente o path definido no refine), o Zod já tratou
     if (form.formState.errors.weatherForecast) { // Checa erro no path do refine
-        setFormError(form.formState.errors.weatherForecast.message);
+      setFormError(form.formState.errors.weatherForecast.message ?? "Revise as informações fornecidas.");
         return;
     }
 

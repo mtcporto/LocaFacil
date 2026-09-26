@@ -28,12 +28,12 @@ export default function LandlordDashboardPage() {
   });
 
   const stats = [
-    { title: "Total de Imóveis", value: totalProperties.toString(), icon: Building, color: "text-primary" },
-    { title: "Unidades Ocupadas", value: occupiedUnits.toString(), icon: Users, color: "text-purple-500" }, // Cor alterada para diferenciar
-    { title: "Aluguéis a Receber (Mês)", value: `R$ ${totalToReceiveRent.toFixed(2)}`, icon: DollarSign, color: "text-blue-500" },
-    { title: "Aluguéis Recebidos (Mês)", value: `R$ ${totalReceivedRent.toFixed(2)}`, icon: CheckCircle, color: "text-green-500" },
-    { title: "Aluguéis Pendentes/Vencidos", value: `R$ ${totalPendingOrOverdueRent.toFixed(2)}`, icon: AlertTriangle, color: "text-red-500" },
-    { title: "Notificações Pendentes", value: "3", icon: Bell, color: "text-yellow-500" }, // Placeholder value
+    { title: "Imóveis", value: totalProperties.toString(), icon: Building, color: "text-primary", detail: "no portfólio" },
+    { title: "Unidades ocupadas", value: occupiedUnits.toString(), icon: Users, color: "text-sky-600", detail: "inquilinos ativos" },
+    { title: "A receber este mês", value: `R$ ${totalToReceiveRent.toFixed(2)}`, icon: DollarSign, color: "text-amber-600", detail: "previsão mensal" },
+    { title: "Recebido este mês", value: `R$ ${totalReceivedRent.toFixed(2)}`, icon: CheckCircle, color: "text-emerald-600", detail: "pagamentos confirmados" },
+    { title: "Pendências", value: `R$ ${totalPendingOrOverdueRent.toFixed(2)}`, icon: AlertTriangle, color: "text-rose-600", detail: "aluguéis para acompanhar" },
+    { title: "Notificações", value: "3", icon: Bell, color: "text-violet-600", detail: "aguardando ação" },
   ];
 
   const quickLinks = [
@@ -44,28 +44,32 @@ export default function LandlordDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section>
-        <h1 className="text-3xl font-bold text-primary mb-2">Painel do Proprietário</h1>
-        <p className="text-muted-foreground">Bem-vindo de volta! Aqui está um resumo de seus imóveis e atividades.</p>
+      <section className="relative overflow-hidden rounded-2xl bg-primary px-6 py-8 text-primary-foreground shadow-lg sm:px-8">
+        <div className="relative z-10 max-w-2xl">
+          <p className="mb-2 text-sm font-medium uppercase tracking-[0.18em] text-primary-foreground/70">Visão geral · Setembro 2026</p>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Painel do proprietário</h1>
+          <p className="mt-3 max-w-xl text-primary-foreground/80">Uma leitura rápida dos seus imóveis, recebimentos e próximas ações.</p>
+        </div>
+        <Building className="absolute -bottom-10 -right-4 h-48 w-48 text-primary-foreground/10" aria-hidden="true" />
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"> 
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat, index) => (
-          <Card key={index} className="shadow-md hover:shadow-lg transition-shadow">
+          <Card key={index} className="border-border/70 shadow-sm transition-shadow hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
               <stat.icon className={`h-5 w-5 ${stat.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              {/* <p className="text-xs text-muted-foreground">Status atual</p> */}
+              <div className="text-2xl font-bold tracking-tight">{stat.value}</div>
+              <p className="mt-1 text-xs text-muted-foreground">{stat.detail}</p>
             </CardContent>
           </Card>
         ))}
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <Card className="shadow-md">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle>Ações Rápidas</CardTitle>
             <CardDescription>Execute tarefas comuns rapidamente.</CardDescription>
@@ -82,7 +86,7 @@ export default function LandlordDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle>Atividade Recente</CardTitle>
              <CardDescription>Últimas atualizações e interações com inquilinos.</CardDescription>
