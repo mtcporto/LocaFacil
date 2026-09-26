@@ -39,10 +39,10 @@ export default function SmartSuggestionsClient() {
 
   async function onSubmit(values: z.infer<typeof SuggestionSchema>) {
     setFormError(null);
-    const hasContext = [values.weatherForecast, values.cityEvents, values.maintenanceSchedule]
+    const hasContext = [values.weatherForecast, values.cityEvents, values.maintenanceSchedule, values.pastNotifications]
       .some(value => value?.trim());
     if (!hasContext) {
-      const message = "Preencha pelo menos um dos três primeiros campos para gerar a sugestão.";
+      const message = "Preencha pelo menos um campo para gerar a sugestão.";
       setFormError(message);
       form.setError('root', {message});
         return;
@@ -92,7 +92,7 @@ export default function SmartSuggestionsClient() {
             Sugestões de Notificação com IA
           </CardTitle>
           <CardDescription>
-            Forneça algum contexto (pelo menos um dos três primeiros campos) e nossa IA ajudará a redigir notificações relevantes e oportunas para seus inquilinos.
+            Forneça qualquer contexto disponível e nossa IA ajudará a redigir notificações relevantes e oportunas para seus inquilinos.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
