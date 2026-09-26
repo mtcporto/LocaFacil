@@ -2,8 +2,15 @@ import LoginForm from '@/components/auth/LoginForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import {redirect} from 'next/navigation';
+import {getCurrentSession} from '@/lib/auth';
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await getCurrentSession();
+  if (session) {
+    redirect(session.role === 'landlord' ? '/landlord/dashboard' : '/tenant/dashboard');
+  }
+
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-200px)] py-12">
       <Card className="w-full max-w-md shadow-xl">
