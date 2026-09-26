@@ -72,9 +72,9 @@ export default function SidebarLayout({ children, navItems, userRole }: SidebarL
             </SidebarMenuButton>
            )}
           <SidebarMenuButton tooltip="Sair" asChild>
-            <Link href="/api/auth/logout">
+            <a href="/api/auth/logout">
                 <LogOut /> <span>Sair</span>
-            </Link>
+            </a>
           </SidebarMenuButton>
         </SidebarFooter>
       </Sidebar>

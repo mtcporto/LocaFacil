@@ -26,10 +26,10 @@ export default async function Header() {
               </Button>
               <span className="hidden max-w-[180px] truncate text-xs text-muted-foreground lg:inline" title={session.email}>{session.email}</span>
               <Button variant="outline" asChild>
-                <Link href="/api/auth/logout" className="flex items-center gap-2">
+                <a href="/api/auth/logout" className="flex items-center gap-2">
                   <LogOut size={18} />
                   Sair
-                </Link>
+                </a>
               </Button>
             </>
           ) : (

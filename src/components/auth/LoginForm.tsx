@@ -42,13 +42,13 @@ export default function LoginForm() {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
         body: JSON.stringify(values),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
       toast({title: "Login bem-sucedido", description: "Abrindo seu portal seguro..."});
-      router.push(result.role === 'landlord' ? '/landlord/dashboard' : '/tenant/dashboard');
-      router.refresh();
+      window.location.assign(result.role === 'landlord' ? '/landlord/dashboard' : '/tenant/dashboard');
     } catch {
       toast({
         variant: "destructive",
