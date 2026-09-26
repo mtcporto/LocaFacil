@@ -18,11 +18,6 @@ const SuggestionSchema = z.object({
   cityEvents: z.string().optional(),
   maintenanceSchedule: z.string().optional(),
   pastNotifications: z.string().optional(),
-}).refine(data => {
-  return !!data.weatherForecast || !!data.cityEvents || !!data.maintenanceSchedule;
-}, {
-  message: "Forneça informações para pelo menos um dos seguintes: Previsão do Tempo, Eventos da Cidade ou Cronograma de Manutenção.",
-  path: ["weatherForecast"], // Associar o erro ao primeiro campo para melhor UX ou criar um erro global
 });
 
 export default function SmartSuggestionsClient() {
@@ -44,10 +39,12 @@ export default function SmartSuggestionsClient() {
 
   async function onSubmit(values: z.infer<typeof SuggestionSchema>) {
     setFormError(null);
-     // A validação do Zod resolver deve lidar com o `refine` e popular `formState.errors`
-    // Se formState.errors tiver algo (especificamente o path definido no refine), o Zod já tratou
-    if (form.formState.errors.weatherForecast) { // Checa erro no path do refine
-      setFormError(form.formState.errors.weatherForecast.message ?? "Revise as informações fornecidas.");
+    const hasContext = [values.weatherForecast, values.cityEvents, values.maintenanceSchedule]
+      .some(value => value?.trim());
+    if (!hasContext) {
+      const message = "Preencha pelo menos um dos três primeiros campos para gerar a sugestão.";
+      setFormError(message);
+      form.setError('root', {message});
         return;
     }
 
@@ -101,6 +98,7 @@ export default function SmartSuggestionsClient() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
+              {formError && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{formError}</p>}
               <FormField
                 control={form.control}
                 name="weatherForecast"

@@ -1,8 +1,13 @@
 import Link from 'next/link';
-import { Building, LogIn } from 'lucide-react';
+import { Building, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {getCurrentSession} from '@/lib/auth';
 
-export default function Header() {
+export default async function Header() {
+  const session = await getCurrentSession();
+  const portalHref = session?.role === 'landlord' ? '/landlord/dashboard' : '/tenant/dashboard';
+  const portalLabel = session?.role === 'landlord' ? 'Portal do proprietário' : 'Portal do inquilino';
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-xl">
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
@@ -14,18 +19,27 @@ export default function Header() {
           <Button variant="ghost" asChild>
             <Link href="/properties">Imóveis</Link>
           </Button>
-          <Button variant="ghost" asChild className="hidden sm:inline-flex">
-            <Link href="/landlord/dashboard">Proprietário</Link>
-          </Button>
-           <Button variant="ghost" asChild className="hidden sm:inline-flex">
-            <Link href="/tenant/dashboard">Inquilino</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/auth/login" className="flex items-center gap-2">
-              <LogIn size={18} />
-              Entrar
-            </Link>
-          </Button>
+          {session ? (
+            <>
+              <Button variant="ghost" asChild className="hidden sm:inline-flex">
+                <Link href={portalHref}>{portalLabel}</Link>
+              </Button>
+              <span className="hidden max-w-[180px] truncate text-xs text-muted-foreground lg:inline" title={session.email}>{session.email}</span>
+              <Button variant="outline" asChild>
+                <Link href="/api/auth/logout" className="flex items-center gap-2">
+                  <LogOut size={18} />
+                  Sair
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <Button variant="outline" asChild>
+              <Link href="/auth/login" className="flex items-center gap-2">
+                <LogIn size={18} />
+                Entrar
+              </Link>
+            </Button>
+          )}
           {/* <Button asChild>
             <Link href="/auth/signup" className="flex items-center gap-2">
               <UserPlus size={18} />

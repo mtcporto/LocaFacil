@@ -15,8 +15,7 @@ import {
   SidebarInset,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Home, Building, Users, Bell, Settings, LogOut } from 'lucide-react'; // Removidos LayoutDashboard, FileText, CreditCard que eram específicos
+import { Building, Settings, LogOut } from 'lucide-react';
 import React from 'react';
 
 interface NavItem {
@@ -73,7 +72,7 @@ export default function SidebarLayout({ children, navItems, userRole }: SidebarL
             </SidebarMenuButton>
            )}
           <SidebarMenuButton tooltip="Sair" asChild>
-            <Link href="/auth/login"> {/* Mock logout */}
+            <Link href="/api/auth/logout">
                 <LogOut /> <span>Sair</span>
             </Link>
           </SidebarMenuButton>
