@@ -1,23 +1,23 @@
 import Link from 'next/link';
-import { Building, LogIn, UserPlus } from 'lucide-react';
+import { Building, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Header() {
   return (
-    <header className="bg-card shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="flex items-center gap-2 text-primary hover:text-accent transition-colors">
-          <Building className="h-8 w-8" />
-          <h1 className="text-2xl font-bold">LocaFácil</h1>
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-xl">
+      <div className="container mx-auto flex items-center justify-between px-4 py-4">
+        <Link href="/" className="flex items-center gap-3 text-foreground transition-colors hover:text-primary">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground"><Building className="h-5 w-5" /></span>
+          <span><h1 className="text-xl font-bold tracking-tight">LocaFácil</h1><span className="hidden text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:block">locação com clareza</span></span>
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4">
           <Button variant="ghost" asChild>
             <Link href="/properties">Imóveis</Link>
           </Button>
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" asChild className="hidden sm:inline-flex">
             <Link href="/landlord/dashboard">Proprietário</Link>
           </Button>
-           <Button variant="ghost" asChild>
+           <Button variant="ghost" asChild className="hidden sm:inline-flex">
             <Link href="/tenant/dashboard">Inquilino</Link>
           </Button>
           <Button variant="outline" asChild>

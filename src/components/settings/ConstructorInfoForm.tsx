@@ -83,15 +83,15 @@ export default function ConstructorInfoForm() {
 
   async function onSubmit(values: z.infer<typeof constructorFormSchema>) {
     setIsLoading(true);
-    // Simula chamada de API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsLoading(false);
-
-    console.log("Valores do formulário (simulado):", values);
-    toast({
-      title: "Configurações Salvas!",
-      description: "As informações da construtora foram atualizadas (simulação).",
-    });
+    try {
+      const response = await fetch('/api/settings/constructor', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(values)});
+      if (!response.ok) throw new Error();
+      toast({title: "Configurações salvas", description: "As informações foram atualizadas no Turso."});
+    } catch {
+      toast({variant: 'destructive', title: "Não foi possível salvar", description: "Verifique a conexão com o banco e tente novamente."});
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

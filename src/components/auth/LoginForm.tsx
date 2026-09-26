@@ -38,29 +38,25 @@ export default function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // Simula chamada de API
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsLoading(false);
-
-    // Simula lógica de login
-    if (values.email === "landlord@example.com") {
-      toast({
-        title: "Login Bem-sucedido",
-        description: "Redirecionando para o painel do proprietário...",
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(values),
       });
-      router.push("/landlord/dashboard");
-    } else if (values.email === "tenant@example.com") {
-      toast({
-        title: "Login Bem-sucedido",
-        description: "Redirecionando para o painel do inquilino...",
-      });
-      router.push("/tenant/dashboard");
-    } else {
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      toast({title: "Login bem-sucedido", description: "Abrindo seu portal seguro..."});
+      router.push(result.role === 'landlord' ? '/landlord/dashboard' : '/tenant/dashboard');
+      router.refresh();
+    } catch {
       toast({
         variant: "destructive",
-        title: "Falha no Login",
+        title: "Falha no login",
         description: "Email ou senha inválidos.",
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
