@@ -1,7 +1,13 @@
 import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/google-genai';
+import openAICompatible from '@genkit-ai/compat-oai';
 
 export const ai = genkit({
-  plugins: [googleAI()],
-  model: 'googleai/gemini-2.0-flash',
+  plugins: [
+    openAICompatible({
+      name: 'openai',
+      apiKey: process.env.OPENAI_API_KEY || false,
+      baseURL: process.env.base_url,
+    }),
+  ],
+  model: `openai/${process.env.model || 'gpt-4.1'}`,
 });

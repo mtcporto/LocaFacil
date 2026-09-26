@@ -35,9 +35,9 @@ export const mockProperties: Property[] = [
     description: 'Aconchegante apartamento com vista para o mar.',
     longDescription: 'Descubra o conforto de viver neste bem conservado apartamento no Edifício Lest Ville. Localizado no vibrante bairro de Cabo Branco, esta unidade oferece vistas deslumbrantes do oceano e fácil acesso às comodidades locais. O edifício é gerido profissionalmente, garantindo uma experiência de vida agradável. Ideal para solteiros ou casais que procuram uma localização privilegiada à beira-mar.',
     images: [
-        'https://placehold.co/800x600.png',
-        'https://placehold.co/1024x768.png',
-        'https://placehold.co/600x800.png'
+      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=900&q=85'
     ],
     sq_m: 30,
     bedrooms: 1,
@@ -59,9 +59,9 @@ export const mockProperties: Property[] = [
     description: 'Espaçoso apartamento de 3 quartos em Manaira.',
     longDescription: 'Experimente o luxo de viver neste espaçoso apartamento de 3 quartos no Manaira Prime Residence. Esta unidade moderna possui acabamentos de alta qualidade, ampla luz natural e varanda privativa. As comodidades do edifício incluem piscina, academia e segurança 24 horas. Perfeitamente situado perto de opções de compras, restaurantes e entretenimento.',
     images: [
-        'https://placehold.co/1000x700.png',
-        'https://placehold.co/700x500.png',
-        'https://placehold.co/800x550.png'
+      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=85'
     ],
     sq_m: 120,
     bedrooms: 3,
@@ -81,9 +81,9 @@ export const mockProperties: Property[] = [
     description: 'Moderno condomínio de 2 quartos com vista para a cidade.',
     longDescription: 'Desfrute da vida urbana neste elegante condomínio de 2 quartos no Condomínio Sunrise. Esta unidade possui um layout de conceito aberto, design contemporâneo e grandes janelas que oferecem vistas panorâmicas da cidade. Os moradores têm acesso a um terraço na cobertura e a uma academia. Convenientemente localizado no coração de Recife, perto de transporte público e atrações culturais.',
     images: [
-        'https://placehold.co/750x550.png',
-        'https://placehold.co/950x650.png',
-        'https://placehold.co/650x450.png'
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=900&q=85'
     ],
     sq_m: 75,
     bedrooms: 2,
@@ -103,9 +103,9 @@ export const mockProperties: Property[] = [
     description: 'Charmosa casa de 4 quartos com jardim.',
     longDescription: 'Esta bela casa de 4 quartos no Vale Verde oferece um refúgio tranquilo com um jardim espaçoso e área de entretenimento ao ar livre. A casa apresenta um design tradicional com atualizações modernas, incluindo cozinha totalmente equipada e banheiros reformados. Amplo espaço de estacionamento disponível. Ideal para famílias que procuram um bairro tranquilo.',
     images: [
-        'https://placehold.co/850x550.png',
-        'https://placehold.co/650x400.png',
-        'https://placehold.co/1200x750.png'
+      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600566753051-f0b89df2dd90?auto=format&fit=crop&w=900&q=85'
     ],
     sq_m: 200,
     bedrooms: 4,
