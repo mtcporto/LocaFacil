@@ -12,6 +12,7 @@ export async function POST(request: Request) {
   const response = await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(paymentId)}`, {
     headers: {Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`},
   });
+  if (response.status === 404) return NextResponse.json({received: true});
   if (!response.ok) return NextResponse.json({error: 'Falha ao consultar pagamento.'}, {status: 502});
   const payment = await response.json() as {id?: number; external_reference?: string; status?: string; payment_method_id?: string};
   if (payment.id && payment.external_reference && payment.status) {
