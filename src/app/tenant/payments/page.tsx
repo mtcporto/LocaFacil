@@ -5,24 +5,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock, Copy, Check } from "lucide-react";
+import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
 
-const PIX_KEY = "08.315.079/0001-51"; // CNPJ
-const PIX_KEY_TYPE = "CNPJ";
-
 export default function TenantPaymentsPage() {
   const { toast } = useToast();
-  const [isPixCopied, setIsPixCopied] = React.useState(false);
+  const [paymentHistory, setPaymentHistory] = React.useState<Array<{id: string; created_at: string; amount: number; status: string; method: string | null}>>([]);
+  const [isCreatingPayment, setIsCreatingPayment] = React.useState(false);
 
-  const paymentHistory = [
-    { id: "pay_1", date: "2024-06-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, 
-    { id: "pay_2", date: "2024-05-05", amount: 950.00, status: "Pago", method: "Transferência Bancária" }, 
-    { id: "pay_3", date: "2024-04-05", amount: 950.00, status: "Pago", method: "Cartão de Crédito" }, 
-    { id: "pay_4", date: "2024-03-07", amount: 1000.00, status: "Atrasado", method: "Cartão de Crédito" }, 
-  ];
+  React.useEffect(() => {
+    fetch('/api/payments').then(async response => {
+      if (!response.ok) return;
+      const data = await response.json() as {payments?: typeof paymentHistory};
+      setPaymentHistory(data.payments || []);
+    }).catch(() => undefined);
+  }, []);
 
   const nextPayment = {
     dueDate: "2024-07-05",
@@ -57,14 +56,21 @@ export default function TenantPaymentsPage() {
     return "secondary";
   };
 
-  const handleCopyToClipboard = async (text: string) => {
+  const handleCreatePayment = async () => {
+    setIsCreatingPayment(true);
     try {
-      await navigator.clipboard.writeText(text);
-      setIsPixCopied(true);
-      toast({ title: "Chave PIX copiada!", description: "Use no seu app bancário." });
-      setTimeout(() => setIsPixCopied(false), 3000);
-    } catch (err) {
-      toast({ variant: "destructive", title: "Erro ao copiar", description: "Não foi possível copiar a chave PIX." });
+      const response = await fetch('/api/payments', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({amount: nextPayment.amount, description: 'Aluguel mensal - LocaFácil'}),
+      });
+      const data = await response.json() as {checkoutUrl?: string; error?: string};
+      if (!response.ok || !data.checkoutUrl) throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
+      window.location.assign(data.checkoutUrl);
+    } catch (error) {
+      toast({variant: 'destructive', title: 'Pagamento indisponível', description: error instanceof Error ? error.message : 'Tente novamente.'});
+    } finally {
+      setIsCreatingPayment(false);
     }
   };
 
@@ -108,26 +114,15 @@ export default function TenantPaymentsPage() {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Pagamento via PIX</AlertDialogTitle>
+                <AlertDialogTitle>Pagamento via Mercado Pago</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Para concluir seu pagamento de <strong className="text-foreground">R$ {nextPayment.amount.toFixed(2)}</strong>, utilize a chave PIX abaixo em seu aplicativo bancário.
+                  Você será levado ao checkout seguro do Mercado Pago para escolher PIX ou cartão e concluir o pagamento de <strong className="text-foreground">R$ {nextPayment.amount.toFixed(2)}</strong>.
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <div className="my-4 p-4 bg-secondary rounded-md space-y-2">
-                <p className="text-sm text-muted-foreground">Chave PIX ({PIX_KEY_TYPE}):</p>
-                <div className="flex items-center justify-between">
-                  <p className="text-lg font-mono text-primary break-all">{PIX_KEY}</p>
-                  <Button variant="ghost" size="sm" onClick={() => handleCopyToClipboard(PIX_KEY)}>
-                    {isPixCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                    <span className="ml-2">{isPixCopied ? "Copiada!" : "Copiar"}</span>
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">Beneficiário: CONSTRUTORA EARLEN LTDA</p>
-              </div>
               <AlertDialogFooter>
                 <AlertDialogCancel>Fechar</AlertDialogCancel>
-                <AlertDialogAction onClick={() => toast({ title: "Pagamento em Processamento", description: "Seu pagamento via PIX está sendo processado (simulação)." })}>
-                  Já Paguei
+                <AlertDialogAction onClick={handleCreatePayment} disabled={isCreatingPayment}>
+                  {isCreatingPayment ? 'Abrindo checkout...' : 'Continuar para pagar'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -155,14 +150,14 @@ export default function TenantPaymentsPage() {
               <TableBody>
                 {paymentHistory.map((payment) => (
                   <TableRow key={payment.id}>
-                    <TableCell>{formatDate(payment.date)}</TableCell>
+                    <TableCell>{formatDate(payment.created_at.slice(0, 10))}</TableCell>
                     <TableCell>{payment.amount.toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusBadgeVariant(payment.status)} className={`px-2 py-0.5 ${payment.status === "Pago" ? "bg-green-100 text-green-700 border-green-300" : payment.status === "Pendente" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
                         {getStatusIcon(payment.status)} <span className="ml-1">{payment.status}</span>
                       </Badge>
                     </TableCell>
-                    <TableCell>{payment.method}</TableCell>
+                    <TableCell>{payment.method || 'Mercado Pago'}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => handleViewReceipt(payment.id)}>Ver</Button>
                     </TableCell>

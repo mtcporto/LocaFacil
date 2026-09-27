@@ -24,6 +24,7 @@ export async function ensureDatabase(): Promise<void> {
       await client.batch([
         `CREATE TABLE IF NOT EXISTS app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
         `CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK (role IN ('landlord', 'tenant')), display_name TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
+        `CREATE TABLE IF NOT EXISTS payments (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, external_reference TEXT NOT NULL UNIQUE, preference_id TEXT, provider_payment_id TEXT UNIQUE, amount REAL NOT NULL, status TEXT NOT NULL, method TEXT, description TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
       ]);
       await client.execute({
         sql: 'INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)',
@@ -32,6 +33,66 @@ export async function ensureDatabase(): Promise<void> {
     })();
   }
   await schemaPromise;
+}
+
+export type PaymentRecord = {
+  id: string;
+  amount: number;
+  status: string;
+  method: string | null;
+  description: string;
+  created_at: string;
+};
+
+export async function createPayment(payment: {
+  id: string;
+  userId: string;
+  externalReference: string;
+  amount: number;
+  description: string;
+}): Promise<void> {
+  const database = getDatabase();
+  await ensureDatabase();
+  await database.execute({
+    sql: `INSERT INTO payments (id, user_id, external_reference, amount, status, description) VALUES (?, ?, ?, ?, 'pending', ?)`,
+    args: [payment.id, payment.userId, payment.externalReference, payment.amount, payment.description],
+  });
+}
+
+export async function setPaymentPreference(id: string, preferenceId: string): Promise<void> {
+  const database = getDatabase();
+  await database.execute({sql: 'UPDATE payments SET preference_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', args: [preferenceId, id]});
+}
+
+export async function listPaymentsForUser(userId: string): Promise<PaymentRecord[]> {
+  const database = getDatabase();
+  await ensureDatabase();
+  const result = await database.execute({
+    sql: 'SELECT id, amount, status, method, description, created_at FROM payments WHERE user_id = ? ORDER BY created_at DESC',
+    args: [userId],
+  });
+  return result.rows.map(row => ({
+    id: String(row.id),
+    amount: Number(row.amount),
+    status: String(row.status),
+    method: row.method == null ? null : String(row.method),
+    description: String(row.description),
+    created_at: String(row.created_at),
+  }));
+}
+
+export async function updatePaymentFromProvider(data: {
+  providerPaymentId: string;
+  externalReference: string;
+  status: string;
+  method: string | null;
+}): Promise<void> {
+  const database = getDatabase();
+  await ensureDatabase();
+  await database.execute({
+    sql: `UPDATE payments SET provider_payment_id = ?, status = ?, method = ?, updated_at = CURRENT_TIMESTAMP WHERE external_reference = ?`,
+    args: [data.providerPaymentId, data.status, data.method, data.externalReference],
+  });
 }
 
 export async function getConstructorInfo(): Promise<ConstructorInfo> {
