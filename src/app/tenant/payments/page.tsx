@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock, Copy, Check } from "lucide-react";
+import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock, Copy, Check, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
@@ -23,6 +23,7 @@ export default function TenantPaymentsPage() {
   const [pixPayment, setPixPayment] = React.useState<{paymentId: string; qrCode: string; qrCodeBase64?: string; ticketUrl?: string} | null>(null);
   const [isPixCopied, setIsPixCopied] = React.useState(false);
   const [selectedReceipt, setSelectedReceipt] = React.useState<typeof paymentHistory[number] | null>(null);
+  const [receiptMode, setReceiptMode] = React.useState<'summary' | 'full'>('summary');
   const approvalToastShown = React.useRef(false);
 
   React.useEffect(() => {
@@ -255,7 +256,7 @@ export default function TenantPaymentsPage() {
                     </TableCell>
                     <TableCell>{payment.method || 'Mercado Pago'}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => setSelectedReceipt(payment)}>Ver</Button>
+                      <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => { setSelectedReceipt(payment); setReceiptMode('summary'); }}>Ver</Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -270,8 +271,8 @@ export default function TenantPaymentsPage() {
       <AlertDialog open={Boolean(selectedReceipt)} onOpenChange={open => { if (!open) setSelectedReceipt(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Recibo de pagamento</AlertDialogTitle>
-            <AlertDialogDescription>Comprovante registrado no LocaFácil.</AlertDialogDescription>
+            <AlertDialogTitle>{receiptMode === 'summary' ? 'Resumo do pagamento' : 'Recibo completo do pagamento'}</AlertDialogTitle>
+            <AlertDialogDescription>{receiptMode === 'summary' ? 'Visão rápida do comprovante registrado no LocaFácil.' : 'Comprovante detalhado registrado no LocaFácil.'}</AlertDialogDescription>
           </AlertDialogHeader>
           {selectedReceipt && (
             <div className="space-y-3 rounded-md border bg-muted/30 p-4 text-sm">
@@ -280,10 +281,22 @@ export default function TenantPaymentsPage() {
               <div className="flex justify-between gap-4"><span>Status</span><strong>{getStatusLabel(selectedReceipt.status)}</strong></div>
               <div className="flex justify-between gap-4"><span>Método</span><strong>{selectedReceipt.method || 'Mercado Pago'}</strong></div>
               <div className="flex justify-between gap-4"><span>Data</span><strong>{formatDate(selectedReceipt.created_at.slice(0, 10))}</strong></div>
-              <div className="flex justify-between gap-4"><span>Identificador</span><strong className="max-w-[220px] break-all text-right font-mono text-xs">{selectedReceipt.id}</strong></div>
+              {receiptMode === 'full' && (
+                <>
+                  <div className="flex justify-between gap-4"><span>Data e hora</span><strong>{new Date(selectedReceipt.created_at).toLocaleString('pt-BR')}</strong></div>
+                  <div className="flex justify-between gap-4"><span>ID interno</span><strong className="max-w-[220px] break-all text-right font-mono text-xs">{selectedReceipt.id}</strong></div>
+                  <div className="flex justify-between gap-4"><span>ID Mercado Pago</span><strong className="max-w-[220px] break-all text-right font-mono text-xs">{selectedReceipt.provider_payment_id || 'Ainda não disponível'}</strong></div>
+                  <div className="border-t pt-3 text-xs text-muted-foreground">Este documento é o comprovante detalhado da transação registrada no LocaFácil. O comprovante oficial do Mercado Pago permanece disponível no ambiente do provedor.</div>
+                </>
+              )}
             </div>
           )}
           <AlertDialogFooter>
+            {receiptMode === 'summary' ? (
+              <Button type="button" variant="outline" onClick={() => setReceiptMode('full')}>Recibo completo</Button>
+            ) : (
+              <Button type="button" variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir</Button>
+            )}
             <AlertDialogAction>Fechar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
