@@ -12,9 +12,13 @@ import React from "react";
 
 export default function TenantPaymentsPage() {
   const { toast } = useToast();
-  const [paymentHistory, setPaymentHistory] = React.useState<Array<{id: string; created_at: string; amount: number; status: string; method: string | null}>>([]);
+  const [paymentHistory, setPaymentHistory] = React.useState<Array<{id: string; created_at: string; amount: number; status: string; method: string | null; description: string}>>([]);
   const [rentAmount, setRentAmount] = React.useState(1);
   const [rentDueDay, setRentDueDay] = React.useState(5);
+  const [iptuAmount, setIptuAmount] = React.useState(1);
+  const [iptuDueDay, setIptuDueDay] = React.useState(10);
+  const [tcrAmount, setTcrAmount] = React.useState(1);
+  const [tcrDueDay, setTcrDueDay] = React.useState(15);
   const [isCreatingPayment, setIsCreatingPayment] = React.useState(false);
   const [pixPayment, setPixPayment] = React.useState<{qrCode: string; qrCodeBase64?: string; ticketUrl?: string} | null>(null);
   const [isPixCopied, setIsPixCopied] = React.useState(false);
@@ -23,9 +27,13 @@ export default function TenantPaymentsPage() {
     Promise.all([fetch('/api/payments'), fetch('/api/settings/payments')]).then(async ([paymentsResponse, settingsResponse]) => {
       if (paymentsResponse.ok) setPaymentHistory((await paymentsResponse.json()).payments || []);
       if (settingsResponse.ok) {
-        const settings = await settingsResponse.json() as {rentAmount?: number; rentDueDay?: number};
+        const settings = await settingsResponse.json() as {rentAmount?: number; rentDueDay?: number; iptuAmount?: number; iptuDueDay?: number; tcrAmount?: number; tcrDueDay?: number};
         setRentAmount(settings.rentAmount || 1);
         setRentDueDay(settings.rentDueDay || 5);
+        setIptuAmount(settings.iptuAmount || 1);
+        setIptuDueDay(settings.iptuDueDay || 10);
+        setTcrAmount(settings.tcrAmount || 1);
+        setTcrDueDay(settings.tcrDueDay || 15);
       }
     }).catch(() => undefined);
   }, []);
@@ -47,27 +55,34 @@ export default function TenantPaymentsPage() {
     return localDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
+  const getStatusLabel = (status: string) => {
+    if (status === 'approved') return 'Aprovado';
+    if (status === 'pending' || status === 'in_process') return 'Pendente';
+    if (status === 'rejected' || status === 'cancelled' || status === 'refunded' || status === 'charged_back') return 'Negado';
+    return status;
+  };
+
   const getStatusIcon = (status: string) => {
-    if (status === "Pago") return <CheckCircle className="h-4 w-4 text-green-500" />;
-    if (status === "Pendente") return <Clock className="h-4 w-4 text-yellow-500" />;
-    if (status === "Atrasado" || status === "Vencido") return <AlertCircle className="h-4 w-4 text-red-500" />;
+    if (status === "approved" || status === "Pago") return <CheckCircle className="h-4 w-4 text-green-600" />;
+    if (status === "pending" || status === "in_process" || status === "Pendente") return <Clock className="h-4 w-4 text-yellow-600" />;
+    if (status === "rejected" || status === "cancelled" || status === "refunded" || status === "charged_back" || status === "Atrasado" || status === "Vencido") return <AlertCircle className="h-4 w-4 text-red-600" />;
     return null;
   };
   
   const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-    if (status === "Pago") return "default"; 
-    if (status === "Pendente") return "outline"; 
-    if (status === "Atrasado" || status === "Vencido") return "destructive"; 
+    if (status === "approved" || status === "Pago") return "default";
+    if (status === "pending" || status === "in_process" || status === "Pendente") return "outline";
+    if (status === "rejected" || status === "cancelled" || status === "refunded" || status === "charged_back" || status === "Atrasado" || status === "Vencido") return "destructive";
     return "secondary";
   };
 
-  const handleCreatePayment = async () => {
+  const handleCreatePayment = async (kind: 'rent' | 'iptu' | 'tcr' = 'rent') => {
     setIsCreatingPayment(true);
     try {
       const response = await fetch('/api/payments', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({kind: 'rent'}),
+        body: JSON.stringify({kind}),
       });
       const data = await response.json() as {checkoutUrl?: string; error?: string};
       if (!response.ok || !data.checkoutUrl) throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
@@ -143,7 +158,7 @@ export default function TenantPaymentsPage() {
                 <Button type="button" variant="outline" onClick={handleCreatePix} disabled={isCreatingPayment}>
                   Gerar PIX agora
                 </Button>
-                <AlertDialogAction onClick={handleCreatePayment} disabled={isCreatingPayment}>
+                <AlertDialogAction onClick={() => handleCreatePayment('rent')} disabled={isCreatingPayment}>
                   {isCreatingPayment ? 'Abrindo checkout...' : 'Continuar para pagar'}
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -151,6 +166,21 @@ export default function TenantPaymentsPage() {
           </AlertDialog>
         </CardContent>
       </Card>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {[
+          {kind: 'iptu' as const, label: 'IPTU', amount: iptuAmount, dueDay: iptuDueDay},
+          {kind: 'tcr' as const, label: 'TCR', amount: tcrAmount, dueDay: tcrDueDay},
+        ].map(tax => (
+          <Card key={tax.kind} className="shadow-md">
+            <CardHeader><CardTitle>{tax.label}</CardTitle><CardDescription>Pagamento separado do aluguel.</CardDescription></CardHeader>
+            <CardContent className="flex items-center justify-between gap-4">
+              <div><p className="text-lg font-semibold">R$ {tax.amount.toFixed(2)}</p><p className="text-sm text-muted-foreground">Vencimento: dia {tax.dueDay}</p></div>
+              <Button onClick={() => handleCreatePayment(tax.kind)} disabled={isCreatingPayment}><CreditCard className="mr-2 h-4 w-4" />Pagar</Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       {pixPayment && (
         <Card className="shadow-md">
@@ -183,6 +213,7 @@ export default function TenantPaymentsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Data</TableHead>
+                  <TableHead>Referência</TableHead>
                   <TableHead>Valor (R$)</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Método</TableHead>
@@ -193,10 +224,11 @@ export default function TenantPaymentsPage() {
                 {paymentHistory.map((payment) => (
                   <TableRow key={payment.id}>
                     <TableCell>{formatDate(payment.created_at.slice(0, 10))}</TableCell>
+                    <TableCell>{payment.description}</TableCell>
                     <TableCell>{payment.amount.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusBadgeVariant(payment.status)} className={`px-2 py-0.5 ${payment.status === "Pago" ? "bg-green-100 text-green-700 border-green-300" : payment.status === "Pendente" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
-                        {getStatusIcon(payment.status)} <span className="ml-1">{payment.status}</span>
+                      <Badge variant={getStatusBadgeVariant(payment.status)} className={`px-2 py-0.5 ${payment.status === "approved" ? "bg-green-100 text-green-700 border-green-300" : payment.status === "pending" || payment.status === "in_process" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
+                        {getStatusIcon(payment.status)} <span className="ml-1">{getStatusLabel(payment.status)}</span>
                       </Badge>
                     </TableCell>
                     <TableCell>{payment.method || 'Mercado Pago'}</TableCell>

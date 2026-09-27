@@ -124,12 +124,20 @@ export async function saveConstructorInfo(info: ConstructorInfo): Promise<void> 
 export type PaymentSettings = {
   rentAmount: number;
   rentDueDay: number;
+  iptuAmount: number;
+  iptuDueDay: number;
+  tcrAmount: number;
+  tcrDueDay: number;
   services: Array<Pick<ServiceItem, 'id' | 'name' | 'description' | 'price'> & {active: boolean}>;
 };
 
 export const defaultPaymentSettings: PaymentSettings = {
   rentAmount: 1,
   rentDueDay: 5,
+  iptuAmount: 1,
+  iptuDueDay: 10,
+  tcrAmount: 1,
+  tcrDueDay: 15,
   services: mockServices.map(({id, name, description}) => ({id, name, description, price: 1, active: true})),
 };
 
@@ -144,6 +152,10 @@ export async function getPaymentSettings(): Promise<PaymentSettings> {
     return {
       rentAmount: Number(parsed.rentAmount) > 0 ? Number(parsed.rentAmount) : defaultPaymentSettings.rentAmount,
       rentDueDay: Number(parsed.rentDueDay) >= 1 && Number(parsed.rentDueDay) <= 28 ? Number(parsed.rentDueDay) : defaultPaymentSettings.rentDueDay,
+      iptuAmount: Number(parsed.iptuAmount) > 0 ? Number(parsed.iptuAmount) : defaultPaymentSettings.iptuAmount,
+      iptuDueDay: Number(parsed.iptuDueDay) >= 1 && Number(parsed.iptuDueDay) <= 28 ? Number(parsed.iptuDueDay) : defaultPaymentSettings.iptuDueDay,
+      tcrAmount: Number(parsed.tcrAmount) > 0 ? Number(parsed.tcrAmount) : defaultPaymentSettings.tcrAmount,
+      tcrDueDay: Number(parsed.tcrDueDay) >= 1 && Number(parsed.tcrDueDay) <= 28 ? Number(parsed.tcrDueDay) : defaultPaymentSettings.tcrDueDay,
       services: Array.isArray(parsed.services) ? parsed.services.map(service => ({...service, active: service.active !== false})) : defaultPaymentSettings.services,
     };
   } catch {

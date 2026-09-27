@@ -8,7 +8,7 @@ import {useToast} from "@/hooks/use-toast";
 import {Loader2, Save, Trash2} from "lucide-react";
 
 type Service = {id: string; name: string; description: string; price: number; active: boolean};
-type Settings = {rentAmount: number; rentDueDay: number; services: Service[]};
+type Settings = {rentAmount: number; rentDueDay: number; iptuAmount: number; iptuDueDay: number; tcrAmount: number; tcrDueDay: number; services: Service[]};
 
 export default function PaymentSettingsForm() {
   const {toast} = useToast();
@@ -59,6 +59,20 @@ export default function PaymentSettingsForm() {
           Dia de vencimento
           <Input type="number" min="1" max="28" value={settings.rentDueDay} onChange={event => setSettings({...settings, rentDueDay: Number(event.target.value)})} />
           <span className="text-xs font-normal text-muted-foreground">Use um dia entre 1 e 28.</span>
+        </label>
+      </div>
+      <div className="grid gap-4 border-t pt-5 md:grid-cols-2">
+        <label className="space-y-2 text-sm font-medium">
+          IPTU (R$)
+          <Input type="number" min="0.01" step="0.01" value={settings.iptuAmount} onChange={event => setSettings({...settings, iptuAmount: Number(event.target.value)})} />
+          <span className="text-xs font-normal text-muted-foreground">Dia de vencimento</span>
+          <Input type="number" min="1" max="28" value={settings.iptuDueDay} onChange={event => setSettings({...settings, iptuDueDay: Number(event.target.value)})} />
+        </label>
+        <label className="space-y-2 text-sm font-medium">
+          TCR (R$)
+          <Input type="number" min="0.01" step="0.01" value={settings.tcrAmount} onChange={event => setSettings({...settings, tcrAmount: Number(event.target.value)})} />
+          <span className="text-xs font-normal text-muted-foreground">Dia de vencimento</span>
+          <Input type="number" min="1" max="28" value={settings.tcrDueDay} onChange={event => setSettings({...settings, tcrDueDay: Number(event.target.value)})} />
         </label>
       </div>
 

@@ -5,6 +5,8 @@ import {createPayment, getPaymentSettings, updatePaymentFromProvider} from '@/li
 
 const pixSchema = z.discriminatedUnion('kind', [
   z.object({kind: z.literal('rent')}),
+  z.object({kind: z.literal('iptu')}),
+  z.object({kind: z.literal('tcr')}),
   z.object({kind: z.literal('services'), items: z.array(z.object({id: z.string().min(1), quantity: z.number().int().positive().max(100)})).min(1)}),
 ]);
 
@@ -23,8 +25,14 @@ export async function POST(request: Request) {
       })
     : [];
   if (parsed.data.kind === 'services' && services.some(service => !service)) return NextResponse.json({error: 'Um dos serviços não está disponível.'}, {status: 400});
-  const amount = parsed.data.kind === 'rent' ? settings.rentAmount : services.reduce((total, service) => total + (service?.price || 0) * (service?.quantity || 0), 0);
-  const description = parsed.data.kind === 'rent' ? 'Aluguel mensal - LocaFácil' : 'Serviços adicionais - LocaFácil';
+  const amount = parsed.data.kind === 'rent' ? settings.rentAmount : parsed.data.kind === 'iptu' ? settings.iptuAmount : parsed.data.kind === 'tcr' ? settings.tcrAmount : services.reduce((total, service) => total + (service?.price || 0) * (service?.quantity || 0), 0);
+  const description = parsed.data.kind === 'rent'
+    ? 'Aluguel mensal - LocaFácil'
+    : parsed.data.kind === 'iptu'
+      ? 'IPTU - LocaFácil'
+      : parsed.data.kind === 'tcr'
+        ? 'TCR - LocaFácil'
+        : `Serviços: ${services.map(service => service?.name).filter(Boolean).join(', ')}`;
   const paymentId = crypto.randomUUID();
   const externalReference = `locafacil:${paymentId}:${session.userId}`;
   await createPayment({amount, description, id: paymentId, userId: session.userId, externalReference});

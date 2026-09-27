@@ -6,6 +6,10 @@ import {getPaymentSettings, savePaymentSettings} from '@/lib/db';
 const paymentSettingsSchema = z.object({
   rentAmount: z.number().positive().max(100000),
   rentDueDay: z.number().int().min(1).max(28),
+  iptuAmount: z.number().positive().max(100000),
+  iptuDueDay: z.number().int().min(1).max(28),
+  tcrAmount: z.number().positive().max(100000),
+  tcrDueDay: z.number().int().min(1).max(28),
   services: z.array(z.object({id: z.string().min(1), name: z.string().min(1).max(80), description: z.string().max(240), price: z.number().positive().max(100000), active: z.boolean()})).max(50),
 });
 
