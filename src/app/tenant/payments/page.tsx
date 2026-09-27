@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { CreditCard, DollarSign, CheckCircle, AlertCircle, Clock, Copy, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
@@ -16,6 +16,8 @@ export default function TenantPaymentsPage() {
   const [rentAmount, setRentAmount] = React.useState(1);
   const [rentDueDay, setRentDueDay] = React.useState(5);
   const [isCreatingPayment, setIsCreatingPayment] = React.useState(false);
+  const [pixPayment, setPixPayment] = React.useState<{qrCode: string; qrCodeBase64?: string; ticketUrl?: string} | null>(null);
+  const [isPixCopied, setIsPixCopied] = React.useState(false);
 
   React.useEffect(() => {
     Promise.all([fetch('/api/payments'), fetch('/api/settings/payments')]).then(async ([paymentsResponse, settingsResponse]) => {
@@ -77,6 +79,20 @@ export default function TenantPaymentsPage() {
     }
   };
 
+  const handleCreatePix = async () => {
+    setIsCreatingPayment(true);
+    try {
+      const response = await fetch('/api/payments/pix', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({kind: 'rent'})});
+      const data = await response.json() as {qrCode?: string; qrCodeBase64?: string; ticketUrl?: string; error?: string};
+      if (!response.ok || !data.qrCode) throw new Error(data.error || 'Não foi possível gerar o PIX.');
+      setPixPayment({qrCode: data.qrCode, qrCodeBase64: data.qrCodeBase64, ticketUrl: data.ticketUrl});
+    } catch (error) {
+      toast({variant: 'destructive', title: 'PIX indisponível', description: error instanceof Error ? error.message : 'Tente novamente.'});
+    } finally {
+      setIsCreatingPayment(false);
+    }
+  };
+
   const handleViewReceipt = (paymentId: string) => {
      toast({
       title: "Visualizar Recibo",
@@ -124,6 +140,9 @@ export default function TenantPaymentsPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Fechar</AlertDialogCancel>
+                <Button type="button" variant="outline" onClick={handleCreatePix} disabled={isCreatingPayment}>
+                  Gerar PIX agora
+                </Button>
                 <AlertDialogAction onClick={handleCreatePayment} disabled={isCreatingPayment}>
                   {isCreatingPayment ? 'Abrindo checkout...' : 'Continuar para pagar'}
                 </AlertDialogAction>
@@ -132,6 +151,26 @@ export default function TenantPaymentsPage() {
           </AlertDialog>
         </CardContent>
       </Card>
+
+      {pixPayment && (
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle>PIX para este pagamento</CardTitle>
+            <CardDescription>Escaneie o QR Code ou copie o código no aplicativo do seu banco.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+            {pixPayment.qrCodeBase64 && <img src={`data:image/png;base64,${pixPayment.qrCodeBase64}`} alt="QR Code PIX" className="h-56 w-56 rounded border p-2" />}
+            <div className="w-full space-y-3">
+              <p className="break-all rounded-md bg-secondary p-3 font-mono text-xs">{pixPayment.qrCode}</p>
+              <Button type="button" variant="outline" onClick={async () => {await navigator.clipboard.writeText(pixPayment.qrCode); setIsPixCopied(true); setTimeout(() => setIsPixCopied(false), 2000);}}>
+                {isPixCopied ? <Check className="mr-2 h-4 w-4 text-green-600" /> : <Copy className="mr-2 h-4 w-4" />}
+                {isPixCopied ? 'Copiado' : 'Copiar código PIX'}
+              </Button>
+              {pixPayment.ticketUrl && <a href={pixPayment.ticketUrl} target="_blank" rel="noreferrer" className="block text-sm text-primary underline">Abrir instruções do PIX</a>}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="shadow-md">
         <CardHeader>
