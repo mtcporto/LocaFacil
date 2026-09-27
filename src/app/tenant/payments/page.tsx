@@ -22,6 +22,7 @@ export default function TenantPaymentsPage() {
   const [isCreatingPayment, setIsCreatingPayment] = React.useState(false);
   const [pixPayment, setPixPayment] = React.useState<{paymentId: string; qrCode: string; qrCodeBase64?: string; ticketUrl?: string} | null>(null);
   const [isPixCopied, setIsPixCopied] = React.useState(false);
+  const [selectedReceipt, setSelectedReceipt] = React.useState<typeof paymentHistory[number] | null>(null);
   const approvalToastShown = React.useRef(false);
 
   React.useEffect(() => {
@@ -133,14 +134,6 @@ export default function TenantPaymentsPage() {
       setIsCreatingPayment(false);
     }
   };
-
-  const handleViewReceipt = (paymentId: string) => {
-     toast({
-      title: "Visualizar Recibo",
-      description: `Em uma aplicação real, o recibo para o pagamento ${paymentId} seria exibido.`,
-    });
-  };
-
 
   return (
     <div className="space-y-8">
@@ -262,7 +255,7 @@ export default function TenantPaymentsPage() {
                     </TableCell>
                     <TableCell>{payment.method || 'Mercado Pago'}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => handleViewReceipt(payment.id)}>Ver</Button>
+                      <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => setSelectedReceipt(payment)}>Ver</Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -273,6 +266,28 @@ export default function TenantPaymentsPage() {
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog open={Boolean(selectedReceipt)} onOpenChange={open => { if (!open) setSelectedReceipt(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Recibo de pagamento</AlertDialogTitle>
+            <AlertDialogDescription>Comprovante registrado no LocaFácil.</AlertDialogDescription>
+          </AlertDialogHeader>
+          {selectedReceipt && (
+            <div className="space-y-3 rounded-md border bg-muted/30 p-4 text-sm">
+              <div className="flex justify-between gap-4"><span>Referência</span><strong className="text-right">{selectedReceipt.description}</strong></div>
+              <div className="flex justify-between gap-4"><span>Valor</span><strong>R$ {selectedReceipt.amount.toFixed(2)}</strong></div>
+              <div className="flex justify-between gap-4"><span>Status</span><strong>{getStatusLabel(selectedReceipt.status)}</strong></div>
+              <div className="flex justify-between gap-4"><span>Método</span><strong>{selectedReceipt.method || 'Mercado Pago'}</strong></div>
+              <div className="flex justify-between gap-4"><span>Data</span><strong>{formatDate(selectedReceipt.created_at.slice(0, 10))}</strong></div>
+              <div className="flex justify-between gap-4"><span>Identificador</span><strong className="max-w-[220px] break-all text-right font-mono text-xs">{selectedReceipt.id}</strong></div>
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogAction>Fechar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
