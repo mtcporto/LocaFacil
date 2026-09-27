@@ -94,10 +94,10 @@ export default function TenantPaymentsPage() {
     }
   };
 
-  const handleCreatePix = async () => {
+  const handleCreatePix = async (kind: 'rent' | 'iptu' | 'tcr' = 'rent') => {
     setIsCreatingPayment(true);
     try {
-      const response = await fetch('/api/payments/pix', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({kind: 'rent'})});
+      const response = await fetch('/api/payments/pix', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({kind})});
       const data = await response.json() as {qrCode?: string; qrCodeBase64?: string; ticketUrl?: string; error?: string};
       if (!response.ok || !data.qrCode) throw new Error(data.error || 'Não foi possível gerar o PIX.');
       setPixPayment({qrCode: data.qrCode, qrCodeBase64: data.qrCodeBase64, ticketUrl: data.ticketUrl});
@@ -155,7 +155,7 @@ export default function TenantPaymentsPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Fechar</AlertDialogCancel>
-                <Button type="button" variant="outline" onClick={handleCreatePix} disabled={isCreatingPayment}>
+                <Button type="button" variant="outline" onClick={() => handleCreatePix('rent')} disabled={isCreatingPayment}>
                   Gerar PIX agora
                 </Button>
                 <AlertDialogAction onClick={() => handleCreatePayment('rent')} disabled={isCreatingPayment}>
@@ -176,7 +176,7 @@ export default function TenantPaymentsPage() {
             <CardHeader><CardTitle>{tax.label}</CardTitle><CardDescription>Pagamento separado do aluguel.</CardDescription></CardHeader>
             <CardContent className="flex items-center justify-between gap-4">
               <div><p className="text-lg font-semibold">R$ {tax.amount.toFixed(2)}</p><p className="text-sm text-muted-foreground">Vencimento: dia {tax.dueDay}</p></div>
-              <Button onClick={() => handleCreatePayment(tax.kind)} disabled={isCreatingPayment}><CreditCard className="mr-2 h-4 w-4" />Pagar</Button>
+              <Button onClick={() => handleCreatePix(tax.kind)} disabled={isCreatingPayment}><CreditCard className="mr-2 h-4 w-4" />Gerar PIX</Button>
             </CardContent>
           </Card>
         ))}

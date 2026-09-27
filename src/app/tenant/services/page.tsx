@@ -54,6 +54,7 @@ export default function TenantServicesPage() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [services, setServices] = useState<Array<ServiceItemType & {active: boolean}>>([]);
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
+  const [pixPayment, setPixPayment] = useState<{qrCode: string; qrCodeBase64?: string} | null>(null);
 
   useEffect(() => {
     fetch('/api/settings/payments').then(async response => {
@@ -143,10 +144,37 @@ export default function TenantServicesPage() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full" size="lg" disabled={totalAmount === 0 || isCreatingPayment} onClick={handleCreatePayment}>
-              {isCreatingPayment ? 'Abrindo checkout...' : 'Solicitar e pagar com PIX ou cartão'}
-            </Button>
+            <div className="flex w-full flex-col gap-2 sm:flex-row">
+              <Button className="w-full" size="lg" disabled={totalAmount === 0 || isCreatingPayment} onClick={handleCreatePayment}>
+                {isCreatingPayment ? 'Abrindo checkout...' : 'Pagar com cartão ou boleto'}
+              </Button>
+              <Button className="w-full" size="lg" variant="outline" disabled={totalAmount === 0 || isCreatingPayment} onClick={async () => {
+                setIsCreatingPayment(true);
+                try {
+                  const response = await fetch('/api/payments/pix', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({kind: 'services', items: Object.entries(cart).filter(([, quantity]) => quantity > 0).map(([id, quantity]) => ({id, quantity}))})});
+                  const data = await response.json() as {qrCode?: string; qrCodeBase64?: string; ticketUrl?: string; error?: string};
+                  if (!response.ok || !data.qrCode) throw new Error(data.error || 'Não foi possível gerar o PIX.');
+                  setPixPayment({qrCode: data.qrCode, qrCodeBase64: data.qrCodeBase64});
+                } catch (error) {
+                  toast({variant: 'destructive', title: 'PIX indisponível', description: error instanceof Error ? error.message : 'Tente novamente.'});
+                } finally {
+                  setIsCreatingPayment(false);
+                }
+              }}>
+                Gerar PIX
+              </Button>
+            </div>
           </CardFooter>
+        </Card>
+      )}
+
+      {pixPayment && (
+        <Card className="shadow-md">
+          <CardHeader><CardTitle>PIX dos serviços</CardTitle><CardDescription>Escaneie o QR Code ou copie o código no aplicativo do seu banco.</CardDescription></CardHeader>
+          <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+            {pixPayment.qrCodeBase64 && <img src={`data:image/png;base64,${pixPayment.qrCodeBase64}`} alt="QR Code PIX dos serviços" className="h-56 w-56 rounded border p-2" />}
+            <p className="w-full break-all rounded-md bg-secondary p-3 font-mono text-xs">{pixPayment.qrCode}</p>
+          </CardContent>
         </Card>
       )}
     </div>
