@@ -88,3 +88,24 @@
     /* font-family removed to allow Next/Font to take precedence */
   }
 }
+
+@media print {
+  body:has(.contract-page) {
+    background: white;
+  }
+
+  body:has(.contract-page) > * {
+    visibility: hidden;
+  }
+
+  body:has(.contract-page) .contract-page,
+  body:has(.contract-page) .contract-page * {
+    visibility: visible;
+  }
+
+  body:has(.contract-page) .contract-page {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+  }
+}

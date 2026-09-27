@@ -1,71 +1,40 @@
+import type {Property, Tenant} from '@/lib/mockData';
 
-"use client";
-
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FileText, CalendarDays, UserCircle, Home, Landmark, CircleDollarSign } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import React from "react";
-import { getTenantById, getPropertyById, type Tenant, type Property } from "@/lib/mockData";
-
-// Simulação do ID do inquilino logado. Em um app real, viria do contexto de autenticação.
-const MOCK_LOGGED_IN_TENANT_ID = 't2'; // João Santos (dados genéricos)
-
-const constructorDetails = {
+export const constructorDetails = {
   nome: "CONSTRUTORA EARLEN LTDA",
   cnpj: "08.315.079/0001-51",
   enderecoCompleto: "Avenida Flávio Ribeiro Coutinho, 707, Manaíra, João Pessoa, Paraíba",
-};
-
-const formatDateForDisplay = (dateString: string | undefined): string => {
-  if (!dateString) return '-';
-  const parts = dateString.split('-');
-  if (parts.length !== 3) return dateString;
-  
-  const year = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) -1; // Mês (0-indexado)
-  const day = parseInt(parts[2], 10);
-  
-  const localDate = new Date(year, month, day);
-  if (isNaN(localDate.getTime())) return dateString; // Retorna original se data inválida
-  return localDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
 const formatDateForContract = (dateString: string | undefined): string => {
   if (!dateString) return 'Data não definida';
   const parts = dateString.split('-');
   if (parts.length !== 3) return dateString;
-
   const year = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) - 1; // Mês (0-indexado)
+  const month = parseInt(parts[1], 10) - 1;
   const day = parseInt(parts[2], 10);
   const date = new Date(year, month, day);
-  
-  if (isNaN(date.getTime())) return dateString; // Retorna original se data inválida
-  
+  if (isNaN(date.getTime())) return dateString;
   const dayFormatted = date.getDate();
-  const monthFormatted = date.toLocaleDateString('pt-BR', { month: 'long' });
+  const monthFormatted = date.toLocaleDateString('pt-BR', {month: 'long'});
   const yearFormatted = date.getFullYear();
   return `${dayFormatted} de ${monthFormatted} de ${yearFormatted}`;
 };
 
-const getLeaseTemplate = (tenant: Tenant, property: Property) => {
+export const getLeaseTemplate = (tenant: Tenant, property: Property) => {
   const contractStartDateFormatted = formatDateForContract(tenant.leaseStartDate);
   const contractEndDateFormatted = formatDateForContract(tenant.leaseEndDate);
-  const todayFormatted = formatDateForContract(new Date().toISOString().split('T')[0]); // Data da "assinatura"
-
-  let durationMonths = 6; 
+  const todayFormatted = formatDateForContract(new Date().toISOString().split('T')[0]);
+  let durationMonths = 6;
   if (tenant.leaseStartDate && tenant.leaseEndDate) {
     const start = new Date(tenant.leaseStartDate);
     const end = new Date(tenant.leaseEndDate);
     if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-        const adjustedEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate() + 1);
-        durationMonths = (adjustedEnd.getFullYear() - start.getFullYear()) * 12 + (adjustedEnd.getMonth() - start.getMonth());
-        if (durationMonths <= 0) durationMonths = 6; 
+      const adjustedEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate() + 1);
+      durationMonths = (adjustedEnd.getFullYear() - start.getFullYear()) * 12 + (adjustedEnd.getMonth() - start.getMonth());
+      if (durationMonths <= 0) durationMonths = 6;
     }
   }
-
 
   return `
 CONTRATO DE LOCAÇÃO DE IMÓVEL
@@ -98,7 +67,7 @@ CLÁUSULA 4ª – PRAZO DE LOCAÇÃO
 
 CLÁUSULA 5ª – RETRIBUIÇÃO DO CONTRATO
 
-5.1. O valor mensal da locação será de R$ ${property.rent_amount.toFixed(2)} (${(property.rent_amount).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace("R$", "").trim()} reais) e deve ser pago até o dia 15 (quinze) de cada mês. Se esta data cair em dia não útil, o vencimento será prorrogado para o primeiro dia útil seguinte.
+5.1. O valor mensal da locação será de R$ ${property.rent_amount.toFixed(2)} (${property.rent_amount.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}).replace("R$", "").trim()} reais) e deve ser pago até o dia 15 (quinze) de cada mês. Se esta data cair em dia não útil, o vencimento será prorrogado para o primeiro dia útil seguinte.
 
 5.2. Em caso de atraso, o(a) LOCATÁRIO(A) pagará multa de 10% sobre o valor do débito, além de correção monetária e juros moratórios de 1% (um por cento) ao mês; observando-se a inadimplência no pagamento do aluguel mensal, dentro do prazo estabelecido neste contrato, fica a CONSTRUTORA EARLEN LTDA, desde já, autorizada a emitir TÍTULO DE CRÉDITO em nome dos coobrigações (LOCATÁRIO/FIADOR), abaixo assinados, representativo do valor do aluguel e mais despesas inerentes. Não havendo pagamento do débito incluimos seus nomes no serviço de proteção de crédito ou similares.
 
@@ -138,7 +107,7 @@ CLÁUSULA 10ª – DAS PENALIDADES E MULTAS CONTRATUAIS
 
 CLÁUSULA 11ª – GARANTIAS LOCATÍCIAS
 
-11.1. O contrato conta com garantia pessoal através de fiança prestada por [NOME_FIADOR], brasileiro(a), [ESTADO_CIVIL_FIADOR], [PROFISSAO_FIADOR], portador(a) da cédula de identidade nº [RG_FIADOR] SSP/PB, inscrito(a) no CPF/MF nº [CPF_FIADOR], e seu cônjuge (se aplicável) [NOME_CONJUGE_FIADOR], brasileiro(a), portador(a) da cédula de identidade nº [RG_CONJUGE_FIADOR], inscrito(a) no CPF/MF nº [CPF_CONJUGE_FIADOR] residentes e domiciliados em [ENDERECO_FIADOR], Fone:[TELEFONE_FIADOR], e-mail: [EMAIL_FIADOR]. Esta fiança é solidária e perdura mesmo após o término do prazo contratual.
+11.1. O contrato conta com garantia pessoal através de fiança prestada por [NOME_FIADOR], brasileiro(a), [ESTADO_CIVIL_FIADOR], [PROFISSAO_FIADOR], portador(a) da cédula de identidade nº [RG_FIADOR] SSP/PB, inscrito(a) no CPF/MF nº [CPF_FIADOR], e seu cônjuge (se aplicável) [NOME_CONJUGE_FIADOR], brasileiro(a), portador(a) da cédula de identidade nº [RG_CONJUGE_FIADOR] SSP/PB, inscrito(a) no CPF/MF nº [CPF_FIADOR], residentes e domiciliados em [ENDERECO_FIADOR], Fone:[TELEFONE_FIADOR], e-mail: [EMAIL_FIADOR]. Esta fiança é solidária e perdura mesmo após o término do prazo contratual.
 
 CLÁUSULA 12ª – LEGISLAÇÃO APLICÁVEL
 
@@ -169,119 +138,3 @@ Nome: CPF:
 Nome: CPF:
 `;
 };
-
-
-export default function TenantLeasePage() {
-  const [tenant, setTenant] = React.useState<Tenant | null>(null);
-  const [property, setProperty] = React.useState<Property | null>(null);
-
-  React.useEffect(() => {
-    const currentTenant = getTenantById(MOCK_LOGGED_IN_TENANT_ID);
-    if (currentTenant) {
-      setTenant(currentTenant);
-      const currentProperty = getPropertyById(currentTenant.propertyId);
-      if (currentProperty) {
-        setProperty(currentProperty);
-      }
-    }
-  }, []);
-
-
-  const leaseDetails = tenant && property ? {
-    propertyName: `${property.name} - Unidade ${tenant.apartmentUnit}`,
-    address: `${property.address}, ${property.city}, ${property.state}`,
-    tenantName: tenant.name,
-    landlordName: constructorDetails.nome,
-    leaseStartDate: tenant.leaseStartDate,
-    leaseEndDate: tenant.leaseEndDate,
-    rentAmount: property.rent_amount,
-    rentDueDate: "Dia 15 de cada mês", 
-    securityDeposit: 0, // Placeholder, not in mockData
-  } : null;
-
-  if (!tenant || !property || !leaseDetails) {
-    return (
-      <div className="space-y-8 text-center">
-        <h1 className="text-3xl font-bold text-primary mb-2">Detalhes do Meu Contrato</h1>
-        <p className="text-muted-foreground">Carregando dados do contrato...</p>
-      </div>
-    );
-  }
-
-
-  return (
-    <div className="space-y-8">
-      <section>
-        <h1 className="text-3xl font-bold text-primary mb-2">Detalhes do Meu Contrato</h1>
-        <p className="text-muted-foreground">Revise os termos e condições do seu contrato de locação atual.</p>
-      </section>
-
-      <Card className="shadow-md">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <FileText className="mr-2 h-6 w-6 text-primary" />
-            Resumo do Contrato de Locação
-          </CardTitle>
-          <CardDescription>
-            Imóvel: {leaseDetails.propertyName}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><Home className="h-5 w-5 mr-2 text-accent"/>Endereço do Imóvel</h3>
-              <p className="text-sm text-muted-foreground">{leaseDetails.address}</p>
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><UserCircle className="h-5 w-5 mr-2 text-accent"/>Inquilino</h3>
-              <p className="text-sm text-muted-foreground">{leaseDetails.tenantName}</p>
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><Landmark className="h-5 w-5 mr-2 text-accent"/>Proprietário/Agente</h3>
-              <p className="text-sm text-muted-foreground">{leaseDetails.landlordName}</p>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><CalendarDays className="h-5 w-5 mr-2 text-accent"/>Data de Início do Contrato</h3>
-              <p className="text-sm text-muted-foreground">{formatDateForDisplay(leaseDetails.leaseStartDate)}</p>
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><CalendarDays className="h-5 w-5 mr-2 text-accent"/>Data de Término do Contrato</h3>
-              <p className="text-sm text-muted-foreground">{formatDateForDisplay(leaseDetails.leaseEndDate)}</p>
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><CircleDollarSign className="h-5 w-5 mr-2 text-accent" />Aluguel Mensal</h3>
-              <p className="text-sm text-muted-foreground">R$ {leaseDetails.rentAmount.toFixed(2)}</p>
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-medium text-foreground flex items-center"><CalendarDays className="h-5 w-5 mr-2 text-accent" />Data de Vencimento do Aluguel</h3>
-              <p className="text-sm text-muted-foreground">{leaseDetails.rentDueDate}</p>
-            </div>
-            {leaseDetails.securityDeposit > 0 && (
-              <div className="space-y-1">
-                <h3 className="font-medium text-foreground">Depósito de Segurança</h3>
-                <p className="text-sm text-muted-foreground">R$ {leaseDetails.securityDeposit.toFixed(2)}</p>
-              </div>
-            )}
-          </div>
-          
-          <Separator />
-
-          <div>
-            <Button asChild className="w-full md:w-auto">
-              <Link href="/tenant/lease/contract" target="_blank" rel="noreferrer">
-                <FileText className="mr-2 h-4 w-4" /> Abrir contrato completo
-              </Link>
-            </Button>
-            <p className="mt-2 text-xs text-muted-foreground">O contrato será aberto em uma nova página, com opção de imprimir ou salvar como PDF.</p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
