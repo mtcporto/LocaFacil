@@ -12,7 +12,8 @@ import React from "react";
 
 export default function TenantPaymentsPage() {
   const { toast } = useToast();
-  const [paymentHistory, setPaymentHistory] = React.useState<Array<{id: string; provider_payment_id?: string | null; created_at: string; amount: number; status: string; method: string | null; description: string}>>([]);
+  type PaymentRecord = {id: string; provider_payment_id?: string | null; created_at: string; amount: number; status: string; method: string | null; description: string};
+  const [paymentHistory, setPaymentHistory] = React.useState<PaymentRecord[]>([]);
   const [rentAmount, setRentAmount] = React.useState(1);
   const [rentDueDay, setRentDueDay] = React.useState(5);
   const [iptuAmount, setIptuAmount] = React.useState(1);
@@ -24,6 +25,10 @@ export default function TenantPaymentsPage() {
   const [isPixCopied, setIsPixCopied] = React.useState(false);
   const [selectedReceipt, setSelectedReceipt] = React.useState<typeof paymentHistory[number] | null>(null);
   const [receiptMode, setReceiptMode] = React.useState<'summary' | 'full'>('summary');
+  const [statusFilter, setStatusFilter] = React.useState<'all' | 'approved' | 'pending' | 'other'>('all');
+  const [periodFilter, setPeriodFilter] = React.useState<'all' | 'week' | 'month'>('all');
+  const [pageSize, setPageSize] = React.useState(10);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const approvalToastShown = React.useRef(false);
 
   React.useEffect(() => {
@@ -90,19 +95,37 @@ export default function TenantPaymentsPage() {
     return status;
   };
 
+  const isExpiredPending = (payment: PaymentRecord) => payment.status === 'pending' && Date.now() - new Date(payment.created_at).getTime() > 24 * 60 * 60 * 1000;
+  const getPaymentStatus = (payment: PaymentRecord) => isExpiredPending(payment) ? 'expired' : payment.status;
+
   const getStatusIcon = (status: string) => {
     if (status === "approved" || status === "Pago") return <CheckCircle className="h-4 w-4 text-green-600" />;
     if (status === "pending" || status === "in_process" || status === "Pendente") return <Clock className="h-4 w-4 text-yellow-600" />;
-    if (status === "rejected" || status === "cancelled" || status === "refunded" || status === "charged_back" || status === "Atrasado" || status === "Vencido") return <AlertCircle className="h-4 w-4 text-red-600" />;
+    if (status === "rejected" || status === "cancelled" || status === "refunded" || status === "charged_back" || status === "expired" || status === "Atrasado" || status === "Vencido") return <AlertCircle className="h-4 w-4 text-red-600" />;
     return null;
   };
   
   const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     if (status === "approved" || status === "Pago") return "default";
     if (status === "pending" || status === "in_process" || status === "Pendente") return "outline";
-    if (status === "rejected" || status === "cancelled" || status === "refunded" || status === "charged_back" || status === "Atrasado" || status === "Vencido") return "destructive";
+    if (status === "rejected" || status === "cancelled" || status === "refunded" || status === "charged_back" || status === "expired" || status === "Atrasado" || status === "Vencido") return "destructive";
     return "secondary";
   };
+
+  const filteredPayments = paymentHistory.filter(payment => {
+    const displayStatus = getPaymentStatus(payment);
+    const matchesStatus = statusFilter === 'all'
+      || (statusFilter === 'approved' && displayStatus === 'approved')
+      || (statusFilter === 'pending' && displayStatus === 'pending')
+      || (statusFilter === 'other' && !['approved', 'pending'].includes(displayStatus));
+    const age = Date.now() - new Date(payment.created_at).getTime();
+    const matchesPeriod = periodFilter === 'all'
+      || (periodFilter === 'week' && age <= 7 * 24 * 60 * 60 * 1000)
+      || (periodFilter === 'month' && age <= 30 * 24 * 60 * 60 * 1000);
+    return matchesStatus && matchesPeriod;
+  });
+  const totalPages = Math.max(1, Math.ceil(filteredPayments.length / pageSize));
+  const visiblePayments = filteredPayments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleCreatePayment = async (kind: 'rent' | 'iptu' | 'tcr' = 'rent') => {
     setIsCreatingPayment(true);
@@ -228,10 +251,33 @@ export default function TenantPaymentsPage() {
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle>Histórico de Pagamentos</CardTitle>
-          <CardDescription>Registro de todos os seus pagamentos de aluguel anteriores.</CardDescription>
+          <CardDescription>Pagamentos recentes e anteriores, com filtros e paginação.</CardDescription>
         </CardHeader>
         <CardContent>
-          {paymentHistory.length > 0 ? (
+          <div className="mb-4 flex flex-col gap-3 rounded-md border bg-muted/20 p-3 md:flex-row md:items-end">
+            <label className="flex flex-1 flex-col gap-1 text-sm font-medium">Status
+              <select className="h-9 rounded-md border bg-background px-3 font-normal" value={statusFilter} onChange={event => { setStatusFilter(event.target.value as typeof statusFilter); setCurrentPage(1); }}>
+                <option value="all">Todos</option>
+                <option value="approved">Aprovados</option>
+                <option value="pending">Pendentes atuais</option>
+                <option value="other">Expirados e outros</option>
+              </select>
+            </label>
+            <label className="flex flex-1 flex-col gap-1 text-sm font-medium">Período
+              <select className="h-9 rounded-md border bg-background px-3 font-normal" value={periodFilter} onChange={event => { setPeriodFilter(event.target.value as typeof periodFilter); setCurrentPage(1); }}>
+                <option value="all">Todo o período</option>
+                <option value="week">Última semana</option>
+                <option value="month">Último mês</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-sm font-medium">Por página
+              <select className="h-9 rounded-md border bg-background px-3 font-normal" value={pageSize} onChange={event => { setPageSize(Number(event.target.value)); setCurrentPage(1); }}>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </label>
+          </div>
+          {filteredPayments.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -244,14 +290,14 @@ export default function TenantPaymentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paymentHistory.map((payment) => (
+                {visiblePayments.map((payment) => (
                   <TableRow key={payment.id}>
                     <TableCell>{formatDate(payment.created_at.slice(0, 10))}</TableCell>
                     <TableCell>{payment.description}</TableCell>
                     <TableCell>{payment.amount.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusBadgeVariant(payment.status)} className={`px-2 py-0.5 ${payment.status === "approved" ? "bg-green-100 text-green-700 border-green-300" : payment.status === "pending" || payment.status === "in_process" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
-                        {getStatusIcon(payment.status)} <span className="ml-1">{getStatusLabel(payment.status)}</span>
+                      <Badge variant={getStatusBadgeVariant(getPaymentStatus(payment))} className={`px-2 py-0.5 ${getPaymentStatus(payment) === "approved" ? "bg-green-100 text-green-700 border-green-300" : getPaymentStatus(payment) === "pending" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
+                        {getStatusIcon(getPaymentStatus(payment))} <span className="ml-1">{getPaymentStatus(payment) === 'expired' ? 'Expirada / não paga' : getStatusLabel(payment.status)}</span>
                       </Badge>
                     </TableCell>
                     <TableCell>{payment.method || 'Mercado Pago'}</TableCell>
@@ -263,8 +309,16 @@ export default function TenantPaymentsPage() {
               </TableBody>
             </Table>
           ) : (
-            <p className="text-muted-foreground text-center py-8">Nenhum histórico de pagamento disponível.</p>
+            <p className="py-8 text-center text-muted-foreground">Nenhum pagamento encontrado com esses filtros.</p>
           )}
+          {filteredPayments.length > 0 && <div className="mt-4 flex items-center justify-between border-t pt-4 text-sm">
+            <span className="text-muted-foreground">Mostrando {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, filteredPayments.length)} de {filteredPayments.length}</span>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(page => page - 1)}>Anterior</Button>
+              <span className="flex items-center px-2">{currentPage} / {totalPages}</span>
+              <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(page => page + 1)}>Próxima</Button>
+            </div>
+          </div>}
         </CardContent>
       </Card>
 
