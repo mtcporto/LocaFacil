@@ -5,13 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockServices, type ServiceItem as ServiceItemType } from "@/lib/mockData";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import type { ServiceItem as ServiceItemType } from "@/lib/mockData";
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, Trash2, Copy, Check, ConciergeBell } from 'lucide-react';
-
-const PIX_KEY = "08.315.079/0001-51"; // CNPJ
-const PIX_KEY_TYPE = "CNPJ";
+import { ShoppingCart, ConciergeBell } from 'lucide-react';
 
 interface CartItem extends ServiceItemType {
   quantity: number;
@@ -56,18 +52,27 @@ export default function TenantServicesPage() {
   const { toast } = useToast();
   const [cart, setCart] = useState<Record<string, number>>({});
   const [totalAmount, setTotalAmount] = useState(0);
-  const [isPixCopied, setIsPixCopied] = React.useState(false);
+  const [services, setServices] = useState<Array<ServiceItemType & {active: boolean}>>([]);
+  const [isCreatingPayment, setIsCreatingPayment] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/settings/payments').then(async response => {
+      if (!response.ok) throw new Error();
+      const data = await response.json() as {services?: Array<ServiceItemType & {active: boolean}>};
+      setServices((data.services || []).filter(service => service.active));
+    }).catch(() => toast({variant: 'destructive', title: 'Não foi possível carregar os serviços'}));
+  }, [toast]);
 
   useEffect(() => {
     let currentTotal = 0;
     for (const serviceId in cart) {
-      const service = mockServices.find(s => s.id === serviceId);
+      const service = services.find(s => s.id === serviceId);
       if (service && cart[serviceId] > 0) {
         currentTotal += service.price * cart[serviceId];
       }
     }
     setTotalAmount(currentTotal);
-  }, [cart]);
+  }, [cart, services]);
 
   const handleQuantityChange = (id: string, quantity: number) => {
     setCart(prevCart => ({
@@ -76,14 +81,17 @@ export default function TenantServicesPage() {
     }));
   };
 
-  const handleCopyToClipboard = async (text: string) => {
+  const handleCreatePayment = async () => {
+    setIsCreatingPayment(true);
     try {
-      await navigator.clipboard.writeText(text);
-      setIsPixCopied(true);
-      toast({ title: "Chave PIX copiada!", description: "Use no seu app bancário." });
-      setTimeout(() => setIsPixCopied(false), 3000);
-    } catch (err) {
-      toast({ variant: "destructive", title: "Erro ao copiar", description: "Não foi possível copiar a chave PIX." });
+      const response = await fetch('/api/payments', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({kind: 'services', items: Object.entries(cart).filter(([, quantity]) => quantity > 0).map(([id, quantity]) => ({id, quantity}))})});
+      const data = await response.json() as {checkoutUrl?: string; error?: string};
+      if (!response.ok || !data.checkoutUrl) throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
+      window.location.assign(data.checkoutUrl);
+    } catch (error) {
+      toast({variant: 'destructive', title: 'Pagamento indisponível', description: error instanceof Error ? error.message : 'Tente novamente.'});
+    } finally {
+      setIsCreatingPayment(false);
     }
   };
   
@@ -100,7 +108,7 @@ export default function TenantServicesPage() {
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockServices.map(service => (
+        {services.map(service => (
           <ServiceItemCard 
             key={service.id} 
             item={service} 
@@ -120,7 +128,7 @@ export default function TenantServicesPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             <ul className="space-y-1">
-            {mockServices.filter(s => cart[s.id] > 0).map(service => (
+            {services.filter(s => cart[s.id] > 0).map(service => (
               <li key={service.id} className="flex justify-between items-center text-sm">
                 <span>{service.name} (x{cart[service.id]})</span>
                 <span>R$ {(service.price * cart[service.id]).toFixed(2)}</span>
@@ -135,41 +143,9 @@ export default function TenantServicesPage() {
             </div>
           </CardContent>
           <CardFooter>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="w-full" size="lg" disabled={totalAmount === 0}>
-                  Solicitar e Pagar com PIX
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Pagamento via PIX</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Para concluir seu pedido de serviços no valor de <strong className="text-foreground">R$ {totalAmount.toFixed(2)}</strong>, utilize a chave PIX abaixo em seu aplicativo bancário.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="my-4 p-4 bg-secondary rounded-md space-y-2">
-                  <p className="text-sm text-muted-foreground">Chave PIX ({PIX_KEY_TYPE}):</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-mono text-primary break-all">{PIX_KEY}</p>
-                    <Button variant="ghost" size="sm" onClick={() => handleCopyToClipboard(PIX_KEY)}>
-                      {isPixCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                      <span className="ml-2">{isPixCopied ? "Copiada!" : "Copiar"}</span>
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Beneficiário: CONSTRUTORA EARLEN LTDA</p>
-                </div>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => {
-                      toast({ title: "Pedido de Serviço Registrado!", description: "Seu pedido foi enviado e o pagamento está sendo processado (simulação)." });
-                      setCart({}); // Limpa o carrinho após o "pagamento"
-                  }}>
-                    Já Paguei
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button className="w-full" size="lg" disabled={totalAmount === 0 || isCreatingPayment} onClick={handleCreatePayment}>
+              {isCreatingPayment ? 'Abrindo checkout...' : 'Solicitar e pagar com PIX ou cartão'}
+            </Button>
           </CardFooter>
         </Card>
       )}

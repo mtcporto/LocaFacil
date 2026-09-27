@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import ConstructorInfoForm from "@/components/settings/ConstructorInfoForm";
+import PaymentSettingsForm from "@/components/settings/PaymentSettingsForm";
 import { Settings } from "lucide-react";
 
 export default function LandlordSettingsPage() {
@@ -25,6 +26,16 @@ export default function LandlordSettingsPage() {
         </CardHeader>
         <CardContent>
           <ConstructorInfoForm />
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-md">
+        <CardHeader>
+          <CardTitle>Valores e cobranças</CardTitle>
+          <CardDescription>Configure o aluguel, o vencimento e os serviços disponíveis para pagamento.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PaymentSettingsForm />
         </CardContent>
       </Card>
     </div>

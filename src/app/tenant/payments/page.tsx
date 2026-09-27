@@ -13,19 +13,22 @@ import React from "react";
 export default function TenantPaymentsPage() {
   const { toast } = useToast();
   const [paymentHistory, setPaymentHistory] = React.useState<Array<{id: string; created_at: string; amount: number; status: string; method: string | null}>>([]);
+  const [rentAmount, setRentAmount] = React.useState(1);
+  const [rentDueDay, setRentDueDay] = React.useState(5);
   const [isCreatingPayment, setIsCreatingPayment] = React.useState(false);
 
   React.useEffect(() => {
-    fetch('/api/payments').then(async response => {
-      if (!response.ok) return;
-      const data = await response.json() as {payments?: typeof paymentHistory};
-      setPaymentHistory(data.payments || []);
+    Promise.all([fetch('/api/payments'), fetch('/api/settings/payments')]).then(async ([paymentsResponse, settingsResponse]) => {
+      if (paymentsResponse.ok) setPaymentHistory((await paymentsResponse.json()).payments || []);
+      if (settingsResponse.ok) {
+        const settings = await settingsResponse.json() as {rentAmount?: number; rentDueDay?: number};
+        setRentAmount(settings.rentAmount || 1);
+        setRentDueDay(settings.rentDueDay || 5);
+      }
     }).catch(() => undefined);
   }, []);
 
   const nextPayment = {
-    dueDate: "2024-07-05",
-    amount: 950.00, 
     status: "Pendente", 
   };
   
@@ -62,7 +65,7 @@ export default function TenantPaymentsPage() {
       const response = await fetch('/api/payments', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({amount: nextPayment.amount, description: 'Aluguel mensal - LocaFácil'}),
+        body: JSON.stringify({kind: 'rent'}),
       });
       const data = await response.json() as {checkoutUrl?: string; error?: string};
       if (!response.ok || !data.checkoutUrl) throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
@@ -99,8 +102,8 @@ export default function TenantPaymentsPage() {
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-lg font-semibold">R$ {nextPayment.amount.toFixed(2)}</p>
-              <p className="text-sm text-muted-foreground">Vencimento: {formatDate(nextPayment.dueDate)}</p>
+              <p className="text-lg font-semibold">R$ {rentAmount.toFixed(2)}</p>
+              <p className="text-sm text-muted-foreground">Vencimento: dia {rentDueDay}</p>
             </div>
             <Badge variant={getStatusBadgeVariant(nextPayment.status)} className={`px-3 py-1 text-sm ${nextPayment.status === "Pago" ? "bg-green-100 text-green-700 border-green-300" : nextPayment.status === "Pendente" ? "bg-yellow-100 text-yellow-700 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}>
               {getStatusIcon(nextPayment.status)}<span className="ml-1">{nextPayment.status}</span>
@@ -116,7 +119,7 @@ export default function TenantPaymentsPage() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Pagamento via Mercado Pago</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Você será levado ao checkout seguro do Mercado Pago para escolher PIX ou cartão e concluir o pagamento de <strong className="text-foreground">R$ {nextPayment.amount.toFixed(2)}</strong>.
+                  Você será levado ao checkout seguro do Mercado Pago para escolher PIX ou cartão e concluir o pagamento de <strong className="text-foreground">R$ {rentAmount.toFixed(2)}</strong>.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

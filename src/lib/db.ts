@@ -1,5 +1,6 @@
 import {createClient, type Client} from '@libsql/client';
 import {defaultConstructorInfo, type ConstructorInfo} from '@/lib/constructor';
+import {mockServices, type ServiceItem} from '@/lib/mockData';
 
 const client: Client | null = process.env.TURSO_DATABASE_URL
   ? createClient({
@@ -117,5 +118,44 @@ export async function saveConstructorInfo(info: ConstructorInfo): Promise<void> 
   await database.execute({
     sql: `INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`,
     args: ['constructor', JSON.stringify(info)],
+  });
+}
+
+export type PaymentSettings = {
+  rentAmount: number;
+  rentDueDay: number;
+  services: Array<Pick<ServiceItem, 'id' | 'name' | 'description' | 'price'> & {active: boolean}>;
+};
+
+export const defaultPaymentSettings: PaymentSettings = {
+  rentAmount: 1,
+  rentDueDay: 5,
+  services: mockServices.map(({id, name, description}) => ({id, name, description, price: 1, active: true})),
+};
+
+export async function getPaymentSettings(): Promise<PaymentSettings> {
+  if (!client) return defaultPaymentSettings;
+  await ensureDatabase();
+  const result = await client.execute({sql: 'SELECT value FROM app_settings WHERE key = ?', args: ['payments']});
+  const value = result.rows[0]?.value;
+  if (typeof value !== 'string') return defaultPaymentSettings;
+  try {
+    const parsed = JSON.parse(value) as Partial<PaymentSettings>;
+    return {
+      rentAmount: Number(parsed.rentAmount) > 0 ? Number(parsed.rentAmount) : defaultPaymentSettings.rentAmount,
+      rentDueDay: Number(parsed.rentDueDay) >= 1 && Number(parsed.rentDueDay) <= 28 ? Number(parsed.rentDueDay) : defaultPaymentSettings.rentDueDay,
+      services: Array.isArray(parsed.services) ? parsed.services.map(service => ({...service, active: service.active !== false})) : defaultPaymentSettings.services,
+    };
+  } catch {
+    return defaultPaymentSettings;
+  }
+}
+
+export async function savePaymentSettings(settings: PaymentSettings): Promise<void> {
+  const database = getDatabase();
+  await ensureDatabase();
+  await database.execute({
+    sql: `INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`,
+    args: ['payments', JSON.stringify(settings)],
   });
 }
