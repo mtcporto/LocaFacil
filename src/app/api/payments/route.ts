@@ -1,7 +1,7 @@
 import {NextResponse} from 'next/server';
 import {z} from 'zod';
 import {getCurrentSession} from '@/lib/auth';
-import {createPayment, getPaymentSettings, listPaymentsForUser, setPaymentPreference} from '@/lib/db';
+import {createPayment, getPaymentSettings, listPaymentsForUser, setPaymentPreference, updatePaymentFromProvider} from '@/lib/db';
 
 const createPaymentSchema = z.discriminatedUnion('kind', [
   z.object({kind: z.literal('rent')}),
@@ -13,6 +13,20 @@ const createPaymentSchema = z.discriminatedUnion('kind', [
 export async function GET() {
   const session = await getCurrentSession();
   if (session?.role !== 'tenant') return NextResponse.json({error: 'Não autorizado.'}, {status: 401});
+  const payments = await listPaymentsForUser(session.userId);
+  if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
+    await Promise.all(payments.filter(payment => payment.provider_payment_id && ['pending', 'in_process'].includes(payment.status)).map(async payment => {
+      const response = await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(payment.provider_payment_id as string)}`, {
+        headers: {Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`},
+        cache: 'no-store',
+      }).catch(() => null);
+      if (!response?.ok) return;
+      const providerPayment = await response.json().catch(() => null) as {status?: string; payment_method_id?: string} | null;
+      if (providerPayment?.status) {
+        await updatePaymentFromProvider({providerPaymentId: payment.provider_payment_id as string, externalReference: `locafacil:${payment.id}:${session.userId}`, status: providerPayment.status, method: providerPayment.payment_method_id || payment.method});
+      }
+    }));
+  }
   return NextResponse.json({payments: await listPaymentsForUser(session.userId)});
 }
 

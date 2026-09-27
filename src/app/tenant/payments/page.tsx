@@ -12,7 +12,7 @@ import React from "react";
 
 export default function TenantPaymentsPage() {
   const { toast } = useToast();
-  const [paymentHistory, setPaymentHistory] = React.useState<Array<{id: string; created_at: string; amount: number; status: string; method: string | null; description: string}>>([]);
+  const [paymentHistory, setPaymentHistory] = React.useState<Array<{id: string; provider_payment_id?: string | null; created_at: string; amount: number; status: string; method: string | null; description: string}>>([]);
   const [rentAmount, setRentAmount] = React.useState(1);
   const [rentDueDay, setRentDueDay] = React.useState(5);
   const [iptuAmount, setIptuAmount] = React.useState(1);
@@ -20,8 +20,9 @@ export default function TenantPaymentsPage() {
   const [tcrAmount, setTcrAmount] = React.useState(1);
   const [tcrDueDay, setTcrDueDay] = React.useState(15);
   const [isCreatingPayment, setIsCreatingPayment] = React.useState(false);
-  const [pixPayment, setPixPayment] = React.useState<{qrCode: string; qrCodeBase64?: string; ticketUrl?: string} | null>(null);
+  const [pixPayment, setPixPayment] = React.useState<{paymentId: string; qrCode: string; qrCodeBase64?: string; ticketUrl?: string} | null>(null);
   const [isPixCopied, setIsPixCopied] = React.useState(false);
+  const approvalToastShown = React.useRef(false);
 
   React.useEffect(() => {
     Promise.all([fetch('/api/payments'), fetch('/api/settings/payments')]).then(async ([paymentsResponse, settingsResponse]) => {
@@ -37,6 +38,31 @@ export default function TenantPaymentsPage() {
       }
     }).catch(() => undefined);
   }, []);
+
+  React.useEffect(() => {
+    if (!pixPayment?.paymentId) return;
+    let isActive = true;
+    const refreshPayment = async () => {
+      const response = await fetch('/api/payments', {cache: 'no-store'}).catch(() => null);
+      if (!response?.ok || !isActive) return;
+      const payments = (await response.json() as {payments?: typeof paymentHistory}).payments || [];
+      setPaymentHistory(payments);
+      const currentPayment = payments.find(payment => payment.provider_payment_id === pixPayment.paymentId);
+      if (currentPayment?.status === 'approved' && !approvalToastShown.current) {
+        approvalToastShown.current = true;
+        toast({title: 'Pagamento aprovado', description: 'O pagamento foi confirmado pelo Mercado Pago.'});
+      }
+    };
+    const interval = window.setInterval(refreshPayment, 5000);
+    return () => { isActive = false; window.clearInterval(interval); };
+  }, [pixPayment?.paymentId, toast]);
+
+  React.useEffect(() => {
+    const result = new URLSearchParams(window.location.search).get('payment');
+    if (result === 'success') toast({title: 'Pagamento aprovado', description: 'O Mercado Pago confirmou o pagamento.'});
+    if (result === 'pending') toast({title: 'Pagamento pendente', description: 'Aguardando a confirmação do Mercado Pago. O histórico será atualizado automaticamente.'});
+    if (result === 'failure') toast({variant: 'destructive', title: 'Pagamento não concluído', description: 'Nenhuma cobrança foi confirmada.'});
+  }, [toast]);
 
   const nextPayment = {
     status: "Pendente", 
@@ -98,9 +124,9 @@ export default function TenantPaymentsPage() {
     setIsCreatingPayment(true);
     try {
       const response = await fetch('/api/payments/pix', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({kind})});
-      const data = await response.json() as {qrCode?: string; qrCodeBase64?: string; ticketUrl?: string; error?: string};
+      const data = await response.json() as {paymentId?: string; qrCode?: string; qrCodeBase64?: string; ticketUrl?: string; error?: string};
       if (!response.ok || !data.qrCode) throw new Error(data.error || 'Não foi possível gerar o PIX.');
-      setPixPayment({qrCode: data.qrCode, qrCodeBase64: data.qrCodeBase64, ticketUrl: data.ticketUrl});
+      setPixPayment({paymentId: data.paymentId || '', qrCode: data.qrCode, qrCodeBase64: data.qrCodeBase64, ticketUrl: data.ticketUrl});
     } catch (error) {
       toast({variant: 'destructive', title: 'PIX indisponível', description: error instanceof Error ? error.message : 'Tente novamente.'});
     } finally {
@@ -191,6 +217,9 @@ export default function TenantPaymentsPage() {
           <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
             {pixPayment.qrCodeBase64 && <img src={`data:image/png;base64,${pixPayment.qrCodeBase64}`} alt="QR Code PIX" className="h-56 w-56 rounded border p-2" />}
             <div className="w-full space-y-3">
+              {paymentHistory.find(payment => payment.provider_payment_id === pixPayment.paymentId)?.status === 'approved' && (
+                <div className="rounded-md border border-green-300 bg-green-50 p-3 text-sm font-medium text-green-800">Pagamento aprovado e confirmado.</div>
+              )}
               <p className="break-all rounded-md bg-secondary p-3 font-mono text-xs">{pixPayment.qrCode}</p>
               <Button type="button" variant="outline" onClick={async () => {await navigator.clipboard.writeText(pixPayment.qrCode); setIsPixCopied(true); setTimeout(() => setIsPixCopied(false), 2000);}}>
                 {isPixCopied ? <Check className="mr-2 h-4 w-4 text-green-600" /> : <Copy className="mr-2 h-4 w-4" />}

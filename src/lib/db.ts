@@ -38,6 +38,7 @@ export async function ensureDatabase(): Promise<void> {
 
 export type PaymentRecord = {
   id: string;
+  provider_payment_id: string | null;
   amount: number;
   status: string;
   method: string | null;
@@ -69,11 +70,12 @@ export async function listPaymentsForUser(userId: string): Promise<PaymentRecord
   const database = getDatabase();
   await ensureDatabase();
   const result = await database.execute({
-    sql: 'SELECT id, amount, status, method, description, created_at FROM payments WHERE user_id = ? ORDER BY created_at DESC',
+    sql: 'SELECT id, provider_payment_id, amount, status, method, description, created_at FROM payments WHERE user_id = ? ORDER BY created_at DESC',
     args: [userId],
   });
   return result.rows.map(row => ({
     id: String(row.id),
+    provider_payment_id: row.provider_payment_id == null ? null : String(row.provider_payment_id),
     amount: Number(row.amount),
     status: String(row.status),
     method: row.method == null ? null : String(row.method),
