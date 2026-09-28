@@ -96,8 +96,16 @@ export default function LoginForm() {
         <div className="relative py-1 text-center text-xs text-muted-foreground before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t before:border-border">
           <span className="relative bg-card px-3">ou</span>
         </div>
-        <Button type="button" variant="outline" className="w-full" asChild>
-          <a href="/api/auth/google">Continuar com Google</a>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-12 w-full rounded-full border-slate-300 bg-white font-semibold text-slate-800 shadow-sm hover:bg-slate-50 hover:text-slate-900"
+          asChild
+        >
+          <a href="/api/auth/google">
+            <span aria-hidden="true" className="text-lg font-bold text-[#4285F4]">G</span>
+            Continuar com Google
+          </a>
         </Button>
       </form>
     </Form>
