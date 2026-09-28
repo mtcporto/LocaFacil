@@ -103,7 +103,12 @@ export default function LoginForm() {
           asChild
         >
           <a href="/api/auth/google">
-            <span aria-hidden="true" className="text-lg font-bold text-[#4285F4]">G</span>
+            <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M21.35 12.27c0-.71-.06-1.4-.18-2.06H12v3.9h5.24a4.48 4.48 0 0 1-1.94 2.94v2.51h3.23c1.89-1.74 2.82-4.3 2.82-7.29Z" />
+              <path fill="#34A853" d="M12 21.5c2.7 0 4.96-.9 6.62-2.43l-3.23-2.51c-.9.6-2.05.95-3.39.95-2.61 0-4.82-1.76-5.61-4.13H3.05v2.59A10 10 0 0 0 12 21.5Z" />
+              <path fill="#FBBC05" d="M6.39 13.38A6.02 6.02 0 0 1 6.07 12c0-.48.11-.95.32-1.38V8.03H3.05A9.5 9.5 0 0 0 2 12c0 1.43.34 2.79 1.05 3.97l3.34-2.59Z" />
+              <path fill="#EA4335" d="M12 6.49c1.47 0 2.79.51 3.83 1.51l2.87-2.87C16.95 3.48 14.7 2.5 12 2.5a10 10 0 0 0-8.95 5.53l3.34 2.59C7.18 8.25 9.39 6.49 12 6.49Z" />
+            </svg>
             Continuar com Google
           </a>
         </Button>
