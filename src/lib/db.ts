@@ -26,6 +26,7 @@ export async function ensureDatabase(): Promise<void> {
         `CREATE TABLE IF NOT EXISTS app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
         `CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK (role IN ('landlord', 'tenant')), display_name TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
         `CREATE TABLE IF NOT EXISTS payments (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, external_reference TEXT NOT NULL UNIQUE, preference_id TEXT, provider_payment_id TEXT UNIQUE, amount REAL NOT NULL, status TEXT NOT NULL, method TEXT, description TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
+        `CREATE TABLE IF NOT EXISTS auth_rate_limits (key TEXT PRIMARY KEY, failures INTEGER NOT NULL DEFAULT 0, window_started_at INTEGER NOT NULL, blocked_until INTEGER NOT NULL DEFAULT 0)`,
       ]);
       await client.execute({
         sql: 'INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)',
@@ -34,6 +35,56 @@ export async function ensureDatabase(): Promise<void> {
     })();
   }
   await schemaPromise;
+}
+
+export type LoginRateLimit = {
+  blocked: boolean;
+  retryAfterSeconds: number;
+};
+
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_FAILURES = 5;
+
+export async function checkLoginRateLimit(key: string): Promise<LoginRateLimit> {
+  const database = getDatabase();
+  await ensureDatabase();
+  const result = await database.execute({sql: 'SELECT failures, window_started_at, blocked_until FROM auth_rate_limits WHERE key = ?', args: [key]});
+  const row = result.rows[0];
+  if (!row) return {blocked: false, retryAfterSeconds: 0};
+
+  const now = Date.now();
+  const blockedUntil = Number(row.blocked_until);
+  if (blockedUntil > now) {
+    return {blocked: true, retryAfterSeconds: Math.ceil((blockedUntil - now) / 1000)};
+  }
+  if (now - Number(row.window_started_at) >= LOGIN_WINDOW_MS) {
+    await database.execute({sql: 'DELETE FROM auth_rate_limits WHERE key = ?', args: [key]});
+    return {blocked: false, retryAfterSeconds: 0};
+  }
+  return {blocked: false, retryAfterSeconds: 0};
+}
+
+export async function recordLoginFailure(key: string): Promise<void> {
+  const database = getDatabase();
+  await ensureDatabase();
+  const now = Date.now();
+  const result = await database.execute({sql: 'SELECT failures, window_started_at FROM auth_rate_limits WHERE key = ?', args: [key]});
+  const row = result.rows[0];
+  const withinWindow = row && now - Number(row.window_started_at) < LOGIN_WINDOW_MS;
+  const failures = withinWindow ? Number(row.failures) + 1 : 1;
+  const blockedUntil = failures >= LOGIN_MAX_FAILURES ? now + LOGIN_WINDOW_MS : 0;
+
+  await database.execute({
+    sql: `INSERT INTO auth_rate_limits (key, failures, window_started_at, blocked_until) VALUES (?, ?, ?, ?)
+      ON CONFLICT(key) DO UPDATE SET failures = excluded.failures, window_started_at = excluded.window_started_at, blocked_until = excluded.blocked_until`,
+    args: [key, failures, withinWindow ? Number(row.window_started_at) : now, blockedUntil],
+  });
+}
+
+export async function clearLoginRateLimit(key: string): Promise<void> {
+  const database = getDatabase();
+  await ensureDatabase();
+  await database.execute({sql: 'DELETE FROM auth_rate_limits WHERE key = ?', args: [key]});
 }
 
 export type PaymentRecord = {
