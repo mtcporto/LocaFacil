@@ -93,6 +93,12 @@ export default function LoginForm() {
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Entrar
         </Button>
+        <div className="relative py-1 text-center text-xs text-muted-foreground before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t before:border-border">
+          <span className="relative bg-card px-3">ou</span>
+        </div>
+        <Button type="button" variant="outline" className="w-full" asChild>
+          <a href="/api/auth/google">Continuar com Google</a>
+        </Button>
       </form>
     </Form>
   );

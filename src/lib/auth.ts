@@ -33,6 +33,28 @@ async function provisionConfiguredUser(email: string, password: string) {
   return {userId, email: email.toLowerCase(), role: configured.role} satisfies Session;
 }
 
+export async function authenticateGoogleUser(email: string, displayName: string): Promise<Session | null> {
+  await ensureDatabase();
+  if (!process.env.TURSO_DATABASE_URL) return null;
+  const database = getDatabase();
+  const normalizedEmail = email.toLowerCase();
+  const existing = await database.execute({sql: 'SELECT id, email, role FROM users WHERE email = ?', args: [normalizedEmail]});
+  const user = existing.rows[0];
+  if (user && typeof user.id === 'string' && typeof user.email === 'string' && (user.role === 'landlord' || user.role === 'tenant')) {
+    return {userId: user.id, email: user.email, role: user.role};
+  }
+
+  const configuredRole = process.env.LANDLORD_EMAIL?.toLowerCase() === normalizedEmail
+    ? 'landlord'
+    : 'tenant';
+  const userId = `google-${Buffer.from(normalizedEmail).toString('hex').slice(0, 24)}`;
+  await database.execute({
+    sql: 'INSERT INTO users (id, email, password_hash, role, display_name) VALUES (?, ?, ?, ?, ?)',
+    args: [userId, normalizedEmail, hashPassword(randomBytes(32).toString('hex')), configuredRole, displayName || normalizedEmail],
+  });
+  return {userId, email: normalizedEmail, role: configuredRole};
+}
+
 export async function authenticate(email: string, password: string): Promise<Session | null> {
   await ensureDatabase();
   if (!process.env.TURSO_DATABASE_URL) return null;
