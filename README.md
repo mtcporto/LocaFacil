@@ -13,7 +13,7 @@ Este projeto é um sistema completo para a gestão de propriedades, desenvolvido
 - **Gestão de Fiadores:** Registro e controle de informações sobre fiadores.
 - **Controle de Pagamentos:** Monitoramento e registro de pagamentos de aluguel e outras taxas.
 - **Gestão de Contratos de Locação:** Armazenamento e acompanhamento de contratos de locação.
-- **Notificações Inteligentes:** Sistema de notificações proativo e personalizado para manter todos informados sobre eventos importantes (utilizando GenKit).
+- **Notificações Inteligentes:** Sistema de notificações proativo e personalizado para manter todos informados sobre eventos importantes (utilizando GPT-4o pelo endpoint Copilot, sem chave).
 
 ### Tecnologias Utilizadas:
 
@@ -22,4 +22,4 @@ Este projeto é um sistema completo para a gestão de propriedades, desenvolvido
 - **TypeScript:** Superset tipado de JavaScript para maior robustez no desenvolvimento.
 - **Tailwind CSS:** Framework CSS utility-first para estilização rápida e responsiva.
 - **shadcn/ui:** Coleção de componentes de interface de usuário baseados em Radix UI e estilizados com Tailwind CSS.
-- **GenKit:** Toolkit para desenvolvimento de fluxos de trabalho de IA generativa, utilizado para as notificações inteligentes.
+- **GPT-4o:** Chamadas ao endpoint Copilot no servidor, sem chave; veja [AI.md](AI.md).

@@ -3,7 +3,7 @@
 'use server';
 
 /**
- * @fileOverview This file defines a Genkit flow for suggesting smart notifications
+ * @fileOverview This file defines an AI function for suggesting smart notifications
  * to landlords based on real-time data such as weather, city events, and maintenance schedules.
  *
  * - suggestNotification - A function that takes input data and returns a suggested notification message.
@@ -12,6 +12,7 @@
  */
 
 import {z} from 'zod';
+import {completeCopilotJson} from '@/ai/copilot';
 
 const SuggestNotificationInputSchema = z.object({
   weatherForecast: z.string().trim().max(4000).optional().describe('A previsão do tempo para os próximos dias. Opcional.'),
@@ -57,32 +58,6 @@ const systemPrompt = `Você é um assistente de IA que ajuda proprietários a cr
 
 export async function suggestNotification(input: SuggestNotificationInput): Promise<SuggestNotificationOutput> {
   const validatedInput = SuggestNotificationInputSchema.parse(input);
-  const baseUrl = process.env.base_url?.replace(/\/$/, '');
-  const model = process.env.model || 'gpt-4.1';
-  if (!baseUrl) throw new Error('O endpoint da IA não está configurado.');
-
-  const response = await fetch(`${baseUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(process.env.OPENAI_API_KEY ? {Authorization: `Bearer ${process.env.OPENAI_API_KEY}`} : {}),
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.4,
-      response_format: {type: 'json_object'},
-      messages: [
-        {role: 'system', content: systemPrompt},
-        {role: 'user', content: JSON.stringify(validatedInput)},
-      ],
-    }),
-  });
-
-  if (!response.ok) throw new Error(`Falha no endpoint da IA (${response.status}).`);
-  const payload = await response.json() as {choices?: Array<{message?: {content?: string}}>};
-  const content = payload.choices?.[0]?.message?.content;
-  if (!content) throw new Error('A IA não retornou uma sugestão de notificação.');
-
-  const parsed = JSON.parse(content) as unknown;
+  const parsed = await completeCopilotJson(systemPrompt, JSON.stringify(validatedInput));
   return SuggestNotificationOutputSchema.parse(parsed);
 }
