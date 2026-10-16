@@ -1,6 +1,6 @@
 # IA
 
-As chamadas são feitas no servidor para `https://copilot-mtcporto.vercel.app/v1/chat/completions`, com o modelo `gpt-4o`, sem chave ou cabeçalho Authorization. Não é necessário configurar OPENAI_API_KEY, base_url, model ou variáveis Gemini. Não há dependência de Genkit nem SDK adicional.
+As chamadas são feitas no servidor para `https://copilot-mtcporto.vercel.app/v1/chat/completions`, com o modelo `gpt-4o`, sem chave ou cabeçalho Authorization. Não é necessário configurar OPENAI_API_KEY, base_url ou model. A integração usa `fetch`, sem SDK adicional.
 
 O cliente usa timeout de 60 segundos, não segue redirecionamentos e rejeita respostas vazias, truncadas ou de outro modelo. O JSON pode vir puro ou em um bloco Markdown completo e é validado pelo esquema de cada função.
 

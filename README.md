@@ -20,6 +20,7 @@ Este projeto é um sistema completo para a gestão de propriedades, desenvolvido
 - **Next.js:** Framework React para construção de aplicações web server-rendered.
 - **React:** Biblioteca JavaScript para construção de interfaces de usuário.
 - **TypeScript:** Superset tipado de JavaScript para maior robustez no desenvolvimento.
+- **Turso/libSQL:** Persistência de dados pelo cliente `@libsql/client`. A autenticação usa a implementação própria e Google OAuth; os pagamentos usam Mercado Pago.
 - **Tailwind CSS:** Framework CSS utility-first para estilização rápida e responsiva.
 - **shadcn/ui:** Coleção de componentes de interface de usuário baseados em Radix UI e estilizados com Tailwind CSS.
 - **GPT-4o:** Chamadas ao endpoint Copilot no servidor, sem chave; veja [AI.md](AI.md).
