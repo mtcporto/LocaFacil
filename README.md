@@ -24,3 +24,8 @@ Este projeto é um sistema completo para a gestão de propriedades, desenvolvido
 - **Tailwind CSS:** Framework CSS utility-first para estilização rápida e responsiva.
 - **shadcn/ui:** Coleção de componentes de interface de usuário baseados em Radix UI e estilizados com Tailwind CSS.
 - **GPT-4o:** Chamadas ao endpoint Copilot no servidor, sem chave; veja [AI.md](AI.md).
+
+
+## Desenvolvimento
+
+Baseline: Node.js 24.x. Consulte o `package.json` para instalação, validação e build.
