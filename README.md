@@ -29,3 +29,7 @@ Este projeto é um sistema completo para a gestão de propriedades, desenvolvido
 ## Desenvolvimento
 
 Baseline: Node.js 24.x. Consulte o `package.json` para instalação, validação e build.
+
+Os formulários usam Zod 4 com `@hookform/resolvers` 5.1 ou superior. A integração
+de validação (erros de campo, coerção numérica e refinamentos) pode ser verificada
+com `npm run test:validation`, sem banco de dados ou serviços externos.

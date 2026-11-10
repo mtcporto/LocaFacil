@@ -35,19 +35,19 @@ const addTenantFormSchema = z.object({
   phone: z.string().min(10, { message: "Telefone deve ter pelo menos 10 dígitos." }),
   cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, { message: "CPF inválido. Formato: XXX.XXX.XXX-XX." }),
   rg: z.string().min(5, { message: "RG deve ter pelo menos 5 caracteres." }),
-  maritalStatus: z.string({ required_error: "Selecione o estado civil." }),
+  maritalStatus: z.string({ error: issue => issue.input === undefined ? "Selecione o estado civil." : undefined }),
   profession: z.string().min(3, { message: "Profissão deve ter pelo menos 3 caracteres." }),
   password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }).optional().or(z.literal('')),
   confirmPassword: z.string().min(6, { message: "A confirmação de senha deve ter pelo menos 6 caracteres." }).optional().or(z.literal('')),
-  propertyId: z.string({ required_error: "Selecione o imóvel." }),
+  propertyId: z.string({ error: issue => issue.input === undefined ? "Selecione o imóvel." : undefined }),
   apartmentUnit: z.string().min(1, { message: "Unidade do apartamento é obrigatória." }),
-  leaseStartDate: z.date({ required_error: "Data de início do contrato é obrigatória." }),
-  leaseEndDate: z.date({ required_error: "Data de fim do contrato é obrigatória." }),
-  rent_paid_status: z.enum(taxStatusOptions, { required_error: "Selecione o status do aluguel." }),
-  iptuAmount: z.coerce.number().nonnegative({ message: "Valor do IPTU não pode ser negativo." }).optional().or(z.literal(0)),
+  leaseStartDate: z.date({ error: issue => issue.input === undefined ? "Data de início do contrato é obrigatória." : undefined }),
+  leaseEndDate: z.date({ error: issue => issue.input === undefined ? "Data de fim do contrato é obrigatória." : undefined }),
+  rent_paid_status: z.enum(taxStatusOptions, { error: issue => issue.input === undefined ? "Selecione o status do aluguel." : undefined }),
+  iptuAmount: z.coerce.number<string | number>().nonnegative({ message: "Valor do IPTU não pode ser negativo." }).optional().or(z.literal(0)),
   iptuDueDate: z.date().optional(),
   iptuStatus: z.enum(taxStatusOptions).optional(),
-  tcrAmount: z.coerce.number().nonnegative({ message: "Valor da TCR não pode ser negativo." }).optional().or(z.literal(0)),
+  tcrAmount: z.coerce.number<string | number>().nonnegative({ message: "Valor da TCR não pode ser negativo." }).optional().or(z.literal(0)),
   tcrDueDate: z.date().optional(),
   tcrStatus: z.enum(taxStatusOptions).optional(),
 }).refine(data => {
@@ -83,7 +83,7 @@ export default function AddTenantForm({ tenantToEdit }: AddTenantFormProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const isEditing = !!tenantToEdit;
 
-  const form = useForm<z.infer<typeof addTenantFormSchema>>({
+  const form = useForm<z.input<typeof addTenantFormSchema>, unknown, z.output<typeof addTenantFormSchema>>({
     resolver: zodResolver(addTenantFormSchema),
     defaultValues: {
       name: tenantToEdit?.name || "",
