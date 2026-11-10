@@ -26,7 +26,7 @@ const addGuarantorFormSchema = z.object({
   name: z.string().min(3, { message: "Nome completo deve ter pelo menos 3 caracteres." }),
   cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, { message: "CPF inválido. Formato: XXX.XXX.XXX-XX." }),
   rg: z.string().min(5, { message: "RG deve ter pelo menos 5 caracteres." }),
-  maritalStatus: z.string({ required_error: "Selecione o estado civil." }),
+  maritalStatus: z.string({ error: issue => issue.input === undefined ? "Selecione o estado civil." : undefined }),
   profession: z.string().min(3, { message: "Profissão deve ter pelo menos 3 caracteres." }),
   email: z.string().email({ message: "Endereço de email inválido." }),
   phone: z.string().min(10, { message: "Telefone deve ter pelo menos 10 dígitos." }),

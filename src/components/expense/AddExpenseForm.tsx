@@ -31,9 +31,9 @@ const expenseCategories = ['Manutenção', 'Pessoal', 'Administrativo', 'Marketi
 
 const addExpenseFormSchema = z.object({
   description: z.string().min(3, { message: "Descrição deve ter pelo menos 3 caracteres." }),
-  amount: z.coerce.number({ invalid_type_error: "Valor deve ser um número." }).positive({ message: "Valor deve ser positivo." }),
-  date: z.date({ required_error: "Data da despesa é obrigatória." }),
-  category: z.enum(expenseCategories, { required_error: "Selecione a categoria." }),
+  amount: z.coerce.number<string | number>({ error: "Valor deve ser um número." }).positive({ message: "Valor deve ser positivo." }),
+  date: z.date({ error: issue => issue.input === undefined ? "Data da despesa é obrigatória." : undefined }),
+  category: z.enum(expenseCategories, { error: issue => issue.input === undefined ? "Selecione a categoria." : undefined }),
   propertyId: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -43,7 +43,7 @@ export default function AddExpenseForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const form = useForm<z.infer<typeof addExpenseFormSchema>>({
+  const form = useForm<z.input<typeof addExpenseFormSchema>, unknown, z.output<typeof addExpenseFormSchema>>({
     resolver: zodResolver(addExpenseFormSchema),
     defaultValues: {
       description: "",

@@ -33,8 +33,8 @@ const addEmployeeFormSchema = z.object({
   role: z.string().min(3, { message: "Cargo é obrigatório." }), // Changed to string to allow for "Outro" input directly
   phone: z.string().min(10, { message: "Telefone deve ter pelo menos 10 dígitos." }),
   email: z.string().email({ message: "Email inválido." }).optional().or(z.literal('')),
-  salary: z.coerce.number({ invalid_type_error: "Salário deve ser um número." }).positive({ message: "Salário deve ser positivo." }),
-  hireDate: z.date({ required_error: "Data de contratação é obrigatória." }),
+  salary: z.coerce.number<string | number>({ error: "Salário deve ser um número." }).positive({ message: "Salário deve ser positivo." }),
+  hireDate: z.date({ error: issue => issue.input === undefined ? "Data de contratação é obrigatória." : undefined }),
   propertyId: z.string().optional(),
 });
 
@@ -43,7 +43,7 @@ export default function AddEmployeeForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const form = useForm<z.infer<typeof addEmployeeFormSchema>>({
+  const form = useForm<z.input<typeof addEmployeeFormSchema>, unknown, z.output<typeof addEmployeeFormSchema>>({
     resolver: zodResolver(addEmployeeFormSchema),
     defaultValues: {
       name: "",

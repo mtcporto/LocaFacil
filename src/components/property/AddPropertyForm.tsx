@@ -41,13 +41,13 @@ const addPropertyFormSchema = z.object({
   zip: z.string().regex(/^\d{5}-?\d{3}$/, { message: "CEP inválido. Formato: XXXXX-XXX ou XXXXXXXX." }),
   description: z.string().min(10, { message: "Descrição curta deve ter pelo menos 10 caracteres." }).max(250, { message: "Descrição curta não pode exceder 250 caracteres." }),
   longDescription: z.string().min(50, { message: "Descrição longa deve ter pelo menos 50 caracteres." }),
-  sq_m: z.coerce.number({ invalid_type_error: "Área deve ser um número." }).positive({ message: "Área deve ser um valor positivo." }),
-  bedrooms: z.coerce.number({ invalid_type_error: "Número de quartos deve ser um número." }).int().min(0, { message: "Número de quartos não pode ser negativo." }),
-  bathrooms: z.coerce.number({ invalid_type_error: "Número de banheiros deve ser um número." }).int().min(1, { message: "Deve ter pelo menos 1 banheiro." }),
-  rent_amount: z.coerce.number({ invalid_type_error: "Valor do aluguel deve ser um número." }).positive({ message: "Valor do aluguel deve ser positivo." }),
-  type: z.enum(["Apartamento", "Casa", "Condomínio"], { required_error: "Selecione o tipo do imóvel." }),
+  sq_m: z.coerce.number<string | number>({ error: "Área deve ser um número." }).positive({ message: "Área deve ser um valor positivo." }),
+  bedrooms: z.coerce.number<string | number>({ error: "Número de quartos deve ser um número." }).int().min(0, { message: "Número de quartos não pode ser negativo." }),
+  bathrooms: z.coerce.number<string | number>({ error: "Número de banheiros deve ser um número." }).int().min(1, { message: "Deve ter pelo menos 1 banheiro." }),
+  rent_amount: z.coerce.number<string | number>({ error: "Valor do aluguel deve ser um número." }).positive({ message: "Valor do aluguel deve ser positivo." }),
+  type: z.enum(["Apartamento", "Casa", "Condomínio"], { error: issue => issue.input === undefined ? "Selecione o tipo do imóvel." : undefined }),
   amenities: z.array(z.string()).optional(),
-  available: z.string({ required_error: "Selecione o status de disponibilidade." }), // Receber como string do Select
+  available: z.string({ error: issue => issue.input === undefined ? "Selecione o status de disponibilidade." : undefined }), // Receber como string do Select
 });
 
 export default function AddPropertyForm() {
@@ -55,7 +55,7 @@ export default function AddPropertyForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const form = useForm<z.infer<typeof addPropertyFormSchema>>({
+  const form = useForm<z.input<typeof addPropertyFormSchema>, unknown, z.output<typeof addPropertyFormSchema>>({
     resolver: zodResolver(addPropertyFormSchema),
     defaultValues: {
       name: "",

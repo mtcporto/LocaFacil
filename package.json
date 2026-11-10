@@ -9,10 +9,11 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:ai": "node --experimental-strip-types --test tests/copilot.test.mjs",
+    "test:validation": "node --test tests/zod-resolver.test.mjs",
     "test:braces-security": "node --test vendor/guarded-braces/test/security.test.cjs"
   },
   "dependencies": {
-    "@hookform/resolvers": "^4.1.3",
+    "@hookform/resolvers": "^5.1.0",
     "@libsql/client": "^0.18.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -35,6 +36,7 @@
     "@radix-ui/react-toast": "^1.2.6",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tanstack/react-query": "^5.66.0",
+    "braces": "file:vendor/guarded-braces",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
@@ -49,8 +51,7 @@
     "recharts": "^2.15.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^4.6.6",
-    "braces": "file:vendor/guarded-braces"
+    "zod": "^4.6.6"
   },
   "overrides": {
     "postcss": "$postcss",
@@ -70,13 +71,13 @@
     "braces": "$braces"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^20",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.1.0",
-    "typescript": "6.0.3",
-    "@tailwindcss/postcss": "^4.1.0"
+    "typescript": "6.0.3"
   },
   "engines": {
     "node": "24.x"
